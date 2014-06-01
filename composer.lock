@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "86248d9e97b702405216b22e18e5e06e",
+    "hash": "64d0ec13eff2a71d14e2bc90c5edb813",
     "packages": [
         {
             "name": "league/plates",
@@ -50,286 +50,6 @@
                 "templating"
             ],
             "time": "2014-04-02 19:15:11"
-        },
-        {
-            "name": "orno/cache",
-            "version": "v1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/orno/cache.git",
-                "reference": "1b7c56981a4e50f96dca7104ece66b9384746fed"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/orno/cache/zipball/1b7c56981a4e50f96dca7104ece66b9384746fed",
-                "reference": "1b7c56981a4e50f96dca7104ece66b9384746fed",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4",
-                "predis/predis": "0.8.*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Orno\\Cache": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Phil Bennett",
-                    "email": "philipobenito@gmail.com"
-                },
-                {
-                    "name": "Michael Bardsley",
-                    "email": "me@mic-b.co.uk"
-                }
-            ],
-            "keywords": [
-                "apc",
-                "cache",
-                "memcached",
-                "orno",
-                "redis"
-            ],
-            "time": "2013-10-01 09:39:17"
-        },
-        {
-            "name": "orno/config",
-            "version": "v1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/orno/config.git",
-                "reference": "1d62e2552c5a3300a8d51125737d1e4698f4f0a6"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/orno/config/zipball/1d62e2552c5a3300a8d51125737d1e4698f4f0a6",
-                "reference": "1d62e2552c5a3300a8d51125737d1e4698f4f0a6",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4",
-                "symfony/yaml": "2.3.*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Orno\\Config": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Phil Bennett",
-                    "email": "philipobenito@gmail.com"
-                }
-            ],
-            "description": "A package to DRY the storage and retrieval of config items and files. Supports YAML, INI, XML and PHP arrays.",
-            "keywords": [
-                "array",
-                "config",
-                "ini",
-                "orno",
-                "xml",
-                "yaml"
-            ],
-            "time": "2013-08-08 10:50:21"
-        },
-        {
-            "name": "orno/db",
-            "version": "v1.2.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/orno/db.git",
-                "reference": "3ee976cbbb27ca16832bef9bdbeaa749f7792e16"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/orno/db/zipball/3ee976cbbb27ca16832bef9bdbeaa749f7792e16",
-                "reference": "3ee976cbbb27ca16832bef9bdbeaa749f7792e16",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Orno\\Db": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "WTFPL"
-            ],
-            "authors": [
-                {
-                    "name": "Phil Bennett",
-                    "email": "philipobenito@gmail.com"
-                }
-            ],
-            "description": "A database abstraction library.",
-            "keywords": [
-                "db",
-                "mysql",
-                "mysqli",
-                "oracle",
-                "orno",
-                "pdo"
-            ],
-            "time": "2013-09-05 10:01:37"
-        },
-        {
-            "name": "orno/di",
-            "version": "v2.0.6",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/orno/di.git",
-                "reference": "e8d29523da316125e67a6d39d477da90dc7be656"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/orno/di/zipball/e8d29523da316125e67a6d39d477da90dc7be656",
-                "reference": "e8d29523da316125e67a6d39d477da90dc7be656",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4"
-            },
-            "suggest": {
-                "orno/cache": "Enables caching of reflection based resolution",
-                "orno/config": "Allows useage of config files rather than interacting with the container directly"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Orno\\Di": "src/",
-                    "OrnoTest": "tests/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Phil Bennett",
-                    "email": "philipobenito@gmail.com"
-                }
-            ],
-            "description": "Orno Di is a small but powerful dependency injection container with automatic resolution of dependencies.",
-            "keywords": [
-                "container",
-                "dependency",
-                "di",
-                "injection",
-                "orno"
-            ],
-            "time": "2014-04-03 08:23:38"
-        },
-        {
-            "name": "predis/predis",
-            "version": "0.8.x-dev",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/nrk/predis.git",
-                "reference": "c4b592298c8b83e05da3c791a2e0ab26e49708aa"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/nrk/predis/zipball/c4b592298c8b83e05da3c791a2e0ab26e49708aa",
-                "reference": "c4b592298c8b83e05da3c791a2e0ab26e49708aa",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.2"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~4.0"
-            },
-            "suggest": {
-                "ext-curl": "Allows access to Webdis when paired with phpiredis",
-                "ext-phpiredis": "Allows faster serialization and deserialization of the Redis protocol"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Predis": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Daniele Alessandri",
-                    "email": "suppakilla@gmail.com",
-                    "homepage": "http://clorophilla.net"
-                }
-            ],
-            "description": "Flexible and feature-complete PHP client library for Redis",
-            "homepage": "http://github.com/nrk/predis",
-            "keywords": [
-                "nosql",
-                "predis",
-                "redis"
-            ],
-            "time": "2014-05-30 10:22:12"
-        },
-        {
-            "name": "slim/slim",
-            "version": "2.4.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/codeguy/Slim.git",
-                "reference": "4906b77a07c7bd6ff1a99aea903e940a2d4fa106"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/codeguy/Slim/zipball/4906b77a07c7bd6ff1a99aea903e940a2d4fa106",
-                "reference": "4906b77a07c7bd6ff1a99aea903e940a2d4fa106",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "suggest": {
-                "ext-mcrypt": "Required for HTTP cookie encryption"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Slim": "."
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Josh Lockhart",
-                    "email": "info@joshlockhart.com",
-                    "homepage": "http://www.joshlockhart.com/"
-                }
-            ],
-            "description": "Slim Framework, a PHP micro framework",
-            "homepage": "http://github.com/codeguy/Slim",
-            "keywords": [
-                "microframework",
-                "rest",
-                "router"
-            ],
-            "time": "2014-04-05 18:33:59"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -389,55 +109,6 @@
             "description": "Symfony EventDispatcher Component",
             "homepage": "http://symfony.com",
             "time": "2014-05-23 14:36:49"
-        },
-        {
-            "name": "symfony/yaml",
-            "version": "2.3.x-dev",
-            "target-dir": "Symfony/Component/Yaml",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/Yaml.git",
-                "reference": "2e257c292cfce88bf6c894a03d0fe8d782055aee"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/2e257c292cfce88bf6c894a03d0fe8d782055aee",
-                "reference": "2e257c292cfce88bf6c894a03d0fe8d782055aee",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.3-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Symfony\\Component\\Yaml\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "http://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony Yaml Component",
-            "homepage": "http://symfony.com",
-            "time": "2014-05-12 09:13:35"
         }
     ],
     "packages-dev": [
@@ -1161,6 +832,55 @@
                 "standards"
             ],
             "time": "2014-05-22 01:56:27"
+        },
+        {
+            "name": "symfony/yaml",
+            "version": "dev-master",
+            "target-dir": "Symfony/Component/Yaml",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/Yaml.git",
+                "reference": "d151f00d4fae107ea0d70ade6b0d2d3e81f45ecd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/d151f00d4fae107ea0d70ade6b0d2d3e81f45ecd",
+                "reference": "d151f00d4fae107ea0d70ade6b0d2d3e81f45ecd",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.6-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\Yaml\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Yaml Component",
+            "homepage": "http://symfony.com",
+            "time": "2014-05-23 14:36:49"
         }
     ],
     "aliases": [
@@ -1170,9 +890,9 @@
     "stability-flags": [
 
     ],
-    "platform": [
-
-    ],
+    "platform": {
+        "php": ">=5.3"
+    },
     "platform-dev": [
 
     ]

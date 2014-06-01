@@ -1,15 +1,13 @@
 {
-    "name": "phpacorn/wave-framework",
+    "name": "wave/wave",
     "description": "Core framework for Wave CMS",
+    "keywords": ["wave", "wave-framework"],
+    "homepage": "https://phpAcorn.github.com/wave-framework",
     "type": "library",
     "require": {
+        "php": ">=5.3",
         "league/plates": "2.*",
-        "orno/di": "2.*",
-        "orno/cache": "1.*",
-        "orno/config": "1.*",
-        "symfony/event-dispatcher": "2.*",
-        "orno/db": "1.*",
-        "slim/slim": "2.*"
+        "symfony/event-dispatcher": "2.*"
     },
     "require-dev": {
         "phpunit/phpunit": "4.*",
@@ -19,11 +17,12 @@
     "authors": [
         {
             "name": "phpAcorn",
-            "email": "phpacorn@gmail.com"
+            "email": "phpacorn@gmail.com",
+            "role": "developer"
         }
     ],
     "minimum-stability": "dev",
     "autoload": {
-        "psr-0": { "Wave": "./lib" }
+        "psr-0": { "Wave": "lib" }
     }
 }
