@@ -27,7 +27,7 @@ class Observer
      * @throws \InvalidArgumentException Invalid subject specified
      */
     public function __construct(Subject $subject)
-    {   
+    {
         $subject->attach($this);
     }
     
