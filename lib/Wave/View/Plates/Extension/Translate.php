@@ -17,7 +17,7 @@ class Translate
     /**
      * @var string currently used locale. Usecase language switcher:selected
      */
-    protected $current = 'all_ALL';
+    protected $current = null;
     
     /**
      * @var array Array of available locales (['en_US', 'en_GB',...])
@@ -34,7 +34,7 @@ class Translate
      * @param string $current The currently loaded locale (Optional)
      * @param array $locales Array with available locales (Optional) 
      */
-    public function __construct($translation, $current = null, $locales = array())
+    public function __construct($translation, $current = 'all_ALL', $locales = array())
     {
         $this->translation = $translation;
         $this->current = $current;
@@ -59,10 +59,11 @@ class Translate
         
         if (array_key_exists($needle, $this->translation)) {
             return $this->translation[$needle];
+        } else {
+            return $needle;
         }
-        
-        return $needle;
     }
+    
     
     public function getFunctions()
     {
@@ -88,5 +89,19 @@ class Translate
     public function availableLocales()
     {
         return $this->locales;
+    }
+    
+    /**
+     * Getter method to retrieve the currently used locale.
+     * Usecase: Language Switcher currently selected language.
+     * 
+     * @method locale
+     * @access public
+     * 
+     * @return string The current locale in use.
+     */
+    public function locale()
+    {
+        return $this->current;
     }
 }
