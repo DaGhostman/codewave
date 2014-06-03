@@ -6,12 +6,15 @@ class LocalTest extends PHPUnit_Framework_TestCase
 {
     private $filesystem = null;
     
+    
     protected function setUp()
     {
         $workspace = getcwd() . '/tmp';
         
-        if (true !== mkdir($workspace, 0755)) {
-            $this->markTestIncomplete('Unable to create directory \'/tmp\'');
+        if (!file_exists($workspace)) {
+            if (true !== mkdir($workspace, 0755)) {
+                $this->markTestIncomplete('Unable to create directory \'/tmp\'');
+            }
         }
         
         $this->filesystem = new Local($workspace);
@@ -110,14 +113,14 @@ class LocalTest extends PHPUnit_Framework_TestCase
         $fp = $this->filesystem;
         
         $fp->create('/permissions', 0777);
-        $this->assertSame('0644', $fp->permissions('/permissions'));
+        $this->assertEquals('0644', $fp->permissions('/permissions'));
         
         $this->assertSame($fp->permissions('/permissions', 0755), $fp);
-        $this->assertSame('0755', $fp->permissions('/permissions'));
+        $this->assertEquals('0755', $fp->permissions('/permissions'));
         unlink($fp->getPath() . '/permissions');
     }
     
-    public function testGetDirIterator()
+    public function testGetIterator()
     {
         $this->assertEquals(
             $this->filesystem->getDirectoryIterator(),
