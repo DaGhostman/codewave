@@ -7,7 +7,7 @@ use \Symfony\Component\EventDispatcher;
 /** 
  * @author phpAcorn <phpacorn@gmail.com>
  * @copyright phpAcorn 2014
- * @link http://phpacorn/
+ * @link http://phpacorn.com/
  * @package phpAcorn\Wave
  * @version 1.0
  * @name Event

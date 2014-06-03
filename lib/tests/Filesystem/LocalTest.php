@@ -135,7 +135,6 @@ class LocalTest extends PHPUnit_Framework_TestCase
     
     public function testGetIterator()
     {
-        
         if (defined('HHVM_VERSION')) {
             $this->markTestSkipped(
                 'HHVM fails the test, because difference in resource number'

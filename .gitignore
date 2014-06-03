@@ -2,4 +2,5 @@
 /lib/.settings/
 /lib/.project
 /build
+phpdoc.dist.xml
 *~

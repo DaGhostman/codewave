@@ -4,6 +4,15 @@ namespace Wave\View\Plates\Extension;
 
 use \League\Plates\Extension\ExtensionInterface;
 
+/** 
+ * @author phpAcorn <phpacorn@gmail.com>
+ * @copyright phpAcorn 2014
+ * @link http://phpacorn.com/
+ * @package Wave
+ * @subpackage Plates\View\Extension
+ * @version 1.0
+ * @name Translate
+ */
 class Translate
 {
     public $engine;

@@ -6,12 +6,13 @@ use Wave\Pattern\Observer\Observer;
 /** 
  * @author phpAcorn <phpacorn@gmail.com>
  * @copyright phpAcorn 2014
- * @link http://phpacorn/
- * @package phpAcorn\Wave
+ * @link http://phpacorn.com/
+ * @package Wave
  * @subpackage Pattern\Observer
  * @version 1.0
  * @name Subject
  * @uses \Wave\Pattern\Observer\Observer
+ * @uses \ErrorException
  */
 class Subject
 {

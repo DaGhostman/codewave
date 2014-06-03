@@ -7,7 +7,7 @@ use \Wave\Pattern\Observer\Subject;
 /** 
  * @author phpAcorn <phpacorn@gmail.com>
  * @copyright phpAcorn 2014
- * @link http://phpacorn/
+ * @link http://phpacorn.com/
  * @package phpAcorn\Wave
  * @subpackage Pattern\Observer
  * @version 1.0
