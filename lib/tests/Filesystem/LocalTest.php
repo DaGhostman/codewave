@@ -104,7 +104,9 @@ class LocalTest extends PHPUnit_Framework_TestCase
         }
         
         $this->assertSame(implode("\n\r", $expected), $fs->read('/readme'));
-        
+        $fs->create('/public', 0755, 'dir');
+        $this->assertFalse($fs->read('/public'));
+        rmdir($fs->getPath() . '/public');
         unlink($fs->getPath() . '/readme');
     }
     
