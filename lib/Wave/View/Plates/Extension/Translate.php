@@ -36,7 +36,6 @@ class Translate
     /**
      * Used to inject all data in the object
      * 
-     * @method __construct
      * @access public
      * 
      * @param array|ArrayAccess $translation Array with translations
