@@ -20,11 +20,6 @@ class LocalTest extends PHPUnit_Framework_TestCase
         $this->filesystem = new Local($workspace);
     }
     
-    protected function tearDown()
-    {
-        rmdir(getcwd() . '/tmp');
-    }
-    
     public function testCreateFileDir()
     {
         $fs = $this->filesystem;
