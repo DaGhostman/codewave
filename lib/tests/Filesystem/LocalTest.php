@@ -108,10 +108,10 @@ class LocalTest extends PHPUnit_Framework_TestCase
         $fp = $this->filesystem;
         
         $fp->create('/permissions', 0777);
-        $this->assertEquals('0644', $fp->permissions('/permissions'));
+        $this->assertEquals(sprintf('%o', 0644), $fp->permissions('/permissions'));
         
         $this->assertSame($fp->permissions('/permissions', 0755), $fp);
-        $this->assertEquals('0755', $fp->permissions('/permissions'));
+        $this->assertEquals(sprintf('%o', 0755), $fp->permissions('/permissions'));
         unlink($fp->getPath() . '/permissions');
     }
     
