@@ -13,7 +13,9 @@ class LocalTest extends PHPUnit_Framework_TestCase
         
         if (!file_exists($workspace)) {
             if (true !== mkdir($workspace, 0755)) {
-                $this->markTestIncomplete('Unable to create directory \'/tmp\'');
+                $this->markTestIncomplete(
+                    'Unable to create directory \'/tmp\''
+                );
             }
         }
         
@@ -48,7 +50,10 @@ class LocalTest extends PHPUnit_Framework_TestCase
         unlink($fs->getPath() . '/readme');
         
         $fs->create('/openme', 0755, 'dir');
-        $this->assertInstanceOf('\Wave\Filesystem\Local', $fs->open('/openme'));
+        $this->assertInstanceOf(
+            '\Wave\Filesystem\Local',
+            $fs->open('/openme')
+        );
         rmdir($fs->getPath() . '/openme');
         
     }
@@ -108,15 +113,34 @@ class LocalTest extends PHPUnit_Framework_TestCase
         $fp = $this->filesystem;
         
         $fp->create('/permissions', 0777);
-        $this->assertEquals(sprintf('%o', fileperms($fp->getPath() . '/permissions')), $fp->permissions('/permissions'));
+        $this->assertEquals(
+            substr(
+                sprintf('%o', fileperms($fp->getPath() . '/permissions')),
+                -4
+            ),
+            $fp->permissions('/permissions')
+        );
         
         $this->assertSame($fp->permissions('/permissions', 0755), $fp);
-        $this->assertEquals(sprintf('%o', fileperms($fp->getPath() . '/permissions')), $fp->permissions('/permissions'));
+        $this->assertEquals(
+            substr(
+                sprintf('%o', fileperms($fp->getPath() . '/permissions')),
+                -4
+            ),
+            $fp->permissions('/permissions')
+        );
+        
         unlink($fp->getPath() . '/permissions');
     }
     
     public function testGetIterator()
     {
+        
+        if (defined('HHVM_VERSION')) {
+            $this->markTestSkipped(
+                'HHVM fails the test, because difference in resource number'
+            );
+        }
         $this->assertEquals(
             $this->filesystem->getDirectoryIterator(),
             new \DirectoryIterator($this->filesystem->getPath())
