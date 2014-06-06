@@ -3,7 +3,7 @@ namespace Wave\Database\Adapter;
 
 use \Wave\Database\Adapter\AdapterInterface;
 
-class PdoAdapter extends AdapterInterface
+class PdoAdapter implements AdapterInterface
 {
 
     const ADAPTER_MYSQL = 'mysql';

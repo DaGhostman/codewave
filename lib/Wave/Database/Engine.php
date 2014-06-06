@@ -22,7 +22,7 @@ class Engine
     /**
      * Returns the PDO instance or null if not connected
      *
-     * @return mixed \PDO object when connected, null otherwise
+     * @return mixed The current adapter object when connected, null otherwise
      */
     public function getLink()
     {
@@ -126,27 +126,6 @@ class Engine
     public function execute($params)
     {
         $this->link->execute($params);
-        
-        return $this;
-    }
-
-    public function beginTransaction()
-    {
-        $this->link->beginTransaction();
-        
-        return $this;
-    }
-
-    public function commit()
-    {
-        $this->link->commit();
-        
-        return $this;
-    }
-
-    public function rollback()
-    {
-        $this->link->rollback();
         
         return $this;
     }
