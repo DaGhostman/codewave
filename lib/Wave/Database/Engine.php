@@ -3,240 +3,151 @@ namespace Wave\Database;
 
 class Engine
 {
-    const ADAPTER_MYSQL  = 'mysql';
-    const ADAPTER_PGSQL  = 'pgsql';
-    const ADAPTER_SQLITE = 'sqlite';
-    
-    protected $dsn = null;
-    protected $link = null;
-    protected $stmt = null;
+
     protected $result = null;
-    
-    public $username = null;
-    public $password = null;
-    
+
+    protected $likn = null;
+
     private $handler = '\Wave\Database\Result';
-    
-    
-    /**
-     * Constructs the DNS string required for connecting to the database
-     * it does not perform the actual connection, but rather wiats for a
-     * request to be made towards the database and initiates a the
-     * connection. Note that this proces only happens once per object
-     * instantiation.
-     *
-     *  @access public
-     *  
-     *  @param array $config Assoc array with settings for the connection
-     *          'hostname' Host of the database, filename for SQLite or socket
-     *          'database' Database name, if using RDBMS
-     *          'username' (Optional) Username
-     *          'password' (Optional) Password
-     *          'port' (Optional) Port to use when connecting
-     * 
-     * @param array $options Array with valid PDO options
-     * 
-     * @throws \InvalidArgumentException
-     *
-     */
-    public function __construct($config, $options = array())
+
+    public function __construct($connection)
     {
-        foreach ($config as $key => $value) {
-            $$key = $value;
-        }
-        if ($engine == self::ADAPTER_MYSQL) {
-            $this->dsn = sprintf(
-                "mysql:host=%s;dbname=%s;port=%s",
-                $hostname,
-                $database,
-                (isset($port) ? $port : 3306)
-            );
-        } elseif ($engine == self::ADAPTER_PGSQL) {
-            $this->dsn = sprintf(
-                "pgsql:host=%s;dbname=%s;port=%s",
-                $hostname,
-                $database,
-                (isset($port) ? $port : 3306)
-            );
-        } elseif ($engine == self::ADAPTER_SQLITE) {
-            $this->dsn = sprintf(
-                "sqlite:%s",
-                $database
-            );
-        } else {
-            throw new \InvalidArgumentException(
-                "Unknown adapter specified"
-            );
+        if (! $connection instanceof Adapter\AdapterInterface) {
+            throw new \InvalidArgumentException("Invalid database connection passed", - 1);
         }
         
-        $this->password = (isset($password) ? $password : $this->password);
-        $this->username = (isset($username) ? $username : $this->username);
+        $this->likn = $connection;
     }
-    
-    
-    /**
-     * Checks if a connecting is established, if not it establishes it,
-     * otherwise it returns.
-     *
-     * @access public
-     * 
-     * @return boolean True if connected, false otherwise
-     * @throws \RuntimeException If unable to connect
-     *
-     */
-    public function connect()
-    {
-        if ($this->link && $this->link instanceof \PDO) {
-            return true;
-        }
-        
-        try {
-            $this->link = new \PDO(
-                $this->dsn,
-                $this->username,
-                $this->password,
-                $options
-            );
-        } catch (\PDOException $ex) {
-            throw new \RuntimeException(
-                "Unable to instantiate PDO connection",
-                $ex->getCode(),
-                $ex
-            );
-        }
-    }
+
     /**
      * Returns the PDO instance or null if not connected
-     * 
+     *
      * @return mixed \PDO object when connected, null otherwise
      */
     public function getLink()
     {
         return $this->link;
     }
-    
-    /**
-     *
-     * Prepares a query for execution PDO style
-     *
-     * @access public
-     * @see PDO::prepare()
-     * @param $query string An SQL query to prepare.
-     * @param $options array (Optional) Options to pass to the query
-     * @throws \RuntimeException in case of error
-     * @return \Wave\Database\Engine Current instance on success
-     *
-     */
-    public function prepare($query, $options)
-    {
-        try {
-            $this->connect();
-            $this->stmt = $this->link->prepare($query, $options);
-        } catch (\PDOException $ex) {
-            throw new \RuntimeException(
-                sprintf("Unable to prepare the query '%s'", $query),
-                $ex->getCode(),
-                $ex
-            );
-        }
-        
-        return $this;
-    }
-    
-    /**
-     * Returns the \PDOStatement of the last 'prepare' call
-     * @return mixed null or \PDOStatement
-     */
-    public function getStatement()
-    {
-        return (!is_null($this->stmt)) ? $this->stmt : null;
-    }
-    
-    
-    /**
-     * Execute a query
-     * 
-     * @access public
-     * @param array $params Array of prepared values
-     * @see \PDO::execute
-     * @throws \RuntimeException
-     */
-    public function execute($params = array())
-    {
-        try {
-            $this->connect();
-            if (!$this->getStatement() instanceof \PDOStatement) {
-                throw new \RuntimeException(
-                    "No statement has been prepared",
-                    -1
-                );
-            }
-            $this->getStatement()->execute($params);
-        } catch (\PDOException $ex) {
-            throw new \RuntimeException(
-                sprintf(
-                    "Unable to execute '%s' with params [%s]",
-                    $this->getStatement()->queryString
-                ),
-                $ex->getCode(),
-                $ex
-            );
-        }
-    }
-    
+
     public function setResulthandler($handler)
     {
         $this->handler = $handler;
         
         return $this;
     }
-    
-    /**
-     * Returns the last inserted ID
-     * 
-     * @return int The ID of the last insert
-     * @see \PDO::lastInsertId
-     */
-    public function getLastId($name = null)
+
+    public function fetch($handler = null, $max = false)
     {
-        try {
-            $this->connect();
-            $this->getLink()->lastInsertId($name);
-        } catch (\PDOException $ex) {
-            throw new \RuntimeException(
-                "Unable to retrieve lastInsertId",
-                $ex->getCode(),
-                $ex
-            );
+        if ($handler !== null) {
+            $this->setResulthandler($handler);
         }
-    }
-    
-    public function fetch()
-    {
+        
         try {
             $this->connect();
-            $result = $this->getStatement()->fetch();
+            if ($max === false) {
+                $result = $this->link->fetch();
+            } else {
+                $result = $this->link->fetchAll();
+            }
         } catch (\PDOException $ex) {
-            throw new \RuntimeException(
-                "Unable to fetch result".
-                $ex->getCode(),
-                $ex
-            );
+            throw new \RuntimeException("Unable to fetch result" . $ex->getCode(), $ex);
         }
         
         return new $this->handler($result);
     }
-    
-    public function fetchAll()
+
+    public function handler($set)
     {
-        try {
-            $this-->connect();
-        } catch (\PDOException $ex) {
-            throw new \RuntimeException(
-                "Unable to fetch resuts",
-                $ex->getCode(),
-                $ex
-            );
+        return new $this->handler($set);
+    }
+
+    public function insert($table, $binds)
+    {
+        $cols = implode(', ', $binds);
+        $keys = implode(',:', $binds);
+        
+        $query = "INSERT INTO %s (%s) VALUES %s";
+        
+        $this->link->prepare(sprintf($query, $table, $cols, $keys));
+        
+        return $this;
+    }
+
+    public function select($table, $fields)
+    {
+        $query = "SELECT % FROM %s";
+        $this->link->prepare(sprintf($query, implode(',', $fields), $table));
+        
+        return $this;
+    }
+
+    public function update($table, $binds)
+    {
+        $query = "UPDATE %s SET %s";
+        
+        $sets = array();
+        foreach ($binds as $set) {
+            array_push($sets, sptinf("%s = :%s", $set, $set));
         }
+        
+        $this->prepare(sprintf($query, $table, implode(', ', $sets)));
+        
+        return $this;
+    }
+
+    public function delete($table)
+    {
+        $this->prepare(sprintf("DELETE FROM %s", $table));
+        
+        return $this;
+    }
+
+    public function where($clause)
+    {
+        $this->link->prepare(sprintf('%s WHERE %s', $this->link->getQuery(), $clause));
+        
+        return $this;
+    }
+
+    public function custom($sql)
+    {
+        $this->link->prepare('%s %s', $this->link->getQuery(), $sql);
+        
+        return $this;
+    }
+
+    public function bind($key, $value, $type)
+    {
+        $this->link->bindParam($key, $value, $type);
+        
+        return $this;
+    }
+
+    public function execute($params)
+    {
+        $this->link->execute($params);
+        
+        return $this;
+    }
+
+    public function beginTransaction()
+    {
+        $this->link->beginTransaction();
+        
+        return $this;
+    }
+
+    public function commit()
+    {
+        $this->link->commit();
+        
+        return $this;
+    }
+
+    public function rollback()
+    {
+        $this->link->rollback();
+        
+        return $this;
     }
 }

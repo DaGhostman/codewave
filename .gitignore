@@ -4,3 +4,7 @@
 /build
 phpdoc.dist.xml
 *~
+.project
+.buildpath
+.externalToolBuilders
+.settings

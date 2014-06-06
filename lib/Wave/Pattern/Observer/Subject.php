@@ -3,7 +3,8 @@ namespace Wave\Pattern\Observer;
 
 use Wave\Pattern\Observer\Observer;
 
-/** 
+/**
+ *
  * @author phpAcorn <phpacorn@gmail.com>
  * @copyright phpAcorn 2014
  * @link http://phpacorn.com/
@@ -16,22 +17,26 @@ use Wave\Pattern\Observer\Observer;
  */
 class Subject
 {
+
     /**
+     *
      * @var array $observers The pool of observers
      */
     protected $observers = array();
-    
+
     /**
+     *
      * @var string $state The state of the subject, defaults to null
      */
     protected $state = null;
-    
+
     /**
      * Attaches observer to the pool
-     * 
+     *
      * @method attach
      * @access public
-     * @param \Wave\Pattern\Observer\Observer $observer Observer to add
+     * @param \Wave\Pattern\Observer\Observer $observer
+     *            Observer to add
      * @return object Object for chaining
      */
     public function attach(Observer $observer)
@@ -42,50 +47,54 @@ class Subject
         
         return $this;
     }
-    
+
     /**
      * Removes an observer from the pool
-     * 
+     *
      * @method detach
      * @access public
-     * @param \Wave\Pattern\Observer\Observer $observer Observer to remove
+     * @param \Wave\Pattern\Observer\Observer $observer
+     *            Observer to remove
      * @return object Object for chaining
      * @throws \ErrorException Observer not existing, empty pool
      */
-    public function detach (Observer $observer)
+    public function detach(Observer $observer)
     {
-        if (!empty($this->observers)) {
+        if (! empty($this->observers)) {
             if (false !== ($key = $this->hasObserver($observer))) {
                 unset($this->observers[$key]);
-            } else {// It doesn't exist
+            } else { // It doesn't exist
                 throw new \ErrorException("Trying to remove undefined observer");
             }
         }
         
         return $this;
     }
-    
+
     /**
-     * Search for a given observer. array_search wrapper
-     * 
+     * Search for a given observer.
+     * array_search wrapper
+     *
      * @method hasObserver
      * @access protected
-     * @param \Wave\Pattern\Observer\Observer $observer Observer to lookup
+     * @param \Wave\Pattern\Observer\Observer $observer
+     *            Observer to lookup
      * @return mixed False or observer key if exists
      */
     public function hasObserver(Observer $observer)
     {
         return array_search($observer, $this->observers);
     }
-    
+
     /**
      * Notify observers for change in subject's state.
      * All arguments passed to it are redirected to each
      * observer, @see call_user_func_array.
-     * 
+     *
      * @method notify
      * @access public
-     * @param mixed $params Arguments to pass to each observer
+     * @param mixed $params
+     *            Arguments to pass to each observer
      */
     public function notify()
     {
@@ -94,19 +103,27 @@ class Subject
         $args = array_reverse($shift);
         
         foreach ($this->observers as $observer) {
-            call_user_func_array(array($observer,'update'), $args);
+            call_user_func_array(array(
+                $observer,
+                'update'
+            ), $args);
         }
     }
-    
+
     /**
-     * 
-     * Representing the call to <em>state</em> getter/setter 
+     *
+     *
+     *
+     *
+     * Representing the call to <em>state</em> getter/setter
      *
      * @method state
      * @access public
-     * @param string $method The called method, namely <em>state</em>
-     * @param mixed $args Arguments passed to the method, the new state
-     * 
+     * @param string $method
+     *            The called method, namely <em>state</em>
+     * @param mixed $args
+     *            Arguments passed to the method, the new state
+     *            
      * @return mixed On success Object for chaining
      */
     public function state($state = null)
@@ -115,7 +132,6 @@ class Subject
             return $this->state;
         } elseif ($state !== null && is_string($state)) {
             $this->state = $state;
-            
         }
         return $this;
     }
