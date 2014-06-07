@@ -4,7 +4,7 @@ namespace Wave\Database\Adapter;
 /**
  * @codeCoverageIgnore
  */
-interface AdapterInterface
+abstract class AbstractAdapter
 {
 
     /**
@@ -17,9 +17,9 @@ interface AdapterInterface
      * @throws \RuntimeException If unable to connect
      *        
      */
-    public function connect();
+    abstract public function connect();
 
-    public function disconnect();
+    abstract public function disconnect();
 
     /**
      *
@@ -39,14 +39,14 @@ interface AdapterInterface
      * @return \Wave\Database\Engine Current instance on success
      *        
      */
-    public function prepare($query, $options);
+    abstract public function prepare($query, $options);
 
     /**
      * Returns the current prepared query
      *
      * @see PDOStatement::$queryStrting
      */
-    public function getQuery();
+    abstract public function getQuery();
 
     /**
      * Execute a query
@@ -57,7 +57,7 @@ interface AdapterInterface
      * @see \PDO::execute
      * @throws \RuntimeException
      */
-    public function execute($params = array());
+    abstract public function execute($params = array());
 
     /**
      * Returns the last inserted ID
@@ -65,7 +65,7 @@ interface AdapterInterface
      * @return int The ID of the last insert
      * @see \PDO::lastInsertId
      */
-    public function lastInsertid($name);
+    abstract public function lastInsertid($name);
 
     /**
      * Fethces the first result that matches
@@ -73,15 +73,15 @@ interface AdapterInterface
      *
      * @return mixed Returns the result
      */
-    public function fetch();
+    abstract public function fetch();
 
     /**
      * Returns all matching results
      */
-    public function fetchAll();
+    abstract public function fetchAll();
 
     /**
      * Binds values to query parameters
      */
-    public function bindParam($key, $value, $type);
+    abstract public function bindParam($key, $value, $type);
 }

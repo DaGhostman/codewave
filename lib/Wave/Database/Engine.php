@@ -6,17 +6,17 @@ class Engine
 
     protected $result = null;
 
-    protected $likn = null;
+    protected $link = null;
 
-    private $handler = '\Wave\Database\Result';
+    private $handler = '\ArrayObject';
 
     public function __construct($connection)
     {
-        if (! $connection instanceof Adapter\AdapterInterface) {
+        if (!$connection instanceof Adapter\AbstractAdapter) {
             throw new \InvalidArgumentException("Invalid database connection passed", - 1);
         }
         
-        $this->likn = $connection;
+        $this->link = $connection;
     }
 
     /**
@@ -43,14 +43,13 @@ class Engine
         }
         
         try {
-            $this->connect();
             if ($max === false) {
                 $result = $this->link->fetch();
             } else {
                 $result = $this->link->fetchAll();
             }
-        } catch (\PDOException $ex) {
-            throw new \RuntimeException("Unable to fetch result" . $ex->getCode(), $ex);
+        } catch (\RuntimeException $ex) {
+            throw new \RuntimeException("Unable to fetch result", $ex->getCode(), $ex);
         }
         
         return new $this->handler($result);
@@ -87,17 +86,17 @@ class Engine
         
         $sets = array();
         foreach ($binds as $set) {
-            array_push($sets, sptinf("%s = :%s", $set, $set));
+            array_push($sets, sprintf("%s = :%s", $set, $set));
         }
         
-        $this->prepare(sprintf($query, $table, implode(', ', $sets)));
+        $this->link->prepare(sprintf($query, $table, implode(', ', $sets)));
         
         return $this;
     }
 
     public function delete($table)
     {
-        $this->prepare(sprintf("DELETE FROM %s", $table));
+        $this->link->prepare(sprintf("DELETE FROM %s", $table));
         
         return $this;
     }

@@ -1,9 +1,9 @@
 <?php
 namespace Wave\Database\Adapter;
 
-use \Wave\Database\Adapter\AdapterInterface;
+use \Wave\Database\Adapter\AbstractAdapter;
 
-class PdoAdapter implements AdapterInterface
+class PdoAdapter extends AbstractAdapter
 {
 
     const ADAPTER_MYSQL = 'mysql';
@@ -114,9 +114,6 @@ class PdoAdapter implements AdapterInterface
     }
 
     /**
-     *
-     *
-     *
      *
      * Prepares a query for execution PDO style
      *

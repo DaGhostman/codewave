@@ -1043,12 +1043,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/Reflection.git",
-                "reference": "6a4610e24f51a4e1f35e51778a1e22a2ef85394e"
+                "reference": "b7d8c7abbe5f3f5fe0cb438fcc4bf9349609109a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/Reflection/zipball/6a4610e24f51a4e1f35e51778a1e22a2ef85394e",
-                "reference": "6a4610e24f51a4e1f35e51778a1e22a2ef85394e",
+                "url": "https://api.github.com/repos/phpDocumentor/Reflection/zipball/b7d8c7abbe5f3f5fe0cb438fcc4bf9349609109a",
+                "reference": "b7d8c7abbe5f3f5fe0cb438fcc4bf9349609109a",
                 "shasum": ""
             },
             "require": {
@@ -1089,7 +1089,7 @@
                 "reflection",
                 "static analysis"
             ],
-            "time": "2014-06-04 18:31:42"
+            "time": "2014-06-06 20:42:11"
         },
         {
             "name": "phpdocumentor/reflection-docblock",
@@ -1855,12 +1855,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit-mock-objects.git",
-                "reference": "061deeeff0fe6fc16d029d3e1e8ee9c6df24d164"
+                "reference": "971b4e0451598ce1551af2c2ab5f840d57b2467f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/061deeeff0fe6fc16d029d3e1e8ee9c6df24d164",
-                "reference": "061deeeff0fe6fc16d029d3e1e8ee9c6df24d164",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/971b4e0451598ce1551af2c2ab5f840d57b2467f",
+                "reference": "971b4e0451598ce1551af2c2ab5f840d57b2467f",
                 "shasum": ""
             },
             "require": {
@@ -1904,7 +1904,7 @@
                 "mock",
                 "xunit"
             ],
-            "time": "2014-06-06 05:38:34"
+            "time": "2014-06-07 16:23:12"
         },
         {
             "name": "pimple/pimple",
@@ -2706,12 +2706,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Validator.git",
-                "reference": "4590252838713e8d773fb4e8a5c6270f1d929e88"
+                "reference": "5d379761d1dcdbd377809932a87efb04c52401ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Validator/zipball/4590252838713e8d773fb4e8a5c6270f1d929e88",
-                "reference": "4590252838713e8d773fb4e8a5c6270f1d929e88",
+                "url": "https://api.github.com/repos/symfony/Validator/zipball/5d379761d1dcdbd377809932a87efb04c52401ee",
+                "reference": "5d379761d1dcdbd377809932a87efb04c52401ee",
                 "shasum": ""
             },
             "require": {
@@ -2769,7 +2769,7 @@
             ],
             "description": "Symfony Validator Component",
             "homepage": "http://symfony.com",
-            "time": "2014-05-31 02:03:04"
+            "time": "2014-06-07 15:54:31"
         },
         {
             "name": "symfony/yaml",
