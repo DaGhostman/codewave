@@ -9,7 +9,7 @@
         <whitelist>
             <directory suffix=".php">lib/Wave/</directory>
             <exclude>
-                <directory suffix="Interface.php">.</directory>
+                <directory prefix="Abstract">.</directory>
             </exclude>
         </whitelist>
     </filter>
