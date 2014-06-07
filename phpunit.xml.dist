@@ -8,6 +8,9 @@
     <filter>
         <whitelist>
             <directory suffix=".php">lib/Wave/</directory>
+            <exclude>
+                <directory suffix="Interface.php">.</directory>
+            </exclude>
         </whitelist>
     </filter>
     <logging>
