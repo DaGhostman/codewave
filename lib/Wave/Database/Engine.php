@@ -115,14 +115,14 @@ class Engine
         return $this;
     }
 
-    public function bind($key, $value, $type)
+    public function bind($key, $value, $type = null)
     {
         $this->link->bindParam($key, $value, $type);
         
         return $this;
     }
 
-    public function execute($params)
+    public function execute($params = array())
     {
         $this->link->execute($params);
         
