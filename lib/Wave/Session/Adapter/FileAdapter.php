@@ -25,7 +25,8 @@ class BasicAdapter extends AbstractAdapter
         $this->session_id = $session_id;
         
         $fcontents = file_get_contents(
-            $this->path . DIRECTORY_SEPARATOR . $session_id, 'a'
+            $this->path . DIRECTORY_SEPARATOR . $session_id,
+            'a'
         );
         
         return unserialize($fcontents);

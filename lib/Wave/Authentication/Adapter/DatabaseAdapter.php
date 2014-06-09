@@ -35,7 +35,7 @@ class DatabaseAdapter extends AbstractAdapter
     {
         if (!$db instanceof \Wave\Database\Engine) {
             throw new \InvalidArgumentException(
-	           "Expected instance of Wave\Database\Engine"
+                "Expected instance of Wave\Database\Engine"
             );
         }
         
