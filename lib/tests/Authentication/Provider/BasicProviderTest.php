@@ -77,8 +77,6 @@ class BasicProviderTest extends PHPUnit_Framework_TestCase
             ->method('populate')
             ->will($this->returnValue(array('id' => 1, 'user' => 'johndoe')));
         
-        var_dump($container);
-        
         $this->provider->setAdapter($adapter);
         $this->provider->setContainer($container);
         

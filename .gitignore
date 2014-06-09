@@ -8,3 +8,4 @@ phpdoc.dist.xml
 .buildpath
 .externalToolBuilders
 .settings
+lib/Wave/Di
