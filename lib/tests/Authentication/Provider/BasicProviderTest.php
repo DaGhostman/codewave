@@ -77,9 +77,10 @@ class BasicProviderTest extends PHPUnit_Framework_TestCase
             ->method('populate')
             ->will($this->returnValue(array('id' => 1, 'user' => 'johndoe')));
         
+        var_dump($container);
+        
         $this->provider->setAdapter($adapter);
         $this->provider->setContainer($container);
-        
         
         $this->assertTrue($this->provider->authenticate('credential', 'secret'));
     }
@@ -88,9 +89,11 @@ class BasicProviderTest extends PHPUnit_Framework_TestCase
     {
         $adapter = $this->adapter;
         $adapter->expects($this->any())
-        ->method('get')
-        ->will($this->returnValue(null));
+            ->method('get')
+            ->will($this->returnValue(null));
+        
         $this->provider->setAdapter($adapter);
+        
         $this->assertFalse($this->provider->authenticate('credential', 'secret'));
     }
     
