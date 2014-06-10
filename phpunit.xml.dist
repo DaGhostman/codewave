@@ -10,6 +10,7 @@
             <directory suffix=".php">lib/Wave/</directory>
             <exclude>
                 <directory prefix="Abstract">.</directory>
+                <directory prefix="">lib/Wave/Application/State</directory>
             </exclude>
         </whitelist>
     </filter>
