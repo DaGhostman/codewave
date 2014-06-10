@@ -22,4 +22,4 @@ script:
   - ./vendor/bin/phpcs lib/Wave --standard=psr2
 
 after_script:
-  - php vendor/bin/coveralls
+  - php vendor/bin/coveralls -v
