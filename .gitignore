@@ -2,6 +2,7 @@
 /lib/.settings/
 /lib/.project
 /build
+/web
 phpdoc.dist.xml
 *~
 .project
