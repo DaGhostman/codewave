@@ -52,19 +52,9 @@ class PdoAdapter extends AbstractAdapter
             $$key = $value;
         }
         if ($driver == self::ADAPTER_MYSQL) {
-            $this->dsn = sprintf(
-                "mysql:host=%s;dbname=%s;port=%s",
-                $hostname,
-                $database,
-                (isset($port) ? $port : 3306)
-            );
+            $this->dsn = sprintf("mysql:host=%s;dbname=%s;port=%s", $hostname, $database, (isset($port)? $port : 3306));
         } elseif ($driver == self::ADAPTER_PGSQL) {
-            $this->dsn = sprintf(
-                "pgsql:host=%s;dbname=%s;port=%s",
-                $hostname,
-                $database,
-                (isset($port) ? $port : 3306)
-            );
+            $this->dsn = sprintf("pgsql:host=%s;dbname=%s;port=%s", $hostname, $database, (isset($port)? $port : 3306));
         } elseif ($driver == self::ADAPTER_SQLITE) {
             $this->dsn = sprintf("sqlite:%s", $database);
         } else {
@@ -83,7 +73,7 @@ class PdoAdapter extends AbstractAdapter
      *        
      * @return boolean True if connected, false otherwise
      * @throws \RuntimeException If unable to connect
-     *  
+     *        
      */
     public function connect($options = array())
     {
@@ -102,6 +92,11 @@ class PdoAdapter extends AbstractAdapter
         return $this;
     }
 
+    /**
+     * (non-PHPdoc)
+     * 
+     * @see \Wave\Database\Adapter\AbstractAdapter::disconnect()
+     */
     public function disconnect()
     {
         if ($this->link === null || ! $this->link instanceof \PDO) {
@@ -114,6 +109,7 @@ class PdoAdapter extends AbstractAdapter
     }
 
     /**
+     *
      *
      * Prepares a query for execution PDO style
      *
@@ -151,17 +147,16 @@ class PdoAdapter extends AbstractAdapter
     public function execute($params = array())
     {
         $this->connect();
-        if (!$this->stmt instanceof \PDOStatement) {
-            throw new \RuntimeException(
-                "No statement has been prepared",
-                -1
-            );
+        if (! $this->stmt instanceof \PDOStatement) {
+            throw new \RuntimeException("No statement has been prepared", - 1);
         }
         
         return $this->stmt->execute($params);
     }
 
     /**
+     *
+     * @see \Wave\Database\Adapter\AbstractAdapter::fetch()
      */
     public function fetch()
     {
@@ -169,6 +164,10 @@ class PdoAdapter extends AbstractAdapter
         return $this->stmt->fetch();
     }
 
+    /**
+     *
+     * @see \Wave\Database\Adapter\AbstractAdapter::fetchAll()
+     */
     public function fetchAll()
     {
         $this->connect();
@@ -187,6 +186,10 @@ class PdoAdapter extends AbstractAdapter
         return $this->link->lastInsertId($name);
     }
 
+    /**
+     *
+     * @see \Wave\Database\Adapter\AbstractAdapter::bindParam()
+     */
     public function bindParam($key, $value, $type)
     {
         $this->stmt->bindParam($key, $value, $type);
@@ -194,6 +197,10 @@ class PdoAdapter extends AbstractAdapter
         return $this;
     }
 
+    /**
+     *
+     * @see \Wave\Database\Adapter\AbstractAdapter::getQuery()
+     */
     public function getQuery()
     {
         return $this->stmt->queryString;

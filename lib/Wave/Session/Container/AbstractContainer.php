@@ -11,6 +11,6 @@ abstract class AbstractContainer extends Observer implements \ArrayAccess
     
     // Return the adapter
     abstract public function getAdapter();
-    
+
     abstract public function setAdapter($adapter);
 }

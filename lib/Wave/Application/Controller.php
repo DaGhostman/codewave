@@ -49,32 +49,38 @@ use Wave\Pattern\Observer\Subject;
  * This class organizes, iterates, and dispatches \Wave\Route objects.
  *
  * @package Wave\Application
- * @author  Josh Lockhart
- * @since   1.0.0
+ * @author Josh Lockhart
+ * @since 1.0.0
  */
 class Controller extends Subject
 {
+
     /**
+     *
      * @var Route The current route (most recently dispatched)
      */
     protected $currentRoute;
 
     /**
+     *
      * @var array Lookup hash of all route objects
      */
     protected $routes;
 
     /**
+     *
      * @var array Lookup hash of named route objects, keyed by route name (lazy-loaded)
      */
     protected $namedRoutes;
 
     /**
+     *
      * @var array Array of route objects that match the request URI (lazy-loaded)
      */
     protected $matchedRoutes;
 
     /**
+     *
      * @var array Array containing all route groups
      */
     protected $routeGroups;
@@ -90,26 +96,31 @@ class Controller extends Subject
 
     /**
      * Get Current Route object or the first matched one if matching has been performed
-     * @return \Wave\Route|null
+     * 
+     * @return \Wave\Route null
      */
     public function getCurrentRoute()
     {
         if ($this->currentRoute !== null) {
             return $this->currentRoute;
         }
-
+        
         if (is_array($this->matchedRoutes) && count($this->matchedRoutes) > 0) {
             return $this->matchedRoutes[0];
         }
-
+        
         return null;
     }
 
     /**
      * Return route objects that match the given HTTP method and URI
-     * @param  string               $httpMethod   The HTTP method to match against
-     * @param  string               $resourceUri  The resource URI to match against
-     * @param  bool                 $reload       Should matching routes be re-parsed?
+     * 
+     * @param string $httpMethod
+     *            The HTTP method to match against
+     * @param string $resourceUri
+     *            The resource URI to match against
+     * @param bool $reload
+     *            Should matching routes be re-parsed?
      * @return array[\Wave\Route]
      */
     public function getMatchedRoutes($httpMethod, $resourceUri, $reload = false)
@@ -117,10 +128,10 @@ class Controller extends Subject
         if ($reload || is_null($this->matchedRoutes)) {
             $this->matchedRoutes = array();
             foreach ($this->routes as $route) {
-                if (!$route->supportsHttpMethod($httpMethod) && !$route->supportsHttpMethod("ANY")) {
+                if (! $route->supportsHttpMethod($httpMethod) && ! $route->supportsHttpMethod("ANY")) {
                     continue;
                 }
-
+                
                 if ($route->matches($resourceUri)) {
                     $this->matchedRoutes[] = $route;
                 }
@@ -131,7 +142,9 @@ class Controller extends Subject
 
     /**
      * Add a route object to the router
-     * @param  \Wave\Route     $route      The Wave Route
+     * 
+     * @param \Wave\Route $route
+     *            The Wave Route
      */
     public function map(\Wave\Route $route)
     {
@@ -141,14 +154,17 @@ class Controller extends Subject
 
     /**
      * Get URL for named route
-     * @param  string               $name   The name of the route
-     * @param  array                $params Associative array of URL parameter names and replacement values
-     * @throws \RuntimeException            If named route not found
-     * @return string                       The URL for the given route populated with provided replacement values
+     * 
+     * @param string $name
+     *            The name of the route
+     * @param array $params
+     *            Associative array of URL parameter names and replacement values
+     * @throws \RuntimeException If named route not found
+     * @return string The URL for the given route populated with provided replacement values
      */
     public function urlFor($name, $params = array())
     {
-        if (!$this->hasNamedRoute($name)) {
+        if (! $this->hasNamedRoute($name)) {
             throw new \RuntimeException('Named route not found for name: ' . $name);
         }
         $search = array();
@@ -156,16 +172,19 @@ class Controller extends Subject
             $search[] = '#:' . preg_quote($key, '#') . '\+?(?!\w)#';
         }
         $pattern = preg_replace($search, $params, $this->getNamedRoute($name)->getPattern());
-
-        //Remove remnants of unpopulated, trailing optional pattern segments, escaped special characters
+        
+        // Remove remnants of unpopulated, trailing optional pattern segments, escaped special characters
         return preg_replace('#\(/?:.+\)|\(|\)|\\\\#', '', $pattern);
     }
 
     /**
      * Add named route
-     * @param  string            $name   The route name
-     * @param  \Wave\Route       $route  The route object
-     * @throws \RuntimeException         If a named route already exists with the same name
+     * 
+     * @param string $name
+     *            The route name
+     * @param \Wave\Route $route
+     *            The route object
+     * @throws \RuntimeException If a named route already exists with the same name
      */
     public function addNamedRoute($name, \Wave\Route $route)
     {
@@ -177,20 +196,23 @@ class Controller extends Subject
 
     /**
      * Has named route
-     * @param  string   $name   The route name
+     * 
+     * @param string $name
+     *            The route name
      * @return bool
      */
     public function hasNamedRoute($name)
     {
         $this->getNamedRoutes();
-
+        
         return isset($this->namedRoutes[(string) $name]);
     }
 
     /**
      * Get named route
-     * @param  string           $name
-     * @return \Wave\Route|null
+     * 
+     * @param string $name            
+     * @return \Wave\Route null
      */
     public function getNamedRoute($name)
     {
@@ -204,6 +226,7 @@ class Controller extends Subject
 
     /**
      * Get named routes
+     * 
      * @return \ArrayIterator
      */
     public function getNamedRoutes()
@@ -216,7 +239,7 @@ class Controller extends Subject
                 }
             }
         }
-
+        
         return new \ArrayIterator($this->namedRoutes);
     }
 }

@@ -1,6 +1,6 @@
 {
     "name": "wave/wave",
-    "description": "Core framework for Wave CMS",
+    "description": "Small extensible framework in PHP",
     "keywords": ["wave", "wave-framework"],
     "homepage": "https://phpAcorn.github.com/wave-framework",
     "type": "library",

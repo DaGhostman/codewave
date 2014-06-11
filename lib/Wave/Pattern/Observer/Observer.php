@@ -22,6 +22,7 @@ class Observer
      *
      *
      *
+     *
      * Defines the subject and attaches itself to it.
      *
      * @method __construct
@@ -37,6 +38,7 @@ class Observer
     }
 
     /**
+     *
      *
      *
      *

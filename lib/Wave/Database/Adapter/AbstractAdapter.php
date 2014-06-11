@@ -19,15 +19,15 @@ abstract class AbstractAdapter
      */
     abstract public function connect();
 
+    /**
+     * Closes the connectino to the database
+     */
     abstract public function disconnect();
 
     /**
-     *
-     *
-     *
-     *
      * Should prepare the query for execution,
-     * and return the newly configured object. PDO Style
+     * and return the newly configured object.
+     * PDO Style
      *
      * @access public
      * @see PDO::prepare()

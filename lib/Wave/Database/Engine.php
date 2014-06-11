@@ -10,9 +10,15 @@ class Engine
 
     private $handler = '\ArrayObject';
 
+    /**
+     * Injects the adapter to use for connection
+     *
+     * @param \Wave\Database\Adapter\AbstractAdapter $connection            
+     * @throws \InvalidArgumentException
+     */
     public function __construct($connection)
     {
-        if (!$connection instanceof Adapter\AbstractAdapter) {
+        if (! $connection instanceof Adapter\AbstractAdapter) {
             throw new \InvalidArgumentException("Invalid database connection passed", - 1);
         }
         
@@ -29,6 +35,13 @@ class Engine
         return $this->link;
     }
 
+    /**
+     * Classname to handle the result.
+     * Handler must expect the result object in the constructor.
+     *
+     * @param string $handler            
+     * @return \Wave\Database\Engine
+     */
     public function setResulthandler($handler)
     {
         $this->handler = $handler;
@@ -36,6 +49,16 @@ class Engine
         return $this;
     }
 
+    /**
+     * Returns the resultset
+     *
+     * @param string $handler
+     *            handler to override the default one
+     * @param bool $max
+     *            if requiered more than one result.
+     * @throws \RuntimeException
+     * @return mixed Instance of the Hanlder
+     */
     public function fetch($handler = null, $max = false)
     {
         if ($handler !== null) {
@@ -55,11 +78,27 @@ class Engine
         return new $this->handler($result);
     }
 
+    /**
+     * Creates the handler and returns it
+     *
+     * @param array $set
+     *            the result set
+     * @return mixed
+     */
     public function handler($set)
     {
         return new $this->handler($set);
     }
 
+    /**
+     * Wrapper to provide basic operation INSERT
+     *
+     * @param string $table
+     *            The name of the table to use
+     * @param array $binds
+     *            Assoc array. the key should be the colum name and value the named parameter
+     * @return \Wave\Database\Engine
+     */
     public function insert($table, $binds)
     {
         $cols = implode(', ', $binds);
@@ -72,14 +111,32 @@ class Engine
         return $this;
     }
 
+    /**
+     * Implementation of SELECT
+     *
+     * @param string $table
+     *            The table to use
+     * @param array $fields
+     *            numeric array with the fields to fetch
+     * @return \Wave\Database\Engine
+     */
     public function select($table, $fields)
     {
-        $query = "SELECT % FROM %s";
+        $query = "SELECT %s FROM %s";
         $this->link->prepare(sprintf($query, implode(',', $fields), $table));
         
         return $this;
     }
 
+    /**
+     * Implementation of UPDATE
+     *
+     * @param string $table
+     *            The table name
+     * @param array $binds
+     *            Numeric array with values which will be used as named parameters
+     * @return \Wave\Database\Engine
+     */
     public function update($table, $binds)
     {
         $query = "UPDATE %s SET %s";
@@ -94,6 +151,13 @@ class Engine
         return $this;
     }
 
+    /**
+     * Implementation of the DELETE
+     *
+     * @param string $table
+     *            The table to use
+     * @return \Wave\Database\Engine
+     */
     public function delete($table)
     {
         $this->link->prepare(sprintf("DELETE FROM %s", $table));
@@ -101,6 +165,15 @@ class Engine
         return $this;
     }
 
+    /**
+     * Appends WHERE to the currently prepared query.
+     * Write
+     * you conditions without adding the 'WHERE' keyword
+     *
+     * @param string $clause
+     *            the contents of the where clause
+     * @return \Wave\Database\Engine
+     */
     public function where($clause)
     {
         $this->link->prepare(sprintf('%s WHERE %s', $this->link->getQuery(), $clause));
@@ -108,13 +181,31 @@ class Engine
         return $this;
     }
 
+    /**
+     * Append custom SQL string to the query being prepared
+     *
+     * @param string $sql
+     *            The SQL query to append
+     * @return \Wave\Database\Engine
+     */
     public function custom($sql)
     {
-        $this->link->prepare('%s %s', $this->link->getQuery(), $sql);
+        $this->link->prepare('%s %s', $this->link->getQuery(), trim($sql));
         
         return $this;
     }
 
+    /**
+     * Binds the $value to the $key
+     *
+     * @param string $key
+     *            name of parameter to bind to
+     * @param mixed $value
+     *            The value to bind
+     * @param mixed $type
+     *            \PDO::PARAM_* constants
+     * @return \Wave\Database\Engine
+     */
     public function bind($key, $value, $type = null)
     {
         $this->link->bindParam($key, $value, $type);
@@ -122,6 +213,13 @@ class Engine
         return $this;
     }
 
+    /**
+     * Executes the query
+     *
+     * @param array $params
+     *            arguments to pass
+     * @return \Wave\Database\Engine
+     */
     public function execute($params = array())
     {
         $this->link->execute($params);

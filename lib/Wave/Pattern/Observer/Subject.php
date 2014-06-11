@@ -111,10 +111,6 @@ class Subject
     }
 
     /**
-     *
-     *
-     *
-     *
      * Representing the call to <em>state</em> getter/setter
      *
      * @method state

@@ -42,68 +42,83 @@ namespace Wave;
 
 /**
  * Route
+ * 
  * @package Slim
- * @author  Josh Lockhart, Thomas Bley
- * @since   1.0.0
+ * @author Josh Lockhart, Thomas Bley
+ * @since 1.0.0
  */
 class Route
 {
+
     /**
+     *
      * @var string The route pattern (e.g. "/books/:id")
      */
     protected $pattern;
 
     /**
+     *
      * @var mixed The route callable
      */
     protected $callable;
 
     /**
+     *
      * @var array Conditions for this route's URL parameters
      */
     protected $conditions = array();
 
     /**
+     *
      * @var array Default conditions applied to all route instances
-    */
+     */
     protected static $defaultConditions = array();
 
     /**
+     *
      * @var string The name of this route (optional)
-    */
+     */
     protected $name;
 
     /**
+     *
      * @var array Key-value array of URL parameters
      */
     protected $params = array();
 
     /**
+     *
      * @var array value array of URL parameter names
-    */
+     */
     protected $paramNames = array();
 
     /**
+     *
      * @var array key array of URL parameter names with + at the end
-    */
+     */
     protected $paramNamesPath = array();
 
     /**
+     *
      * @var array HTTP methods supported by this Route
-    */
+     */
     protected $methods = array();
 
-
     /**
+     *
      * @var bool Whether or not this route should be matched in a case-sensitive manner
-    */
+     */
     protected $caseSensitive;
 
     /**
      * Constructor
-     * @param string $pattern The URL pattern (e.g. "/books/:id")
-     * @param mixed $callable Anything that returns TRUE for is_callable()
-     * @param bool $caseSensitive Whether or not this route should be matched in a case-sensitive manner
+     * 
+     * @param string $pattern
+     *            The URL pattern (e.g. "/books/:id")
+     * @param mixed $callable
+     *            Anything that returns TRUE for is_callable()
+     * @param bool $caseSensitive
+     *            Whether or not this route should be matched in a case-sensitive manner
      */
     public function __construct($pattern, $callable, $caseSensitive = true)
     {
@@ -115,7 +130,8 @@ class Route
 
     /**
      * Set default route conditions for all instances
-     * @param  array $defaultConditions
+     * 
+     * @param array $defaultConditions            
      */
     public static function setDefaultConditions(array $defaultConditions)
     {
@@ -124,6 +140,7 @@ class Route
 
     /**
      * Get default route conditions for all instances
+     * 
      * @return array
      */
     public static function getDefaultConditions()
@@ -133,6 +150,7 @@ class Route
 
     /**
      * Get route pattern
+     * 
      * @return string
      */
     public function getPattern()
@@ -142,7 +160,8 @@ class Route
 
     /**
      * Set route pattern
-     * @param  string $pattern
+     * 
+     * @param string $pattern            
      */
     public function setPattern($pattern)
     {
@@ -151,6 +170,7 @@ class Route
 
     /**
      * Get route callable
+     * 
      * @return mixed
      */
     public function getCallable()
@@ -160,37 +180,44 @@ class Route
 
     /**
      * Set route callable
-     * @param  mixed $callable
+     * 
+     * @param mixed $callable            
      * @throws \InvalidArgumentException If argument is not callable
      */
     public function setCallable($callable)
     {
         $matches = array();
-        if (is_string($callable) && preg_match(
-            '!^([^\:]+)\:([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)$!',
-            $callable,
-            $matches
-        )) {
+        if (is_string($callable) &&
+            preg_match(
+                '!^([^\:]+)\:([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)$!',
+                $callable,
+                $matches
+            )
+        ) {
             $class = $matches[1];
             $method = $matches[2];
             $callable = function () use ($class, $method) {
                 static $obj = null;
                 if ($obj === null) {
-                    $obj = new $class;
+                    $obj = new $class();
                 }
-                return call_user_func_array(array($obj, $method), func_get_args());
+                return call_user_func_array(array(
+                    $obj,
+                    $method
+                ), func_get_args());
             };
         }
-
-        if (!is_callable($callable)) {
+        
+        if (! is_callable($callable)) {
             throw new \InvalidArgumentException('Route callable must be callable');
         }
-
+        
         $this->callable = $callable;
     }
 
     /**
      * Get route conditions
+     * 
      * @return array
      */
     public function getConditions()
@@ -200,7 +227,8 @@ class Route
 
     /**
      * Set route conditions
-     * @param  array $conditions
+     * 
+     * @param array $conditions            
      */
     public function setConditions(array $conditions)
     {
@@ -209,7 +237,8 @@ class Route
 
     /**
      * Get route name
-     * @return string|null
+     * 
+     * @return string null
      */
     public function getName()
     {
@@ -218,15 +247,17 @@ class Route
 
     /**
      * Set route name
-     * @param  string $name
+     * 
+     * @param string $name            
      */
     public function setName($name)
     {
-        $this->name = (string)$name;
+        $this->name = (string) $name;
     }
 
     /**
      * Get route parameters
+     * 
      * @return array
      */
     public function getParams()
@@ -236,7 +267,8 @@ class Route
 
     /**
      * Set route parameters
-     * @param  array $params
+     * 
+     * @param array $params            
      */
     public function setParams($params)
     {
@@ -245,28 +277,33 @@ class Route
 
     /**
      * Get route parameter value
-     * @param  string $index Name of URL parameter
+     * 
+     * @param string $index
+     *            Name of URL parameter
      * @return string
      * @throws \InvalidArgumentException If route parameter does not exist at index
      */
     public function getParam($index)
     {
-        if (!isset($this->params[$index])) {
+        if (! isset($this->params[$index])) {
             throw new \InvalidArgumentException('Route parameter does not exist at specified index');
         }
-
+        
         return $this->params[$index];
     }
 
     /**
      * Set route parameter value
-     * @param  string $index Name of URL parameter
-     * @param  mixed $value The new parameter value
+     * 
+     * @param string $index
+     *            Name of URL parameter
+     * @param mixed $value
+     *            The new parameter value
      * @throws \InvalidArgumentException If route parameter does not exist at index
      */
     public function setParam($index, $value)
     {
-        if (!isset($this->params[$index])) {
+        if (! isset($this->params[$index])) {
             throw new \InvalidArgumentException('Route parameter does not exist at specified index');
         }
         $this->params[$index] = $value;
@@ -283,6 +320,7 @@ class Route
 
     /**
      * Get supported HTTP methods
+     * 
      * @return array
      */
     public function getHttpMethods()
@@ -301,26 +339,27 @@ class Route
 
     /**
      * Append supported HTTP methods (alias for Route::appendHttpMethods)
+     * 
      * @return \Wave\Route
      */
     public function via()
     {
         $args = func_get_args();
         $this->methods = array_merge($this->methods, $args);
-
+        
         return $this;
     }
 
     /**
      * Detect support for an HTTP method
-     * @param  string $method
+     * 
+     * @param string $method            
      * @return bool
      */
     public function supportsHttpMethod($method)
     {
         return in_array($method, $this->methods);
     }
-
 
     /**
      * Matches URI?
@@ -330,29 +369,29 @@ class Route
      *
      * http://blog.sosedoff.com/2009/09/20/rails-like-php-url-router/
      *
-     * @param  string $resourceUri A Request URI
+     * @param string $resourceUri
+     *            A Request URI
      * @return bool
      */
     public function matches($resourceUri)
     {
-        //Convert URL params into regex patterns, construct a regex for this route, init params
-        $patternAsRegex = preg_replace_callback(
-            '#:([\w]+)\+?#',
-            array($this, 'matchesCallback'),
-            str_replace(')', ')?', (string)$this->pattern)
-        );
-        if (substr($this->pattern, -1) === '/') {
+        // Convert URL params into regex patterns, construct a regex for this route, init params
+        $patternAsRegex = preg_replace_callback('#:([\w]+)\+?#', array(
+            $this,
+            'matchesCallback'
+        ), str_replace(')', ')?', (string) $this->pattern));
+        if (substr($this->pattern, - 1) === '/') {
             $patternAsRegex .= '?';
         }
-
+        
         $regex = '#^' . $patternAsRegex . '$#';
-
+        
         if ($this->caseSensitive === false) {
             $regex .= 'i';
         }
-
-        //Cache URL params' names and values if this route matches the current HTTP request
-        if (!preg_match($regex, $resourceUri, $paramValues)) {
+        
+        // Cache URL params' names and values if this route matches the current HTTP request
+        if (! preg_match($regex, $resourceUri, $paramValues)) {
             return false;
         }
         foreach ($this->paramNames as $name) {
@@ -364,14 +403,17 @@ class Route
                 }
             }
         }
-
+        
         return true;
     }
 
     /**
-     * Convert a URL parameter (e.g. ":id", ":id+") into a regular expression
-     * @param  array $m URL parameters
-     * @return string       Regular expression for URL parameter
+     * Convert a URL parameter (e.g.
+     * ":id", ":id+") into a regular expression
+     * 
+     * @param array $m
+     *            URL parameters
+     * @return string Regular expression for URL parameter
      */
     protected function matchesCallback($m)
     {
@@ -379,36 +421,40 @@ class Route
         if (isset($this->conditions[$m[1]])) {
             return '(?P<' . $m[1] . '>' . $this->conditions[$m[1]] . ')';
         }
-        if (substr($m[0], -1) === '+') {
+        if (substr($m[0], - 1) === '+') {
             $this->paramNamesPath[$m[1]] = 1;
-
+            
             return '(?P<' . $m[1] . '>.+)';
         }
-
+        
         return '(?P<' . $m[1] . '>[^/]+)';
     }
 
     /**
      * Set route name
-     * @param  string $name The name of the route
+     * 
+     * @param string $name
+     *            The name of the route
      * @return \Wave\Route
      */
     public function name($name)
     {
         $this->setName($name);
-
+        
         return $this;
     }
 
     /**
      * Merge route conditions
-     * @param  array $conditions Key-value array of URL parameter conditions
+     * 
+     * @param array $conditions
+     *            Key-value array of URL parameter conditions
      * @return \Wave\Route
      */
     public function conditions(array $conditions)
     {
         $this->conditions = array_merge($this->conditions, $conditions);
-
+        
         return $this;
     }
 
