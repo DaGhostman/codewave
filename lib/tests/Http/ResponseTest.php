@@ -103,6 +103,6 @@ class ResponseTest extends PHPUnit_Framework_TestCase
         /*
          * This is expected as command line is headerless context
          */
-        $this->assertFalse($this->response->send());
+        $this->assertFalse($this->response->send(true));
     }
 }

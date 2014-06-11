@@ -55,12 +55,16 @@ class Response
     
     public function send()
     {
+        
         if (headers_sent()) {
             return false;
         }
         
+        // @codeCoverageIgnoreStart
         foreach ($this->headers as $header => $status) {
             header($header, true, $status);
         }
+        
     }
 }
+// @codeCoverageIgnoreEnd
