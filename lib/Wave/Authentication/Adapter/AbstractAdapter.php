@@ -1,6 +1,12 @@
 <?php
 namespace Wave\Authentication\Adapter;
 
+/**
+ * AbstractAdapter
+ * @package Wave
+ * @author  Dimitar Dimitrov
+ * @since   1.0.0
+ */
 abstract class AbstractAdapter
 {
     /**
