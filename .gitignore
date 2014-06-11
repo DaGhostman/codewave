@@ -10,3 +10,4 @@ phpdoc.dist.xml
 .externalToolBuilders
 .settings
 lib/Wave/Di
+composer.lock
