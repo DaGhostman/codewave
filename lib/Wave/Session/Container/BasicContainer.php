@@ -27,17 +27,17 @@ class BasicContainer extends AbstractContainer
     
     public function __set($key, $value)
     {
-        $this[$key] = $value;
+        $this->storage[$key] = $value;
     }
     
     public function __get($key)
     {
-        return $this[$key];
+        return $this->storage[$key];
     }
     
     public function __isset($key)
     {
-        return array_key_exists($key, $this);
+        return array_key_exists($key, $this->storage);
     }
     
     public function __unset($key)

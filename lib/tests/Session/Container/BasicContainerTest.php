@@ -12,7 +12,7 @@ class StubAdapter extends AbstractAdapter
     public function update($data){}
     public function fetch()
     {
-        return array('key' => 'val', 2);
+        return array('k' => 'val', 2);
     }
 }
 
@@ -77,8 +77,8 @@ class BasicContainerTest extends PHPUnit_Framework_TestCase
         $adapter = new StubAdapter(null);
         
         $this->container->setAdapter($adapter);
-        unset($this->container->key);
-        $this->assertFalse(isset($this->container->key));
+        unset($this->container->k);
+        $this->assertFalse(isset($this->container->k));
         
         unset($this->container[0]);
         $this->assertFalse(isset($this->container[0]));
