@@ -223,10 +223,12 @@ class LoaderTest extends PHPUnit_Framework_TestCase
     }
     
     /**
-     * @expectedException \RuntimeException
+     * 
+     * @expectedException RuntimeException
      */
     public function testRunWithException()
     {
+        
     
         $loader = new Loader(array(
             'environment' => array(
@@ -238,13 +240,11 @@ class LoaderTest extends PHPUnit_Framework_TestCase
             )
         ));
     
-        $loader->bootstrap();
     
         $loader->get('/bar', function(){
             throw new \RuntimeException('Works!');
         });
         
         $loader->run();
-        echo '.3';
     }
 }

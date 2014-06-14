@@ -320,7 +320,6 @@ class Loader extends Subject
                     $this->state('dispatch_after')->notify();
                     
                     if ($dispatched) {
-                        
                         break;
                     }
                 } catch (\Wave\Application\State\Pass $e) {
@@ -330,9 +329,13 @@ class Loader extends Subject
                     $e->request = $this->http->request();
                     $e->response = $this->http->response();
                     
+                    
                     if ($this->event->hasListeners('application.halt')) {
+                        // @codeCoverageIgnoreStart
                         $this->event->dispatch('application.halt');
+                        // @codeCoverageIgnoreEnd
                     }
+                    
                     
                     break;
                 }
