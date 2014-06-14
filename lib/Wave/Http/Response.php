@@ -5,7 +5,26 @@ class Response
 {
 
     protected $headers = array();
+    protected $protocol = "HTTP/1.1";
 
+    
+    private $statusCodes = array(
+    	200, 301, 302, 401, 403, 404, 500
+    );
+    
+    /**
+     * This is to make sure that the Status codes are being sent 
+     * correctyl and understood correctly by the browser.
+     * 
+     * @param string $protocol The protocol currently in use
+     */
+    public function __construct($protocol = null)
+    {
+        if ($protocol !== null) {
+            $this->protocol = $protocol;
+        }
+    }
+    
     /**
      * Redirects the client to the location.
      *
@@ -18,11 +37,11 @@ class Response
     public function redirect($location, $permanent = false)
     {
         if (false === $permanent) {
-            $this->headers[sprintf('Location: %s', $location)] = 302;
+            $this->headers[302] = sprintf('Location: %s', $location);
         }
         
         if (true === $permanent) {
-            $this->headers[sprintf('Location: %s', $location)] = 301;
+            $this->headers[301] = sprintf('Location: %s', $location);
         }
         
         return $this;
@@ -35,7 +54,7 @@ class Response
      */
     public function OK()
     {
-        $this->headers['200 OK'] = 200;
+        $this->headers[200] = sprintf('%s 200 OK', $this->protocol);
         
         return $this;
     }
@@ -47,7 +66,8 @@ class Response
      */
     public function halt()
     {
-        $this->headers['500 Internal Error'] = 500;
+        $this->headers[500] =
+            sprintf('%s 500 Internal Error', $this->protocol);
         
         return $this;
     }
@@ -59,7 +79,7 @@ class Response
      */
     public function forbidden()
     {
-        $this->headers['403 Forbidden'] = 403;
+        $this->headers[403] = sprintf('%s 403 Forbidden', $this->protocol);
         
         return $this;
     }
@@ -71,7 +91,7 @@ class Response
      */
     public function notFound()
     {
-        $this->headers['404 Not Found'] = 404;
+        $this->headers[404] = sprintf('%s 404 Not Found', $this->protocol);
         
         return $this;
     }
@@ -83,7 +103,7 @@ class Response
      */
     public function unauthorized()
     {
-        $this->headers['401 Unauthorized'] = 401;
+        $this->headers[401] = sprintf('%s 401 Unauthorized', $this->protocol);
         
         return $this;
     }
@@ -100,9 +120,14 @@ class Response
         }
         
         // @codeCoverageIgnoreStart
-        foreach ($this->headers as $header => $status) {
-            header($header, true, $status);
+        foreach ($this->headers as $status => $header) {
+            if (in_array($status, $this->statusCodes)) {
+                header($header, true, $status);
+                continue;
+            }
+            
+            header($header);
         }
     }
+    // @codeCoverageIgnoreEnd
 }
-// @codeCoverageIgnoreEnd

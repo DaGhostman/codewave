@@ -16,7 +16,7 @@ class Factory
     public function __construct($request, $response, $environment)
     {
         $this->request = new $request($environment);
-        $this->response = new $response();
+        $this->response = new $response($environment['request.protocol']);
     }
 
     /**
