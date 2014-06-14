@@ -41,8 +41,6 @@
  */
 namespace Wave\Application;
 
-use Wave\Pattern\Observer\Subject;
-
 /**
  * Router
  *
@@ -52,7 +50,7 @@ use Wave\Pattern\Observer\Subject;
  * @author Josh Lockhart
  * @since 1.0.0
  */
-class Controller extends Subject
+class Controller
 {
 
     /**

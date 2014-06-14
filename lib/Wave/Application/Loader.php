@@ -2,6 +2,8 @@
 namespace Wave\Application;
 
 use Wave\Http\Factory;
+use Wave\Application\Observers\BufferingObserver;
+use Wave\Pattern\Observer\Subject;
 
 /**
  * Loader
@@ -10,7 +12,7 @@ use Wave\Http\Factory;
  * @author Dimitar Dimitrov
  * @since 1.0.0
  */
-class Loader
+class Loader extends Subject
 {
 
     /**
@@ -30,7 +32,7 @@ class Loader
     /**
      * Dependency injection container
      * 
-     * @var \Orno\Di
+     * @var \Di\Container
      */
     public $container = null;
 
@@ -40,6 +42,13 @@ class Loader
      * @var \Wave\Application\Controller
      */
     protected $controller = null;
+    
+    /**
+     * Container for the EventDispatcher
+     * 
+     * @var Syfony\Component\EventDispatcher\EventDispatcher
+     */
+    public $event = null;
 
     /**
      * The placeholder for the default configuration
@@ -74,7 +83,9 @@ class Loader
                 'response' => '\Wave\Http\Response',
                 'environment' => '\Wave\Application\Environment',
                 'http' => '\Wave\Http\Factory',
-                'controller' => '\Wave\Application\Controller'
+                'controller' => '\Wave\Application\Controller',
+                'di' => '\DI\ContainerBuilder',
+                'event' => '\Symfony\Component\EventDispatcher\EventDispatcher'
             ),
             'environment' => array(
                 'request.protocol' => (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1'),
@@ -86,11 +97,17 @@ class Loader
         );
         
         $this->config = array_merge($this->defaultConfig, $config);
+        
+        
         $env_handler = $this->config['handlers']['environment'];
         $ctrl_handler = $this->config['handlers']['controller'];
+        $di_container = $this->config['handlers']['di'];
+        $event_container = $this->config['handlers']['event'];
         
         $this->controller = new $ctrl_handler();
         $this->environement = new $env_handler($this->config['environment']);
+        $this->container = new $di_container();
+        $this->event = new $event_container();
     }
 
     /**
@@ -104,7 +121,13 @@ class Loader
      */
     public function bootstrap()
     {
-        $this->controller->state('http_before')->notify($this->environement);
+        /**
+         * Turns Output buffering On/Off
+         */
+        new BufferingObserver($this);
+        
+        
+        $this->state('http_before')->notify($this->environement);
         
         $this->http = new $this->config['handlers']['http'](
             $this->config['handlers']['request'],
@@ -112,11 +135,16 @@ class Loader
             $this->environement
         );
         
-        $this->controller->state('http_after')->notify($this->environement);
+        $this->state('http_after')->notify($this->environement);
         
         return $this;
     }
 
+    /*****************************
+     * Slim spcific code follows *
+     *****************************/
+    
+    
     /**
      * This method creates a route for GET requests with a pattern, which
      * when is matched will call the $callback.
@@ -258,6 +286,9 @@ class Loader
         return $route;
     }
 
+    /*********************************
+     * Modified Slim Framework Code  *
+     *********************************/
     /**
      * This mehod starts the actual user-land part of the code,
      * it iterates over the registered routes, if none are found it
@@ -272,7 +303,7 @@ class Loader
      */
     public function run()
     {
-        $this->controller->state('map_before')
+        $this->state('map_before')
             ->notify($this->environement);
         
         try {
@@ -282,11 +313,11 @@ class Loader
             
             foreach ($matchedRoutes as $route) {
                 try {
-                    $this->controller->state('dispatch_before')->notify();
+                    $this->state('dispatch_before')->notify();
                     
                     $dispatched = $route->dispatch();
                     
-                    $this->controller->state('dispatch_after')->notify();
+                    $this->state('dispatch_after')->notify();
                     
                     if ($dispatched) {
                         
@@ -295,10 +326,18 @@ class Loader
                 } catch (\Wave\Application\State\Pass $e) {
                     continue;
                 } catch (\Wave\Application\State\Halt $e) {
+                    $e = new \Wave\Event();
+                    $e->request = $this->http->request();
+                    $e->response = $this->http->response();
+                    
+                    if ($this->event->hasListeners('application.halt')) {
+                        $this->event->dispatch('application.halt');
+                    }
+                    
                     break;
                 }
             }
-            if (! $dispatched) {
+            if (!$dispatched) {
                 $this->http->response()
                     ->notFound()
                     ->send();
@@ -309,8 +348,8 @@ class Loader
             }
         }
         
-        $this->controller->state('map_after')->notify($this->environement);
+        $this->state('map_after')->notify($this->environement);
         
-        $this->controller->state('application_after')->notify($this->environement);
+        $this->state('application_after')->notify($this->environement);
     }
 }
