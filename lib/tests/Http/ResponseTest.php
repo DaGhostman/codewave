@@ -10,7 +10,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
     {
         $this->response = new Response();
         
-        $reflect = new ReflectionObject($this->response);
+        $reflect = new \ReflectionObject($this->response);
         $prop = $reflect->getProperty('headers');
         $prop->setAccessible(true);
         
@@ -18,18 +18,31 @@ class ResponseTest extends PHPUnit_Framework_TestCase
         
     }
     
-    public function testRedirects()
+    public function testConstructionProtocol()
+    {
+        $r = new Response('HTTP/1.1');
+        $ref = new \ReflectionObject($r);
+        $prop = $ref->getProperty('protocol');
+        $prop->setAccessible(true);
+        
+        $this->assertSame('HTTP/1.1', $prop->getValue($r));
+    }
+    
+    public function testRedirect301()
+    {
+        $r = $this->response->redirect('/', true);
+        $this->assertInstanceOf('\Wave\Http\Response', $r);
+        
+        $this->assertSame(array(301 => 'Location: /'), $this->reflect->getValue($r));
+        
+    }
+    
+    public function testRedirect302()
     {
         $r = $this->response->redirect('/');
         $this->assertInstanceOf('\Wave\Http\Response', $r);
         
-        $this->assertSame(array('Location: /' => 302), $this->reflect->getValue($r));
-        
-        $rr = $this->response->redirect('/', true);
-        $this->assertInstanceOf('\Wave\Http\Response', $rr);
-        
-        $this->assertSame(array('Location: /' => 301), $this->reflect->getValue($rr));
-        
+        $this->assertSame(array(302 => 'Location: /'), $this->reflect->getValue($r));
     }
     
     public function testHaltStatusCode()
@@ -38,7 +51,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
         
         $this->assertInstanceOf('\Wave\Http\Response', $r);
         $this->assertSame(
-            array('500 Internal Error' => 500),
+            array(500 => 'HTTP/1.1 500 Internal Error'),
             $this->reflect->getValue($r)
         );
     }
@@ -49,7 +62,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
         
         $this->assertInstanceOf('\Wave\Http\Response', $r);
         $this->assertSame(
-        	array('200 OK' => 200),
+        	array(200 => 'HTTP/1.1 200 OK'),
             $this->reflect->getValue($r)
         );
     }
@@ -60,7 +73,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
     
         $this->assertInstanceOf('\Wave\Http\Response', $r);
         $this->assertSame(
-            array('403 Forbidden' => 403),
+            array(403 => 'HTTP/1.1 403 Forbidden'),
             $this->reflect->getValue($r)
         );
     }
@@ -71,7 +84,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
         
         $this->assertInstanceOf('\Wave\Http\Response', $r);
         $this->assertSame(
-        	array('404 Not Found' => 404),
+        	array(404 => 'HTTP/1.1 404 Not Found'),
             $this->reflect->getValue($r)
         );
     }
@@ -82,7 +95,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
     
         $this->assertInstanceOf('\Wave\Http\Response', $r);
         $this->assertSame(
-            array('401 Unauthorized' => 401),
+            array(401 => 'HTTP/1.1 401 Unauthorized'),
             $this->reflect->getValue($r)
         );
     }
@@ -92,13 +105,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
      */
     public function testHeaderSending()
     {
-        $r = $this->response->OK();
-    
-        $this->assertInstanceOf('\Wave\Http\Response', $r);
-        $this->assertSame(
-            array('200 OK' => 200),
-            $this->reflect->getValue($r)
-        );
+        $this->response->OK()->send();
         
         if (defined('HHVM_VERSION')) {
             /**
