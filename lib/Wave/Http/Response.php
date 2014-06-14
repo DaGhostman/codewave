@@ -9,7 +9,7 @@ class Response
 
     
     private $statusCodes = array(
-    	200, 301, 302, 401, 403, 404, 500
+        200, 301, 302, 401, 403, 404, 500
     );
     
     /**

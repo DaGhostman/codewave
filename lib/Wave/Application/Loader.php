@@ -2,7 +2,6 @@
 namespace Wave\Application;
 
 use Wave\Http\Factory;
-use Wave\Application\Observers\BufferingObserver;
 use Wave\Pattern\Observer\Subject;
 
 /**
@@ -121,10 +120,6 @@ class Loader extends Subject
      */
     public function bootstrap()
     {
-        /**
-         * Turns Output buffering On/Off
-         */
-        new BufferingObserver($this);
         
         
         $this->state('http_before')->notify($this->environement);
