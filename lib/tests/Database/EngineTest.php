@@ -195,5 +195,30 @@ class EngineTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\Wave\Database\Engine', $engine->execute(array()));
     }
     
+    public function testHandlerMethod()
+    {
+        $adapter = $this->getMockBuilder('\Wave\Database\Adapter\PdoAdapter')
+        ->disableOriginalConstructor()
+        ->getMock();
+        $engine = new Engine($adapter);
+        
+        $this->assertEquals(new \ArrayObject(array(5)), $engine->handler(5));
+    }
+    
+    /**
+     * @expectedException \ErrorException
+     */
+    public function testExecuteException()
+    {
+        $adapter = $this->getMockBuilder('\Wave\Database\Adapter\PdoAdapter')
+            ->disableOriginalConstructor()
+            ->getMock();
+        
+        $engine = new Engine($adapter);
+        $engine->execute();
+    
+        $this->assertEquals(new \ArrayObject(array(5)), $engine->handler(5));
+    }
+    
     
 }
