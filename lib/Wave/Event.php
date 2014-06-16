@@ -11,7 +11,6 @@ use \Symfony\Component\EventDispatcher;
  * @package phpAcorn\Wave
  * @version 1.0
  * @name Event
- * @uses \Wave\Pattern\Observer\Subject
  * @uses \Symfony\Component\EventDispatcher\Event
  * @see \Symfony\Component\EventDispatcher\Event
  */
