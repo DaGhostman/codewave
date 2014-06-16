@@ -330,13 +330,11 @@ class Loader extends Subject
                     $e->request = $this->http->request();
                     $e->response = $this->http->response();
                     
-                    
+                    // @codeCoverageIgnoreStart
                     if ($this->event->hasListeners('application.halt')) {
-                        // @codeCoverageIgnoreStart
                         $this->event->dispatch('application.halt');
-                        // @codeCoverageIgnoreEnd
                     }
-                    
+                    // @codeCoverageIgnoreEnd
                     
                     break;
                 }

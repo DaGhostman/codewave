@@ -11,6 +11,7 @@
             <exclude>
                 <directory prefix="Abstract">.</directory>
                 <directory prefix="">lib/Wave/Application/State</directory>
+                <directory suffix="Observer.php">lib/Wave/Application/Observers</directory>
             </exclude>
         </whitelist>
     </filter>
