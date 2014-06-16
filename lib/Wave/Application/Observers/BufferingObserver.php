@@ -5,13 +5,13 @@ use Wave\Pattern\Observer\Observer;
 
 class BufferingObserver extends Observer
 {
-    public function map_before()
+    public function mapBefore()
     {
         ob_start();
     }
     
     
-    public function application_after()
+    public function applicationAfter()
     {
         echo ob_get_clean();
     }

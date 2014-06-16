@@ -128,7 +128,7 @@ class Loader extends Subject
     {
         
         
-        $this->state('http_before')->notify($this->environement);
+        $this->state('httpBefore')->notify($this->environement);
         
         $this->http = new $this->config['handlers']['http'](
             $this->config['handlers']['request'],
@@ -136,7 +136,7 @@ class Loader extends Subject
             $this->environement
         );
         
-        $this->state('http_after')->notify($this->environement);
+        $this->state('httpAfter')->notify($this->environement);
         
         return $this;
     }
@@ -304,7 +304,7 @@ class Loader extends Subject
      */
     public function run()
     {
-        $this->state('map_before')
+        $this->state('mapBefore')
             ->notify($this->environement);
         
         try {
@@ -314,11 +314,11 @@ class Loader extends Subject
             
             foreach ($matchedRoutes as $route) {
                 try {
-                    $this->state('dispatch_before')->notify();
+                    $this->state('dispatchBefore')->notify();
                     
                     $dispatched = $route->dispatch();
                     
-                    $this->state('dispatch_after')->notify();
+                    $this->state('dispatchAfter')->notify();
                     
                     if ($dispatched) {
                         break;
@@ -352,8 +352,8 @@ class Loader extends Subject
             }
         }
         
-        $this->state('map_after')->notify($this->environement);
+        $this->state('mapAfter')->notify($this->environement);
         
-        $this->state('application_after')->notify($this->environement);
+        $this->state('applicationAfter')->notify($this->environement);
     }
 }
