@@ -161,6 +161,9 @@ class PdoAdapter extends AbstractAdapter
     public function fetch()
     {
         $this->connect();
+        if ($this->stmt == null || !method_exists($this->stmt, 'fetch')) {
+            throw new \RuntimeException("No statement prepared for exectution");
+        }
         return $this->stmt->fetch();
     }
 

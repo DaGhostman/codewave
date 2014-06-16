@@ -75,7 +75,7 @@ class Engine
             throw new \RuntimeException("Unable to fetch result", $ex->getCode(), $ex);
         }
         
-        return new $this->handler($result);
+        return $this->handler($result);
     }
 
     /**
@@ -87,6 +87,9 @@ class Engine
      */
     public function handler($set)
     {
+        if (!is_array($set)) {
+            $set = array($set);
+        }
         return new $this->handler($set);
     }
 
@@ -104,7 +107,7 @@ class Engine
         $cols = implode(', ', $binds);
         $keys = implode(',:', $binds);
         
-        $query = "INSERT INTO %s (%s) VALUES %s";
+        $query = "INSERT INTO %s (%s) VALUES (:%s)";
         
         $this->link->prepare(sprintf($query, $table, $cols, $keys));
         
@@ -190,7 +193,7 @@ class Engine
      */
     public function custom($sql)
     {
-        $this->link->prepare('%s %s', $this->link->getQuery(), trim($sql));
+        $this->link->prepare(sprintf('%s %s', $this->link->getQuery(), trim($sql)));
         
         return $this;
     }
@@ -222,7 +225,9 @@ class Engine
      */
     public function execute($params = array())
     {
-        $this->link->execute($params);
+        if (!$this->link->execute($params)) {
+            throw new \ErrorException("Query execution did was not successful");
+        }
         
         return $this;
     }

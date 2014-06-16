@@ -4,12 +4,30 @@ use \Wave\Database\Engine;
 class EngineTest extends PHPUnit_Framework_TestCase
 {
     protected $adapter;
+    protected $config = array(
+        'driver' => 'PDO_DRIVER',
+        'database' => 'PDO_DATABASE',
+        'username' => 'PDO_USERNAME',
+        'password' => 'PDO_PASSWORD',
+        'port' => 'PDO_PORT'
+    );
+    
     protected function setUp()
     {
-        $this->adapter = $this->getMockBuilder(
-            '\Wave\Database\Adapter\PdoAdapter'
-        )->disableOriginalConstructor()
-        ->getMock();
+        if (! extension_loaded('pdo')) {
+            $this->markTestSkipped('PDO Extension is unavailable');
+        }
+        
+        foreach ($this->config as $key => $value) {
+            
+            if (! isset($GLOBALS[$value])) {
+                $this->markTestSkipped('Unable to find variable: ' . $value);
+            }
+            
+            $this->config[$key] = $GLOBALS[$value];
+        }
+        
+        $this->adapter = new \Wave\Database\Adapter\PdoAdapter($this->config);
     }
     
     /**
@@ -30,9 +48,6 @@ class EngineTest extends PHPUnit_Framework_TestCase
     public function testgetLink()
     {
         $adapter = $this->adapter;
-        $adapter->expects($this->any())
-            ->method('getLink')
-            ->will($this->returnValue(new \stdClass()));
             
         $engine = new Engine($adapter);
         $this->assertSame($adapter, $engine->getLink());
@@ -40,7 +55,10 @@ class EngineTest extends PHPUnit_Framework_TestCase
     
     public function testResultFetching()
     {
-        $adapter = $this->adapter;
+        $adapter = $this->getMockBuilder('\Wave\Database\Adapter\PdoAdapter')
+            ->disableOriginalConstructor()
+            ->getMock();
+        
         $adapter->expects($this->any())
             ->method('fetch')
             ->will($this->returnValue(
@@ -55,7 +73,7 @@ class EngineTest extends PHPUnit_Framework_TestCase
             )
         );
             
-        $engine = new Engine($this->adapter);
+        $engine = new Engine($adapter);
         
         $this->assertEquals(new \ArrayObject(array('id' => 1, 1, 'field' => 'test', 'test')), $engine->fetch());
         $this->assertEquals(new \ArrayObject(array(array('id' => 1, 1, 'field' => 'test', 'test'))), $engine->fetch(null, true));
@@ -68,9 +86,6 @@ class EngineTest extends PHPUnit_Framework_TestCase
     {
         $adapter = $this->adapter;
         
-        $adapter->expects($this->any())
-            ->method('fetch')
-            ->will($this->throwException(new \RuntimeException("Test Success", -1)));
         
         $engine = new Engine($adapter);
         $engine->fetch();
@@ -78,7 +93,9 @@ class EngineTest extends PHPUnit_Framework_TestCase
     
     public function testHandlerChangeInFetch()
     {
-        $adapter = $this->adapter;
+        $adapter = $this->getMockBuilder('\Wave\Database\Adapter\PdoAdapter')
+            ->disableOriginalConstructor()
+            ->getMock();
         
         $adapter->expects($this->any())
             ->method('fetch')
@@ -103,27 +120,58 @@ class EngineTest extends PHPUnit_Framework_TestCase
     public function testCRUDMethods()
     {
         $adapter = $this->adapter;
-        $adapter->expects($this->any())
-            ->method('prepare')
-            ->will($this->returnValue(true));
+        $adapter->prepare("CREATE TABLE IF NOT EXISTS dummyTable (id INTEGER PRIMARY KEY, name TEXT);")
+            ->execute();
         
-        $adapter->expects($this->any())
-            ->method('getQuery')
-            ->will($this->returnValue('SELECT * FROM dummyTable'));
-        
+        /**
+         * Test Engine::insert()
+         */
         $engine = new Engine($adapter);
-        $this->assertInstanceOf('\Wave\Database\Engine', $engine->insert('dummyTable', array('id', 'name')));
-        $this->assertInstanceOf('\Wave\Database\Engine', $engine->select('dummyTable', array('id', 'name')));
-        $this->assertInstanceOf('\Wave\Database\Engine', $engine->delete('dummyTable'));
-        $this->assertInstanceOf('\Wave\Database\Engine', $engine->update('dummyTable', array('id', 'name')));
-        $this->assertInstanceOf('\Wave\Database\Engine', $engine->where("column = :col"));
-        $this->assertInstanceOf('\Wave\Database\Engine', $engine->custom("WHERE column = :col ORDER BY id"));
+        $this->assertInstanceOf('\Wave\Database\Engine', ($ins = $engine->insert('dummyTable', array('id', 'name'))));
+        $ins->execute(array('id' => 5, 'name' => 'Joe'));
+        $this->assertEquals(5, $ins->getLink()->lastInsertId());
+        
+        /**
+         * Test Engine::select()
+         */
+        $this->assertInstanceOf('\Wave\Database\Engine', ($sel = $engine->select('dummyTable', array('id', 'name'))));
+        $this->assertEquals(
+            new \ArrayObject(array('id' => 5, 5, 'name' => 'Joe', 'Joe')),
+            $sel->execute()->fetch()
+        );
+        
+        /**
+         * Test Engine::update()
+         */
+        $this->assertInstanceOf('\Wave\Database\Engine', ($upd = $engine->update('dummyTable', array('name'))));
+        $this->assertInstanceOf('\Wave\Database\Engine', $upd->where("id = :id"));
+        
+        $upd->execute(array('id' => 5, 'name' => 'Mike'));
+        $this->assertEquals(5, $upd->getLink()->lastInsertId());
+        
+        /**
+         * Testing Engine::custom()
+         */
+        $select = $engine->select('dummyTable', array('name'));
+        $this->assertInstanceOf('\Wave\Database\Engine', $select->custom("WHERE id = :id ORDER BY id"));
+        $res = $select->execute(array('id' => 5))->fetch();
+        $this->assertEquals('Mike', $res['name']);
+        
+        /**
+         * Testing Engine::delete()
+         */
+        $this->assertInstanceOf('\Wave\Database\Engine', ($del = $engine->delete('dummyTable')));
+        $del->where('id = :id')->execute(array('id' => 5));
+        $this->assertEquals(5, $del->getLink()->lastInsertId());
+        
         
     }
     
     public function testBindParams()
     {
-        $adapter = $this->adapter;
+        $adapter = $this->getMockBuilder('\Wave\Database\Adapter\PdoAdapter')
+            ->disableOriginalConstructor()
+            ->getMock();
         
         $adapter->expects($this->any())
             ->method('bindParam')
@@ -135,14 +183,16 @@ class EngineTest extends PHPUnit_Framework_TestCase
     
     public function testExecute()
     {
-        $adapter = $this->adapter;
+        $adapter = $this->getMockBuilder('\Wave\Database\Adapter\PdoAdapter')
+            ->disableOriginalConstructor()
+            ->getMock();
     
         $adapter->expects($this->any())
         ->method('execute')
-        ->will($this->returnValue(null));
+        ->will($this->returnValue(true));
     
         $engine = new Engine($adapter);
-        $this->assertInstanceOf('\Wave\Database\Engine',$engine->execute(array()));
+        $this->assertInstanceOf('\Wave\Database\Engine', $engine->execute(array()));
     }
     
     
