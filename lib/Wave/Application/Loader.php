@@ -105,8 +105,14 @@ class Loader extends Subject
         
         $this->controller = new $ctrl_handler();
         $this->environement = new $env_handler($this->config['environment']);
-        $this->container = new $di_container();
-        $this->event = new $event_container();
+        
+        if (class_exists($di_container, true)) {
+            $this->container = new $di_container();
+        }
+        
+        if (class_exists($event_container, true)) {
+            $this->event = new $event_container();
+        }
     }
 
     /**
