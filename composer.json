@@ -5,15 +5,13 @@
     "homepage": "https://phpAcorn.github.com/wave-framework",
     "type": "library",
     "require": {
-        "php": ">=5.3",
-        "league/plates": "2.*",
-        "symfony/event-dispatcher": "2.*",
-        "mnapoli/php-di": "~4.0"
+        "php": ">=5.3"
     },
     "require-dev": {
         "phpunit/phpunit": "4.*",
         "squizlabs/php_codesniffer": ">1.5",
-        "satooshi/php-coveralls": "dev-master"
+        "satooshi/php-coveralls": "dev-master",
+        "league/plates": "2.*"
     },
     "license": "MIT",
     "authors": [
