@@ -94,9 +94,11 @@ class Loader extends Subject
 
     public function __get($key)
     {
-        if (isset($this->$key)) {
-            return $this->$key;
+        if (!isset($this->$key)) {
+            return null;
         }
+
+        return $this->$key;
     }
 
     public function __call($name, $args = array())

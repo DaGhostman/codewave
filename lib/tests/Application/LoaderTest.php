@@ -16,6 +16,20 @@ class LoaderTest extends PHPUnit_Framework_TestCase
             )
         ));
     }
+
+    public function testGetter()
+    {
+        $this->assertNull($this->loader->some_variable);
+    }
+
+    public function testCaller()
+    {
+        $this->assertNull($this->loader->some_function());
+        $this->assertInstanceOf(
+            '\Wave\Application\Environment',
+            $this->loader->environement()
+        );
+    }
     
     public function testConstructionOfObject()
     {
