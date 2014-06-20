@@ -11,4 +11,3 @@ phpdoc.dist.xml
 .settings
 lib/Wave/Di
 composer.lock
-/.idea
