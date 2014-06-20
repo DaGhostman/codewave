@@ -5,18 +5,18 @@ class Factory
 {
 
     /**
-     * A dynamic factory whcih instantiates the objects
+     * A dynamic factory which instantiates the objects
      *
-     * @param string $request
+     * @param object $request
      *            The request handler
-     * @param string $response
-     *            The reponse handler
+     * @param object $response
+     *            The response handler
      * @throws \LogicException if $_SERVER variable is not presented
      */
-    public function __construct($request, $response, $environment)
+    public function __construct($request, $response)
     {
-        $this->request = new $request($environment);
-        $this->response = new $response($environment['request.protocol']);
+        $this->request = $request;
+        $this->response = $response;
     }
 
     /**

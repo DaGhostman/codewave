@@ -1,8 +1,11 @@
 <?php
 namespace Wave\Application;
 
-use Wave\Http\Factory;
-use Wave\Pattern\Observer\Subject;
+use \Wave\Http;
+use \Wave\Pattern\Observer\Subject;
+use \Wave\Application;
+use \Wave\Route;
+use \Wave\Event;
 
 /**
  * Loader
@@ -19,21 +22,14 @@ class Loader extends Subject
      * 
      * @var \Wave\Application\Environment
      */
-    public $environement = null;
+    protected $environment = null;
 
     /**
      * Container for the Http\Factory object
      * 
      * @var \Wave\Http\Factory
      */
-    public $http = null;
-
-    /**
-     * Dependency injection container
-     * 
-     * @var \Di\Container
-     */
-    public $container = null;
+    protected $http = null;
 
     /**
      * Container for the Controller
@@ -41,13 +37,6 @@ class Loader extends Subject
      * @var \Wave\Application\Controller
      */
     protected $controller = null;
-    
-    /**
-     * Container for the EventDispatcher
-     * 
-     * @var Syfony\Component\EventDispatcher\EventDispatcher
-     */
-    public $event = null;
 
     /**
      * The placeholder for the default configuration
@@ -78,13 +67,8 @@ class Loader extends Subject
             'mode' => 'devel',
             'debug' => true,
             'handlers' => array(
-                'request' => '\Wave\Http\Request',
-                'response' => '\Wave\Http\Response',
-                'environment' => '\Wave\Application\Environment',
-                'http' => '\Wave\Http\Factory',
-                'controller' => '\Wave\Application\Controller',
-                'di' => '\DI\ContainerBuilder',
-                'event' => '\Symfony\Component\EventDispatcher\EventDispatcher'
+                'view' => '\Wave\View\Plates\Wrapper',
+                'log' => '\Wave\Application\Logger'
             ),
             'environment' => array(
                 'request.protocol' => (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1'),
@@ -92,27 +76,32 @@ class Loader extends Subject
                 'request.uri' => (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/'),
                 'request.method' => (isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET')
             ),
-            'routes.case_sensitive' => false
+            'routes.case_sensitive' => false,
+            'template' => array(
+                'path' => '../application/templates',
+                'extension' => 'phtml',
+                'folders' => array(),
+                'extensions' => array()
+            )
+
         );
         
         $this->config = array_merge($this->defaultConfig, $config);
         
-        
-        $env_handler = $this->config['handlers']['environment'];
-        $ctrl_handler = $this->config['handlers']['controller'];
-        $di_container = $this->config['handlers']['di'];
-        $event_container = $this->config['handlers']['event'];
-        
-        $this->controller = new $ctrl_handler();
-        $this->environement = new $env_handler($this->config['environment']);
-        
-        if (class_exists($di_container, true)) {
-            $this->container = new $di_container();
+        $this->controller = new Application\Controller();
+        $this->environement = new Application\Environment($this->config['environment']);
+    }
+
+    public function __get($key)
+    {
+        if (isset($this->$key)) {
+            return $this->$key;
         }
-        
-        if (class_exists($event_container, true)) {
-            $this->event = new $event_container();
-        }
+    }
+
+    public function __call($name, $args = array())
+    {
+        return $this->$name;
     }
 
     /**
@@ -130,10 +119,9 @@ class Loader extends Subject
         
         $this->state('httpBefore')->notify($this->environement);
         
-        $this->http = new $this->config['handlers']['http'](
-            $this->config['handlers']['request'],
-            $this->config['handlers']['response'],
-            $this->environement
+        $this->http = new Http\Factory(
+            new Http\Request($this->environement),
+            new Http\Response($this->environement['request.protocol'])
         );
         
         $this->state('httpAfter')->notify($this->environement);
@@ -142,7 +130,7 @@ class Loader extends Subject
     }
 
     /*****************************
-     * Slim spcific code follows *
+     * Slim specific code follows *
      *****************************/
     
     
@@ -281,7 +269,7 @@ class Loader extends Subject
     {
         $pattern = array_shift($args);
         $callable = array_pop($args);
-        $route = new \Wave\Route($pattern, $callable, $this->config['routes.case_sensitive']);
+        $route = new Route($pattern, $callable, $this->config['routes.case_sensitive']);
         $this->controller->map($route);
         
         return $route;
@@ -291,7 +279,7 @@ class Loader extends Subject
      * Modified Slim Framework Code  *
      *********************************/
     /**
-     * This mehod starts the actual user-land part of the code,
+     * This method starts the actual user-land part of the code,
      * it iterates over the registered routes, if none are found it
      * directly return a 404 to the user, except cases where the headers
      * are already sent.
@@ -300,7 +288,7 @@ class Loader extends Subject
      * Notifys observers using 'dispatch_before' and 'dispatch_after', respectively in the routing phase.
      * Notifys observers using 'application_after' once the mapping has finished.
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function run()
     {
@@ -323,19 +311,9 @@ class Loader extends Subject
                     if ($dispatched) {
                         break;
                     }
-                } catch (\Wave\Application\State\Pass $e) {
+                } catch (Application\State\Pass $e) {
                     continue;
-                } catch (\Wave\Application\State\Halt $e) {
-                    $e = new \Wave\Event();
-                    $e->request = $this->http->request();
-                    $e->response = $this->http->response();
-                    
-                    // @codeCoverageIgnoreStart
-                    if ($this->event->hasListeners('application.halt')) {
-                        $this->event->dispatch('application.halt');
-                    }
-                    // @codeCoverageIgnoreEnd
-                    
+                } catch (Application\State\Halt $e) {
                     break;
                 }
             }
