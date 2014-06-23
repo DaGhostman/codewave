@@ -10,9 +10,11 @@ class TemplateTest extends \PHPUnit_Framework_TestCase
     private $template;
     protected function setUp()
     {
-        mkdir('tests/ro', 0755, true);
+        if (!is_dir('tests/ro')) {
+            mkdir('tests/ro', 0755, true);
+        }
         touch('tests/ro/index.phtml');
-        file_put_contents('tests/ro/index.php', 'hey');
+        file_put_contents('tests/ro/index.phtml', 'hey');
         $this->template = new Template('index', 'tests/ro', 'phtml');
     }
 
