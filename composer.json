@@ -10,8 +10,7 @@
     "require-dev": {
         "phpunit/phpunit": "4.*",
         "squizlabs/php_codesniffer": ">1.5",
-        "satooshi/php-coveralls": "dev-master",
-        "league/plates": "2.*"
+        "satooshi/php-coveralls": "dev-master"
     },
     "license": "MIT",
     "authors": [

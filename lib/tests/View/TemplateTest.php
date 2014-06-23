@@ -12,7 +12,7 @@ class TemplateTest extends \PHPUnit_Framework_TestCase
     {
         mkdir('tests/ro', 0755, true);
         touch('tests/ro/index.phtml');
-        file_put_contents('tests/ro/index.phtml', 'hey');
+        file_put_contents('tests/ro/index.php', 'hey');
         $this->template = new Template('index', 'tests/ro', 'phtml');
     }
 

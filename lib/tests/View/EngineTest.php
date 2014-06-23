@@ -54,7 +54,7 @@ class EngineTest extends \PHPUnit_Framework_TestCase
         if (!file_exists('tests/small/ro/index.phtml')) {
             file_put_contents(
                 'tests/small/ro/index.phtml',
-                '<p>Hello, <?=$this->name?></p>'
+                '<p>Hello, <?php echo $this->name; ?></p>'
             );
         }
 
@@ -77,7 +77,7 @@ class EngineTest extends \PHPUnit_Framework_TestCase
         if (!file_exists('tests/small/ro/ext.phtml')) {
             file_put_contents(
                 'tests/small/ro/ext.phtml',
-                '<p>Hello, <?=$this->upper($this->name)?></p>'
+                '<p>Hello, <?php echo $this->upper($this->name); ?></p>'
             );
         }
         $engine->name = "Small and simple";
