@@ -5,7 +5,6 @@ use \Wave\Http;
 use \Wave\Pattern\Observer\Subject;
 use \Wave\Application;
 use \Wave\Route;
-use \Wave\Event;
 
 /**
  * Loader
@@ -90,8 +89,25 @@ class Loader extends Subject
         
         $this->controller = new Application\Controller();
         $this->environement = new Application\Environment($this->config['environment']);
+
+        /*
+         * Build the HTTP handlers
+         */
+        $this->state('httpBefore')->notify($this->environement);
+
+        $this->http = new Http\Factory(
+            new Http\Request($this->environement),
+            new Http\Response($this->environement['request.protocol'])
+        );
+
+        $this->state('httpAfter')->notify($this->environement);
     }
 
+    /**
+     * @param $key string Variable to get
+     *
+     * @return mixed the variable value
+     */
     public function __get($key)
     {
         if (!isset($this->$key)) {
@@ -101,9 +117,29 @@ class Loader extends Subject
         return $this->$key;
     }
 
+    /**
+     * @param string $name The variable name to access
+     * @param array $args the key of the value to retrieve, currently only useful for
+     *                    when getting config options.
+     *
+     * @return mixed|null
+     */
     public function __call($name, $args = array())
     {
-        return $this->$name;
+        $result = null;
+
+        if (!empty($args)) {
+            if (array_key_exists($args[0], $this->$name)) {
+                $r = $this->$name;
+                $result = $r[$args[0]];
+            } else {
+                $result = null;
+            }
+        } else {
+            $result = $this->$name;
+        }
+
+        return $result;
     }
 
     /**
@@ -113,21 +149,11 @@ class Loader extends Subject
      * observers using 'http_before' and 'http_after'
      * methods, respectively before and after the factory is instantiated.
      *
+     * @deprecated This method is obsolete since, v1.1.0 and will be removed in 1.5
      * @return \Wave\Application\Loader Current instance for chaining
      */
     public function bootstrap()
     {
-        
-        
-        $this->state('httpBefore')->notify($this->environement);
-        
-        $this->http = new Http\Factory(
-            new Http\Request($this->environement),
-            new Http\Response($this->environement['request.protocol'])
-        );
-        
-        $this->state('httpAfter')->notify($this->environement);
-        
         return $this;
     }
 

@@ -1,6 +1,7 @@
 <?php
 
 use Wave\Application\Loader;
+
 class LoaderTest extends PHPUnit_Framework_TestCase
 {
     private $loader = null;
@@ -20,6 +21,9 @@ class LoaderTest extends PHPUnit_Framework_TestCase
     public function testGetter()
     {
         $this->assertNull($this->loader->some_variable);
+        $this->assertEquals('devel', $this->loader->config('mode'));
+
+        $this->assertNull($this->loader->config('model'));
     }
 
     public function testCaller()
@@ -188,16 +192,17 @@ class LoaderTest extends PHPUnit_Framework_TestCase
     
         $loader->bootstrap();
     
-        $loader->get('/bar', function(){
+        $loader->get('/bar', function () {
             echo 'Foo';
             throw new \Wave\Application\State\Pass();
             return true;
         });
-            $loader->get('/bar', function(){
-                echo '.Bar';
-                //throw new \Wave\Application\State\Halt();
-                return true;
-            });
+        $loader->get('/bar', function () {
+            echo '.Bar';
+            throw new \Wave\Application\State\Halt();
+            return true;
+        });
+
         echo '2.';
         $loader->run();
         echo '.3';
@@ -221,16 +226,12 @@ class LoaderTest extends PHPUnit_Framework_TestCase
     
         $loader->bootstrap();
     
-        $loader->get('/bar', function(){
+        $loader->get('/bar', function () {
             echo 'Foo';
             throw new \Wave\Application\State\Halt();
             return true;
         });
-        $loader->get('/bar', function(){
-            echo '.Bar';
-            //throw new \Wave\Application\State\Halt();
-            return true;
-        });
+
         echo '2.';
         $loader->run();
         echo '.3';
