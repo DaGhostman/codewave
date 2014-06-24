@@ -4,6 +4,11 @@ namespace Wave\Session\Container;
 // Updates itself on provider change
 use \Wave\Pattern\Observer\Observer;
 
+/**
+ * Class AbstractContainer
+ * @package Wave\Session\Container
+ * @deprecated
+ */
 abstract class AbstractContainer extends Observer implements \ArrayAccess
 {
     // Sets the data, on instantiation

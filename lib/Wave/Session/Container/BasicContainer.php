@@ -1,6 +1,11 @@
 <?php
 namespace Wave\Session\Container;
 
+/**
+ * Class BasicContainer
+ * @package Wave\Session\Container
+ * @deprecated
+ */
 class BasicContainer extends AbstractContainer
 {
 

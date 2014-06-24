@@ -1,6 +1,11 @@
 <?php
 namespace Wave\Session\Adapter;
 
+/**
+ * Class AbstractAdapter
+ * @package Wave\Session\Adapter
+ * @deprecated
+ */
 abstract class AbstractAdapter
 {
 
