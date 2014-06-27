@@ -27,8 +27,8 @@ class HashTest extends \PHPUnit_Framework_TestCase
         if (strnatcmp(phpversion(), '5.5') < 0) {
             $hash = '$2y$04$usesomesillystringfore7hnbRJHxXVLeakoG8K30oukPsA.ztMG';
             $test = crypt("password", $hash);
-            if ($test == $hash) {
-                include '../../vendor/ircmaxell/password.php';
+            if ($test != $hash) {
+                $this->markTestSkipped("Unable to verify that the $2y fix");
             }
         }
     }
