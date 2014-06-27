@@ -10,7 +10,8 @@
     "require-dev": {
         "phpunit/phpunit": "4.*",
         "squizlabs/php_codesniffer": ">1.5",
-        "satooshi/php-coveralls": "dev-master"
+        "satooshi/php-coveralls": "dev-master",
+        "ircmaxell/password-compat": "1.0.3"
     },
     "license": "MIT",
     "authors": [

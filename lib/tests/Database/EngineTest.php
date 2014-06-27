@@ -40,9 +40,9 @@ class EngineTest extends PHPUnit_Framework_TestCase
     
     public function testObjectCreation()
     {
-        $adapter = $this->adapter; 
+        $adapter = $this->adapter;
         
-        $this->assertInstanceOf('\Wave\Database\Engine', new Engine($this->adapter));
+        $this->assertInstanceOf('\Wave\Database\Engine', new Engine($adapter));
     }
     
     public function testgetLink()
@@ -63,15 +63,13 @@ class EngineTest extends PHPUnit_Framework_TestCase
             ->method('fetch')
             ->will($this->returnValue(
                 array('id' => 1, 1, 'field' => 'test', 'test')
-            )
-        );
+            ));
         
         $adapter->expects($this->any())
             ->method('fetchAll')
             ->will($this->returnValue(
-        	   array(array('id' => 1, 1, 'field' => 'test', 'test'))
-            )
-        );
+                array(array('id' => 1, 1, 'field' => 'test', 'test'))
+            ));
             
         $engine = new Engine($adapter);
         
