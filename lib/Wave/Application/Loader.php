@@ -287,6 +287,23 @@ class Loader extends Subject
     }
 
     /**
+     * This method creates the route for OPTIONS requests
+     *
+     * @see \Wave\Application\Loader::mapRoute()
+     * @param string $pattern
+     *            Pattern for the route (See Docs)
+     * @param mixed $callback
+     *            Callback to fire when the pattern is matched
+     * @return \Wave\Route
+     */
+    public function map()
+    {
+        $args = func_get_args();
+
+        return $this->mapRoute($args);
+    }
+
+    /**
      * Creates the route
      *
      * @param array $args
