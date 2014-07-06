@@ -27,6 +27,10 @@ class Engine extends AbstractEngine
         if (!is_readable($this->path)) {
             throw new \RuntimeException("Template directory not readable");
         }
+
+        if (!in_array('view', stream_get_wrappers())) {
+            stream_register_wrapper('view', '\Wave\View\Stream');
+        }
     }
 
     public function __set($key, $value)

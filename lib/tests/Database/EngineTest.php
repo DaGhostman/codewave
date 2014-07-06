@@ -164,6 +164,24 @@ class EngineTest extends PHPUnit_Framework_TestCase
         
         
     }
+
+    public function testUsingAsSelectStatements()
+    {
+        $adapter = $this->adapter;
+        $adapter->prepare("CREATE TABLE IF NOT EXISTS dummyTable (id INTEGER PRIMARY KEY, name TEXT);")
+            ->execute();
+        $engine = new Engine($adapter);
+        $engine->insert('dummyTable', array('id', 'name'))
+            ->execute(array('id' => 1, 'name' => 'Joe'));
+
+        $result = $engine->select('dummyTable', array('name AS username'))
+            ->where('id = 1')
+            ->execute()
+            ->fetch();
+
+        $this->assertTrue(array_key_exists('username', $result));
+        $this->assertSame('Joe', $result['username']);
+    }
     
     public function testBindParams()
     {
@@ -176,7 +194,7 @@ class EngineTest extends PHPUnit_Framework_TestCase
             ->will($this->returnValue(null));
         
         $engine = new Engine($adapter);
-        $this->assertInstanceOf('\Wave\Database\Engine',$engine->bind('id', 1, \PDO::PARAM_INT));
+        $this->assertInstanceOf('\Wave\Database\Engine', $engine->bind('id', 1, \PDO::PARAM_INT));
     }
     
     public function testExecute()

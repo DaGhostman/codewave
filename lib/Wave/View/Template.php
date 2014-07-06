@@ -99,8 +99,7 @@ class Template
     public function __toString()
     {
         ob_start();
-        include ($this->template);
-
+        include('view://'.$this->template);
         return ob_get_clean();
     }
 }
