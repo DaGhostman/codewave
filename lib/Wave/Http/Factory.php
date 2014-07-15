@@ -107,4 +107,3 @@ class Factory implements \ArrayAccess
         return;
     }
 }
-
