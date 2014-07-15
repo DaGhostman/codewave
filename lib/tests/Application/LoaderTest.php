@@ -1,8 +1,18 @@
 <?php
 
+namespace Tests;
+
 use Wave\Application\Loader;
 
-class LoaderTest extends PHPUnit_Framework_TestCase
+class StubController
+{
+    public function stubAction()
+    {
+        echo "Foo";
+    }
+}
+
+class LoaderTest extends \PHPUnit_Framework_TestCase
 {
     private $loader = null;
     protected function setUp()
@@ -14,14 +24,18 @@ class LoaderTest extends PHPUnit_Framework_TestCase
                 'hostname' => 'localhost',
                 'request.uri' => '/',
                 'request.method' => 'GET'
-            )
+            ),
+            'debug' => true
         ));
     }
 
     public function testGetter()
     {
         $this->assertNull($this->loader->some_variable);
-        $this->assertEquals('devel', $this->loader->config('mode'));
+        $this->assertTrue($this->loader->config('debug'));
+
+        $this->assertInstanceOf('\Wave\Http\Request', $this->loader->http('request'));
+        $this->assertNull($this->loader->http('notExist'));
 
         $this->assertNull($this->loader->config('model'));
     }
@@ -30,7 +44,7 @@ class LoaderTest extends PHPUnit_Framework_TestCase
     {
         $this->assertNull($this->loader->some_function());
         $this->assertInstanceOf(
-            '\Wave\Application\Environment',
+            '\Wave\Storage\Registry',
             $this->loader->environement()
         );
     }
@@ -48,7 +62,7 @@ class LoaderTest extends PHPUnit_Framework_TestCase
         ));
         $loader->bootstrap();
         
-        $this->assertInstanceOf('\Wave\Application\Environment', $loader->environement);
+        $this->assertInstanceOf('\Wave\Storage\Registry', $loader->environement);
         $this->assertInstanceOf('\Wave\Http\Factory', $loader->http);
         $this->assertInstanceOf('\Wave\Http\Request', $loader->http->request());
         $this->assertInstanceOf('\Wave\Http\Response', $loader->http->response());
@@ -63,10 +77,25 @@ class LoaderTest extends PHPUnit_Framework_TestCase
         $method = $ref->getMethod('mapRoute');
         $method->setAccessible(true);
         
-        $ret = $method->invoke($loader, array('/', function(){}));
+        $ret = $method->invoke($loader, array('/', function () {
+                return null;
+        }));
         
-        $this->assertInstanceOf('\Wave\Route', $ret);
+        $this->assertInstanceOf('\Wave\Application\Route', $ret);
         $this->assertEmpty($ret->getHttpMethods());
+    }
+
+    public function testMapRouteGeneration()
+    {
+        $this->loader->bootstrap();
+        $loader = $this->loader;
+
+        $route = $loader->map('/', function () {
+            return null;
+        })->via('GET', 'HEAD');
+
+        $this->assertInstanceOf('\Wave\Application\Route', $route);
+        $this->assertSame(array('GET','HEAD'), $route->getHttpMethods());
     }
     
     public function testGetRouteGeneration()
@@ -74,9 +103,11 @@ class LoaderTest extends PHPUnit_Framework_TestCase
         $this->loader->bootstrap();
         $loader = $this->loader;
     
-        $route = $loader->get('/', function(){});
+        $route = $loader->get('/', function () {
+            return null;
+        });
     
-        $this->assertInstanceOf('\Wave\Route', $route);
+        $this->assertInstanceOf('\Wave\Application\Route', $route);
         $this->assertSame(array('GET','HEAD'), $route->getHttpMethods());
     }
     
@@ -85,9 +116,11 @@ class LoaderTest extends PHPUnit_Framework_TestCase
         $this->loader->bootstrap();
         $loader = $this->loader;
     
-        $route = $loader->post('/', function(){});
+        $route = $loader->post('/', function () {
+            return null;
+        });
     
-        $this->assertInstanceOf('\Wave\Route', $route);
+        $this->assertInstanceOf('\Wave\Application\Route', $route);
         $this->assertSame(array('POST'), $route->getHttpMethods());
     }
     
@@ -96,9 +129,11 @@ class LoaderTest extends PHPUnit_Framework_TestCase
         $this->loader->bootstrap();
         $loader = $this->loader;
     
-        $route = $loader->put('/', function(){});
+        $route = $loader->put('/', function () {
+            return null;
+        });
     
-        $this->assertInstanceOf('\Wave\Route', $route);
+        $this->assertInstanceOf('\Wave\Application\Route', $route);
         $this->assertSame(array('PUT'), $route->getHttpMethods());
     }
     
@@ -107,9 +142,11 @@ class LoaderTest extends PHPUnit_Framework_TestCase
         $this->loader->bootstrap();
         $loader = $this->loader;
     
-        $route = $loader->options('/', function(){});
+        $route = $loader->options('/', function () {
+            return null;
+        });
     
-        $this->assertInstanceOf('\Wave\Route', $route);
+        $this->assertInstanceOf('\Wave\Application\Route', $route);
         $this->assertSame(array('OPTIONS'), $route->getHttpMethods());
     }
     
@@ -118,9 +155,11 @@ class LoaderTest extends PHPUnit_Framework_TestCase
         $this->loader->bootstrap();
         $loader = $this->loader;
     
-        $route = $loader->trace('/', function(){});
+        $route = $loader->trace('/', function () {
+            return null;
+        });
     
-        $this->assertInstanceOf('\Wave\Route', $route);
+        $this->assertInstanceOf('\Wave\Application\Route', $route);
         $this->assertSame(array('TRACE'), $route->getHttpMethods());
     }
     
@@ -129,9 +168,11 @@ class LoaderTest extends PHPUnit_Framework_TestCase
         $this->loader->bootstrap();
         $loader = $this->loader;
     
-        $route = $loader->delete('/', function(){});
+        $route = $loader->delete('/', function () {
+            return null;
+        });
     
-        $this->assertInstanceOf('\Wave\Route', $route);
+        $this->assertInstanceOf('\Wave\Application\Route', $route);
         $this->assertSame(array('DELETE'), $route->getHttpMethods());
     }
     
@@ -140,9 +181,11 @@ class LoaderTest extends PHPUnit_Framework_TestCase
         $this->loader->bootstrap();
         $loader = $this->loader;
     
-        $route = $loader->connect('/', function(){});
+        $route = $loader->connect('/', function () {
+            return null;
+        });
     
-        $this->assertInstanceOf('\Wave\Route', $route);
+        $this->assertInstanceOf('\Wave\Application\Route', $route);
         $this->assertSame(array('CONNECT'), $route->getHttpMethods());
     }
     
@@ -159,16 +202,47 @@ class LoaderTest extends PHPUnit_Framework_TestCase
                 'hostname' => 'localhost',
                 'request.uri' => '/bar',
                 'request.method' => 'GET'
-            )
+            ),
+            'debug' => true
         ));
         
         $loader->bootstrap();
         
-        $loader->get('/bar', function(){
-        	echo 'Foo';
-        	//throw new \Wave\Application\State\Halt();
-        	return true;
+        $loader->get('/bar', function () {
+            echo 'Foo';
+            //throw new \Wave\Application\State\Halt();
+            return true;
         });
+        echo '2.';
+        $loader->run();
+        echo '.3';
+    }
+
+    public function testRunConstructRoutes()
+    {
+        $this->expectOutputString('1.2.Foo.3');
+
+        echo '1.';
+
+        $loader = new Loader(array(
+            'environment' => array(
+                'request.protocol' => 'HTTP/1.1',
+                'request.port' => 80,
+                'hostname' => 'localhost',
+                'request.uri' => '/bar',
+                'request.method' => 'GET'
+            ),
+            'debug' => true
+        ), '../app', array(array(
+            'pattern' => '/:bar',
+            'callback' => '\Tests\StubController:stubAction',
+            'method' => array('GET'),
+            'name' => 'stub',
+            'conditions' => array('bar' => 'bar')
+        )));
+
+        $loader->bootstrap();
+
         echo '2.';
         $loader->run();
         echo '.3';
@@ -252,11 +326,12 @@ class LoaderTest extends PHPUnit_Framework_TestCase
                 'hostname' => 'localhost',
                 'request.uri' => '/bar',
                 'request.method' => 'GET'
-            )
+            ),
+            'debug' => true
         ));
     
     
-        $loader->get('/bar', function(){
+        $loader->get('/bar', function () {
             throw new \RuntimeException('Works!');
         });
         

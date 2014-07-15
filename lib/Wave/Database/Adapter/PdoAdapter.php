@@ -70,7 +70,7 @@ class PdoAdapter extends AbstractAdapter
      * otherwise it returns.
      *
      * @access public
-     *        
+     * @param array $options Options to pass to PDO on instantiation
      * @return boolean True if connected, false otherwise
      * @throws \RuntimeException If unable to connect
      *        

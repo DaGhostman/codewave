@@ -4,7 +4,7 @@ namespace Wave\Application;
 use \Wave\Http;
 use \Wave\Pattern\Observer\Subject;
 use \Wave\Application;
-use \Wave\Route;
+use Wave\Storage\Registry;
 
 /**
  * Loader
@@ -57,38 +57,65 @@ class Loader extends Subject
      * After the instantiation only the containers
      * for Environment and Controller are available.
      *
-     * @param array $config
-     *            Array with configurations
+     * @param mixed $config
+     *            Zend_Config instance or array with configurations
+     *
+     * @param string $directory The user-land code for the application
+     *
+     * @param mixed $routes Zend_Config instance or array with route definitions
      */
-    public function __construct($config = array())
+    public function __construct($config = array(), $directory = '../app', $routes = array())
     {
-        $this->defaultConfig = array(
-            'mode' => 'devel',
-            'debug' => true,
-            'handlers' => array(
-                'view' => '\Wave\View\Plates\Wrapper',
-                'log' => '\Wave\Application\Logger'
-            ),
-            'environment' => array(
-                'request.protocol' => (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1'),
-                'request.port' => (isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : 80),
-                'request.uri' => (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/'),
-                'request.method' => (isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET')
-            ),
-            'routes.case_sensitive' => false,
-            'template' => array(
-                'path' => '../application/templates',
-                'extension' => 'phtml',
-                'folders' => array(),
-                'extensions' => array()
-            )
+        if (!defined("APPLICATION_PATH")) {
+            define("APPLICATION_PATH", realpath($directory) . DIRECTORY_SEPARATOR);
+        }
 
+        if ($config instanceof \Zend_Config) {
+            $config = $config->toArray();
+        }
+
+        if ($routes instanceof \Zend_Config) {
+            $routes = $routes->toArray();
+        }
+
+        $this->config = new Registry(array(
+            "mutable" => false,
+            "override" => false,
+            "data" => $config
+        ));
+
+        $env = array(
+            'request.protocol' => (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1'),
+            'request.port' => (isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : 80),
+            'request.uri' => (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/'),
+            'request.method' => (isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET')
         );
-        
-        $this->config = array_merge($this->defaultConfig, $config);
-        
+
+        if (isset($config['environment'])) {
+            $env = array_merge($env, $config['environment']);
+        }
+
+
         $this->controller = new Application\Controller();
-        $this->environement = new Application\Environment($this->config['environment']);
+        $this->environement = new Registry(array(
+            'mutable' => true,
+            'override' => false,
+            'data' => $env
+        ));
+
+
+        foreach ($routes as $route) {
+            $r = $this->map($route["pattern"], $route['callback']);
+            call_user_func_array(array($r, 'via'), $route['method']);
+
+            if (isset($route['name']) && $route['name'] != null) {
+                $r->name($route['name']);
+            }
+            if (isset($route['conditions']) && null != $route['conditions']) {
+                $r->conditions($route['conditions']);
+            }
+        }
+
 
         /*
          * Build the HTTP handlers
@@ -128,15 +155,22 @@ class Loader extends Subject
     {
         $result = null;
 
-        if (!empty($args)) {
-            if (array_key_exists($args[0], $this->$name)) {
-                $r = $this->$name;
-                $result = $r[$args[0]];
+        if (isset($this->$name)) {
+            if (!empty($args)) {
+                if ($this->$name instanceof Registry) {
+                    $result = $this->$name->get($args[0]);
+                } else {
+                    if (isset($this->{$name}[$args[0]])) {
+                        $result = $this->{$name}[$args[0]];
+                    } else {
+                        $result = null;
+                    }
+                }
             } else {
-                $result = null;
+                $result = $this->$name;
             }
         } else {
-            $result = $this->$name;
+            $result = null;
         }
 
         return $result;
@@ -175,7 +209,7 @@ class Loader extends Subject
      *            Pattern for the route (See Docs)
      * @param mixed $callback
      *            Callback to fire when the pattern is matched
-     * @return \Wave\Route
+     * @return \Wave\Application\Route
      */
     public function get()
     {
@@ -277,7 +311,7 @@ class Loader extends Subject
      *            Pattern for the route (See Docs)
      * @param mixed $callback
      *            Callback to fire when the pattern is matched
-     * @return \Wave\Route
+     * @return \Wave\Application\Route
      */
     public function options()
     {
@@ -294,7 +328,7 @@ class Loader extends Subject
      *            Pattern for the route (See Docs)
      * @param mixed $callback
      *            Callback to fire when the pattern is matched
-     * @return \Wave\Route
+     * @return \Wave\Application\Route
      */
     public function map()
     {
@@ -308,13 +342,13 @@ class Loader extends Subject
      *
      * @param array $args
      *            Arguments for the route
-     * @return \Wave\Route
+     * @return \Wave\Application\Route
      */
     protected function mapRoute($args)
     {
         $pattern = array_shift($args);
         $callable = array_pop($args);
-        $route = new Route($pattern, $callable, $this->config['routes.case_sensitive']);
+        $route = new Route($pattern, $callable, false);
         $this->controller->map($route);
         
         return $route;
@@ -343,7 +377,10 @@ class Loader extends Subject
         try {
             $dispatched = false;
             $matchedRoutes = $this->controller
-                ->getMatchedRoutes($this->environement['request.method'], $this->environement['request.uri']);
+                ->getMatchedRoutes(
+                    $this->environement['request.method'],
+                    $this->environement['request.uri']
+                );
             
             foreach ($matchedRoutes as $route) {
                 try {
@@ -368,7 +405,7 @@ class Loader extends Subject
                     ->send();
             }
         } catch (\Exception $e) {
-            if ($this->config['debug']) {
+            if ($this->config('debug')) {
                 throw $e;
             }
         }

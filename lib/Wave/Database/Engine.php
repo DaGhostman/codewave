@@ -36,13 +36,13 @@ class Engine
     }
 
     /**
-     * Classname to handle the result.
+     * Class name to handle the result.
      * Handler must expect the result object in the constructor.
      *
      * @param string $handler            
      * @return \Wave\Database\Engine
      */
-    public function setResulthandler($handler)
+    public function setResultHandler($handler)
     {
         $this->handler = $handler;
         
@@ -50,14 +50,14 @@ class Engine
     }
 
     /**
-     * Returns the resultset
+     * Returns the result set
      *
      * @param string $handler
      *            handler to override the default one
      * @param bool $max
-     *            if requiered more than one result.
+     *            if required more than one result.
      * @throws \RuntimeException
-     * @return mixed Instance of the Hanlder
+     * @return mixed Instance of the Handler
      */
     public function fetch($handler = null, $max = false)
     {

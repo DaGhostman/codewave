@@ -48,7 +48,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
     public function testMap()
     {
         $router = new \Wave\Application\Controller();
-        $route = new \Wave\Route('/foo', function() {});
+        $route = new \Wave\Application\Route('/foo', function() {});
         $router->map($route);
 
         $this->assertAttributeContains($route, 'routes', $router);
@@ -60,13 +60,13 @@ class ControllerTest extends PHPUnit_Framework_TestCase
     public function testAddNamedRoute()
     {
         $router = new \Wave\Application\Controller();
-        $route = new \Wave\Route('/foo', function () {});
+        $route = new \Wave\Application\Route('/foo', function () {});
         $router->addNamedRoute('foo', $route);
 
         $property = new \ReflectionProperty($router, 'namedRoutes');
         $property->setAccessible(true);
 
-		$rV = $property->getValue($router);
+        $rV = $property->getValue($router);
         $this->assertSame($route, $rV['foo']);
     }
 
@@ -78,7 +78,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('RuntimeException');
 
         $router = new \Wave\Application\Controller();
-        $route = new \Wave\Route('/foo', function () {});
+        $route = new \Wave\Application\Route('/foo', function () {});
         $router->addNamedRoute('foo', $route);
         $router->addNamedRoute('foo', $route);
     }
@@ -89,7 +89,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
     public function testGetNamedRoute()
     {
         $router = new \Wave\Application\Controller();
-        $route = new \Wave\Route('/foo', function () {});
+        $route = new \Wave\Application\Route('/foo', function () {});
 
         $property = new \ReflectionProperty($router, 'namedRoutes');
         $property->setAccessible(true);
@@ -105,8 +105,8 @@ class ControllerTest extends PHPUnit_Framework_TestCase
     public function testGetNamedRoutes()
     {
         $router = new \Wave\Application\Controller();
-        $route1 = new \Wave\Route('/foo', function () {});
-        $route2 = new \Wave\Route('/bar', function () {});
+        $route1 = new \Wave\Application\Route('/foo', function () {});
+        $route2 = new \Wave\Application\Route('/bar', function () {});
 
         // Init router routes to array
         $propertyRouterRoutes = new \ReflectionProperty($router, 'routes');
@@ -134,7 +134,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
     public function testHasNamedRoute()
     {
         $router = new \Wave\Application\Controller();
-        $route = new \Wave\Route('/foo', function () {});
+        $route = new \Wave\Application\Route('/foo', function () {});
 
         $property = new \ReflectionProperty($router, 'namedRoutes');
         $property->setAccessible(true);
@@ -150,7 +150,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
     public function testGetCurrentRoute()
     {
         $router = new \Wave\Application\Controller();
-        $route = new \Wave\Route('/foo', function () {});
+        $route = new \Wave\Application\Route('/foo', function () {});
 
         $property = new \ReflectionProperty($router, 'currentRoute');
         $property->setAccessible(true);
@@ -165,7 +165,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
     public function testGetCurrentRouteIfMatchedRoutes()
     {
         $router = new \Wave\Application\Controller();
-        $route = new \Wave\Route('/foo', function () {});
+        $route = new \Wave\Application\Route('/foo', function () {});
 
         $propertyMatchedRoutes = new \ReflectionProperty($router, 'matchedRoutes');
         $propertyMatchedRoutes->setAccessible(true);
@@ -200,13 +200,13 @@ class ControllerTest extends PHPUnit_Framework_TestCase
     {
         $router = new \Wave\Application\Controller();
 
-        $route1 = new \Wave\Route('/foo', function () {});
+        $route1 = new \Wave\Application\Route('/foo', function () {});
 		$route1 = $route1->via('GET');
 
-        $route2 = new \Wave\Route('/foo', function () {});
+        $route2 = new \Wave\Application\Route('/foo', function () {});
 		$route2 = $route2->via('POST');
 
-        $route3 = new \Wave\Route('/bar', function () {});
+        $route3 = new \Wave\Application\Route('/bar', function () {});
 		$route3 = $route3->via('PUT');
 
         $routes = new \ReflectionProperty($router, 'routes');
@@ -223,10 +223,10 @@ class ControllerTest extends PHPUnit_Framework_TestCase
     {
         $router = new \Wave\Application\Controller();
 
-        $route1 = new \Wave\Route('/hello/:first/:last', function () {});
+        $route1 = new \Wave\Application\Route('/hello/:first/:last', function () {});
         $route1 = $route1->via('GET')->name('hello');
 
-        $route2 = new \Wave\Route('/path/(:foo\.:bar)', function () {});
+        $route2 = new \Wave\Application\Route('/path/(:foo\.:bar)', function () {});
         $route2 = $route2->via('GET')->name('regexRoute');
 
         $routes = new \ReflectionProperty($router, 'namedRoutes');

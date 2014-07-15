@@ -39,7 +39,7 @@ abstract class AbstractAdapter
      * @return \Wave\Database\Engine Current instance on success
      *        
      */
-    abstract public function prepare($query, $options);
+    abstract public function prepare($query, $options = array());
 
     /**
      * Returns the current prepared query

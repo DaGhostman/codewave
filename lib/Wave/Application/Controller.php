@@ -141,10 +141,10 @@ class Controller
     /**
      * Add a route object to the router
      * 
-     * @param \Wave\Route $route
+     * @param \Wave\Application\Route $route
      *            The Wave Route
      */
-    public function map(\Wave\Route $route)
+    public function map(\Wave\Application\Route $route)
     {
         $route->setPattern($route->getPattern());
         $this->routes[] = $route;
@@ -180,11 +180,11 @@ class Controller
      * 
      * @param string $name
      *            The route name
-     * @param \Wave\Route $route
+     * @param \Wave\Application\Route $route
      *            The route object
      * @throws \RuntimeException If a named route already exists with the same name
      */
-    public function addNamedRoute($name, \Wave\Route $route)
+    public function addNamedRoute($name, \Wave\Application\Route $route)
     {
         if ($this->hasNamedRoute($name)) {
             throw new \RuntimeException('Named route already exists with name: ' . $name);
