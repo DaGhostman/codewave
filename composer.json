@@ -24,7 +24,7 @@
             "role": "development"
         }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "autoload": {
         "psr-0": { "Wave\\": "lib" }
     }

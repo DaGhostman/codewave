@@ -109,8 +109,10 @@ class Template
 
     public function getDOM()
     {
-        return ($this->dom instanceof \DOMDocument ?
+        $this->dom = ($this->dom instanceof \DOMDocument ?
             $this->dom : new \DOMDocument());
+
+        return $this->dom;
     }
 
     /**
@@ -128,7 +130,7 @@ class Template
             libxml_use_internal_errors(true);
             $this->getDOM()->loadHTML($source);
             libxml_clear_errors();
-            return trim($this->dom->saveHTML());
+            return trim($this->getDOM()->saveHTML());
         } else {
             return trim($source);
         }
