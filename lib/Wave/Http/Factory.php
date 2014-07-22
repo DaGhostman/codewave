@@ -73,37 +73,18 @@ class Factory implements \ArrayAccess
     }
 
     /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to set
-     * @link http://php.net/manual/en/arrayaccess.offsetset.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to assign the value to.
-     *                      </p>
-     * @param mixed $value  <p>
-     *                      The value to set.
-     *                      </p>
-     *
-     * @return void
+     * @codeCoverageIgnore
      */
     public function offsetSet($offset, $value)
     {
-        return;
+
     }
 
     /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to unset
-     * @link http://php.net/manual/en/arrayaccess.offsetunset.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to unset.
-     *                      </p>
-     *
-     * @return void
+     * @codeCoverageIgnore
      */
     public function offsetUnset($offset)
     {
-        return;
+
     }
 }

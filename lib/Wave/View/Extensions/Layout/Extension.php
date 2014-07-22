@@ -11,7 +11,7 @@ namespace Wave\View\Extensions\Layout;
 
 class Extension
 {
-    private $callable = null;
+    private $callable = 'layout';
     protected $parent = null;
 
     public function __construct($parent)
@@ -27,6 +27,6 @@ class Extension
 
     public function __invoke($template)
     {
-        $this->parent->render($template);
+        return $this->parent->render($template);
     }
 }
