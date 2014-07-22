@@ -15,6 +15,7 @@ class Template
     private $ext = array();
 
     protected $dom = null;
+    protected $useDOM = true;
 
     /**
      * @param $template string Template file
@@ -24,7 +25,6 @@ class Template
     public function __construct($template, $path, $extension)
     {
         $this->template = sprintf("%s/%s.%s", $path, $template, $extension);
-        $this->dom = new \DOMDocument();
     }
 
     /**
@@ -42,6 +42,17 @@ class Template
         }
 
         return $value;
+    }
+
+    /**
+     * Enables\Disables the usage of \DOMDocument for
+     *      template processing.
+     *
+     * @param bool $switch Should use DOM
+     */
+    public function useDOM($switch = true)
+    {
+        $this->useDOM = $switch;
     }
 
     /**
@@ -76,7 +87,7 @@ class Template
     }
 
     /**
-     * @param $data array Assoc array to bulkly define the keys
+     * @param $data array Assoc array to mass-define the keys
      *
      * @return $this
      */
@@ -98,7 +109,8 @@ class Template
 
     public function getDOM()
     {
-        return $this->dom;
+        return ($this->dom instanceof \DOMDocument ?
+            $this->dom : new \DOMDocument());
     }
 
     /**
@@ -109,9 +121,13 @@ class Template
         ob_start();
         include('view://'.$this->template);
         $source = ob_get_clean();
-        //libxml_use_internal_errors(true);
-        if (true === ($dom = $this->dom->loadHTML($source))) {
-            //libxml_clear_errors();
+        if ($this->useDOM) {
+            /*
+             * @FIXME: Workaround for errors with
+             */
+            libxml_use_internal_errors(true);
+            $this->getDOM()->loadHTML($source);
+            libxml_clear_errors();
             return trim($this->dom->saveHTML());
         } else {
             return trim($source);
