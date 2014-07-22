@@ -14,6 +14,8 @@ class Template
     private $template = null;
     private $ext = array();
 
+    protected $dom = null;
+
     /**
      * @param $template string Template file
      * @param $path string Template directory
@@ -22,6 +24,7 @@ class Template
     public function __construct($template, $path, $extension)
     {
         $this->template = sprintf("%s/%s.%s", $path, $template, $extension);
+        $this->dom = new \DOMDocument();
     }
 
     /**
@@ -93,6 +96,11 @@ class Template
         $this->ext[$name] = $obj;
     }
 
+    public function getDOM()
+    {
+        return $this->dom;
+    }
+
     /**
      * @return string The template output
      */
@@ -100,6 +108,13 @@ class Template
     {
         ob_start();
         include('view://'.$this->template);
-        return ob_get_clean();
+        $source = ob_get_clean();
+        //libxml_use_internal_errors(true);
+        if (true === ($dom = $this->dom->loadHTML($source))) {
+            //libxml_clear_errors();
+            return trim($this->dom->saveHTML());
+        } else {
+            return trim($source);
+        }
     }
 }

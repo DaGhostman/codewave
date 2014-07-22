@@ -54,16 +54,27 @@ class EngineTest extends \PHPUnit_Framework_TestCase
         if (!file_exists('tests/small/ro/index.phtml')) {
             file_put_contents(
                 'tests/small/ro/index.phtml',
-                '<p>Hello, <?php echo $this->name; ?></p>'
+                '<!DOCTYPE html><html><body><p>Hello, <?php echo $this->name; ?></p></body></html>'
             );
         }
 
 
-        $this->expectOutputString("<p>Hello, Small and simple</p>");
+        $this->expectOutputString("<!DOCTYPE html>".PHP_EOL."<html><body><p>Hello, Small and simple</p></body></html>");
 
         print $engine->render('test::index');
 
         unlink('tests/small/ro/index.phtml');
+    }
+
+    public function testExtensionMagicCall()
+    {
+        $engine = new \Wave\View\Engine('./');
+        $obj = new \stdClass();
+        $obj->existing = true;
+        $engine->loadExtension('test', $obj);
+
+        $this->assertTrue($engine->ext('test')->existing);
+        $this->assertNull($engine->ext('non_exist'));
     }
 
     public function testExtensionRendering()
@@ -77,12 +88,12 @@ class EngineTest extends \PHPUnit_Framework_TestCase
         if (!file_exists('tests/small/ro/ext.phtml')) {
             file_put_contents(
                 'tests/small/ro/ext.phtml',
-                '<p>Hello, <?php echo $this->upper($this->name); ?></p>'
+                '<!DOCTYPE html><p>Hello, <?php echo $this->upper($this->name); ?></p>'
             );
         }
         $engine->name = "Small and simple";
 
-        $this->expectOutputString("<p>Hello, SMALL AND SIMPLE</p>");
+        $this->expectOutputString('<!DOCTYPE html>'.PHP_EOL.'<html><body><p>Hello, SMALL AND SIMPLE</p></body></html>');
 
         print $engine->render('test::ext');
 

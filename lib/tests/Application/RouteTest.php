@@ -30,22 +30,28 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-class LazyInitializeTestClass {
+class LazyInitializeTestClass
+{
     public static $initialized = false;
 
-    public function __construct() {
+    public function __construct()
+    {
         self::$initialized = true;
     }
 
-    public function foo() {
+    public function foo()
+    {
+
     }
 }
 
-class FooTestClass {
+class FooTestClass
+{
     public static $foo_invoked = false;
     public static $foo_invoked_args = array();
 
-    public function foo() {
+    public function foo()
+    {
         self::$foo_invoked = true;
         self::$foo_invoked_args = func_get_args();
     }
@@ -55,14 +61,18 @@ class RouteTest extends PHPUnit_Framework_TestCase
 {
     public function testGetPattern()
     {
-        $route = new \Wave\Application\Route('/foo', function () {});
+        $route = new \Wave\Application\Route('/foo', function () {
+            return;
+        });
 
         $this->assertEquals('/foo', $route->getPattern());
     }
 
     public function testGetName()
     {
-        $route = new \Wave\Application\Route('/foo', function () {});
+        $route = new \Wave\Application\Route('/foo', function () {
+            return;
+        });
 
         $property = new \ReflectionProperty($route, 'name');
         $property->setAccessible(true);
@@ -73,7 +83,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testSetName()
     {
-        $route = new \Wave\Application\Route('/foo', function () {});
+        $route = new \Wave\Application\Route('/foo', function () {
+            return;
+        });
         $route->name('foo'); // <-- Alias for `setName()`
 
         $this->assertAttributeEquals('foo', 'name', $route);
@@ -144,7 +156,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testGetParams()
     {
-        $route = new \Wave\Application\Route('/hello/:first/:last', function () {});
+        $route = new \Wave\Application\Route('/hello/:first/:last', function () {
+            return;
+        });
         $route->matches('/hello/mr/anderson'); // <-- Parses params from argument
 
         $this->assertEquals(array(
@@ -155,7 +169,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testSetParams()
     {
-        $route = new \Wave\Application\Route('/hello/:first/:last', function () {});
+        $route = new \Wave\Application\Route('/hello/:first/:last', function () {
+            return;
+        });
         $route->matches('/hello/mr/anderson'); // <-- Parses params from argument
         $route->setParams(array(
             'first' => 'agent',
@@ -170,7 +186,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testGetParam()
     {
-        $route = new \Wave\Application\Route('/hello/:first/:last', function () {});
+        $route = new \Wave\Application\Route('/hello/:first/:last', function () {
+            return;
+        });
 
         $property = new \ReflectionProperty($route, 'params');
         $property->setAccessible(true);
@@ -186,7 +204,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('InvalidArgumentException');
 
-        $route = new \Wave\Application\Route('/hello/:first/:last', function () {});
+        $route = new \Wave\Application\Route('/hello/:first/:last', function () {
+            return;
+        });
 
         $property = new \ReflectionProperty($route, 'params');
         $property->setAccessible(true);
@@ -200,7 +220,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testSetParam()
     {
-        $route = new \Wave\Application\Route('/hello/:first/:last', function () {});
+        $route = new \Wave\Application\Route('/hello/:first/:last', function () {
+            return;
+        });
         $route->matches('/hello/mr/anderson'); // <-- Parses params from argument
         $route->setParam('last', 'smith');
 
@@ -214,28 +236,36 @@ class RouteTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('InvalidArgumentException');
 
-        $route = new \Wave\Application\Route('/hello/:first/:last', function () {});
+        $route = new \Wave\Application\Route('/hello/:first/:last', function () {
+            return;
+        });
         $route->matches('/hello/mr/anderson'); // <-- Parses params from argument
         $route->setParam('middle', 'smith'); // <-- Should trigger InvalidArgumentException
     }
 
     public function testMatches()
     {
-        $route = new \Wave\Application\Route('/hello/:name', function () {});
+        $route = new \Wave\Application\Route('/hello/:name', function () {
+            return;
+        });
 
         $this->assertTrue($route->matches('/hello/josh'));
     }
 
     public function testMatchesIsFalse()
     {
-        $route = new \Wave\Application\Route('/foo', function () {});
+        $route = new \Wave\Application\Route('/foo', function () {
+            return;
+        });
 
         $this->assertFalse($route->matches('/bar'));
     }
 
     public function testMatchesPatternWithTrailingSlash()
     {
-        $route = new \Wave\Application\Route('/foo/', function () {});
+        $route = new \Wave\Application\Route('/foo/', function () {
+            return;
+        });
 
         $this->assertTrue($route->matches('/foo/'));
         $this->assertTrue($route->matches('/foo'));
@@ -243,7 +273,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testMatchesPatternWithoutTrailingSlash()
     {
-        $route = new \Wave\Application\Route('/foo', function () {});
+        $route = new \Wave\Application\Route('/foo', function () {
+            return;
+        });
 
         $this->assertFalse($route->matches('/foo/'));
         $this->assertTrue($route->matches('/foo'));
@@ -251,7 +283,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testMatchesWithConditions()
     {
-        $route = new \Wave\Application\Route('/hello/:first/and/:second', function () {});
+        $route = new \Wave\Application\Route('/hello/:first/and/:second', function () {
+            return;
+        });
         $route->conditions(array(
             'first' => '[a-zA-Z]{3,}'
         ));
@@ -261,7 +295,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testMatchesWithConditionsIsFalse()
     {
-        $route = new \Wave\Application\Route('/hello/:first/and/:second', function () {});
+        $route = new \Wave\Application\Route('/hello/:first/and/:second', function () {
+            return;
+        });
         $route->conditions(array(
             'first' => '[a-z]{3,}'
         ));
@@ -279,7 +315,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
     public function testMatchesWithValidRfc2396PathComponent()
     {
         $symbols = ':@&=$,';
-        $route = new \Wave\Application\Route('/rfc2386/:symbols', function () {});
+        $route = new \Wave\Application\Route('/rfc2386/:symbols', function () {
+            return;
+        });
 
         $this->assertTrue($route->matches('/rfc2386/' . $symbols));
     }
@@ -292,7 +330,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
     public function testMatchesWithUnreservedMarks()
     {
         $marks = "-_.!~*'()";
-        $route = new \Wave\Application\Route('/marks/:marks', function () {});
+        $route = new \Wave\Application\Route('/marks/:marks', function () {
+            return;
+        });
 
         $this->assertTrue($route->matches('/marks/' . $marks));
     }
@@ -301,36 +341,48 @@ class RouteTest extends PHPUnit_Framework_TestCase
     {
         $pattern = '/archive/:year(/:month(/:day))';
 
-        $route1 = new \Wave\Application\Route($pattern, function () {});
+        $route1 = new \Wave\Application\Route($pattern, function () {
+            return;
+        });
         $this->assertTrue($route1->matches('/archive/2010'));
         $this->assertEquals(array('year' => '2010'), $route1->getParams());
 
-        $route2 = new \Wave\Application\Route($pattern, function () {});
+        $route2 = new \Wave\Application\Route($pattern, function () {
+            return;
+        });
         $this->assertTrue($route2->matches('/archive/2010/05'));
         $this->assertEquals(array('year' => '2010', 'month' => '05'), $route2->getParams());
 
-        $route3 = new \Wave\Application\Route($pattern, function () {});
+        $route3 = new \Wave\Application\Route($pattern, function () {
+            return;
+        });
         $this->assertTrue($route3->matches('/archive/2010/05/13'));
         $this->assertEquals(array('year' => '2010', 'month' => '05', 'day' => '13'), $route3->getParams());
     }
 
     public function testMatchesIsCaseSensitiveByDefault()
     {
-        $route = new \Wave\Application\Route('/case/sensitive', function () {});
+        $route = new \Wave\Application\Route('/case/sensitive', function () {
+            return;
+        });
         $this->assertTrue($route->matches('/case/sensitive'));
         $this->assertFalse($route->matches('/CaSe/SensItiVe'));
     }
 
     public function testMatchesCanBeCaseInsensitive()
     {
-        $route = new \Wave\Application\Route('/Case/Insensitive', function () {}, false);
+        $route = new \Wave\Application\Route('/Case/Insensitive', function () {
+            return;
+        }, false);
         $this->assertTrue($route->matches('/Case/Insensitive'));
         $this->assertTrue($route->matches('/CaSe/iNSensItiVe'));
     }
 
     public function testGetConditions()
     {
-        $route = new \Wave\Application\Route('/foo', function () {});
+        $route = new \Wave\Application\Route('/foo', function () {
+            return;
+        });
 
         $property = new \ReflectionProperty($route, 'conditions');
         $property->setAccessible(true);
@@ -373,7 +425,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
         $staticProperty->setValue(array(
             'id' => '\d+'
         ));
-        $route = new \Wave\Application\Route('/foo', function () {});
+        $route = new \Wave\Application\Route('/foo', function () {
+            return;
+        });
 
         $this->assertAttributeEquals(array(
             'id' => '\d+'
@@ -382,7 +436,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testMatchesWildcard()
     {
-        $route = new \Wave\Application\Route('/hello/:path+/world', function () {});
+        $route = new \Wave\Application\Route('/hello/:path+/world', function () {
+            return;
+        });
 
         $this->assertTrue($route->matches('/hello/foo/bar/world'));
         $this->assertAttributeEquals(array(
@@ -392,7 +448,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testMatchesMultipleWildcards()
     {
-        $route = new \Wave\Application\Route('/hello/:path+/world/:date+', function () {});
+        $route = new \Wave\Application\Route('/hello/:path+/world/:date+', function () {
+            return;
+        });
 
         $this->assertTrue($route->matches('/hello/foo/bar/world/2012/03/10'));
         $this->assertAttributeEquals(array(
@@ -403,7 +461,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testMatchesParamsAndWildcards()
     {
-        $route = new \Wave\Application\Route('/hello/:path+/world/:year/:month/:day/:path2+', function () {});
+        $route = new \Wave\Application\Route('/hello/:path+/world/:year/:month/:day/:path2+', function () {
+            return;
+        });
 
         $this->assertTrue($route->matches('/hello/foo/bar/world/2012/03/10/first/second'));
         $this->assertAttributeEquals(array(
@@ -417,7 +477,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testMatchesParamsWithOptionalWildcard()
     {
-        $route = new \Wave\Application\Route('/hello(/:foo(/:bar+))', function () {});
+        $route = new \Wave\Application\Route('/hello(/:foo(/:bar+))', function () {
+            return;
+        });
 
         $this->assertTrue($route->matches('/hello'));
         $this->assertTrue($route->matches('/hello/world'));
@@ -429,7 +491,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testSetHttpMethods()
     {
-        $route = new \Wave\Application\Route('/foo', function () {});
+        $route = new \Wave\Application\Route('/foo', function () {
+            return;
+        });
         $route->setHttpMethods('GET', 'POST');
 
         $this->assertAttributeEquals(array('GET', 'POST'), 'methods', $route);
@@ -437,7 +501,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testGetHttpMethods()
     {
-        $route = new \Wave\Application\Route('/foo', function () {});
+        $route = new \Wave\Application\Route('/foo', function () {
+            return;
+        });
 
         $property = new \ReflectionProperty($route, 'methods');
         $property->setAccessible(true);
@@ -448,7 +514,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testAppendHttpMethods()
     {
-        $route = new \Wave\Application\Route('/foo', function () {});
+        $route = new \Wave\Application\Route('/foo', function () {
+            return;
+        });
 
         $property = new \ReflectionProperty($route, 'methods');
         $property->setAccessible(true);
@@ -461,7 +529,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testAppendHttpMethodsWithVia()
     {
-        $route = new \Wave\Application\Route('/foo', function () {});
+        $route = new \Wave\Application\Route('/foo', function () {
+            return;
+        });
         $route->via('PUT');
 
         $this->assertAttributeContains('PUT', 'methods', $route);
@@ -469,7 +539,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testSupportsHttpMethod()
     {
-        $route = new \Wave\Application\Route('/foo', function () {});
+        $route = new \Wave\Application\Route('/foo', function () {
+            return;
+        });
 
         $property = new \ReflectionProperty($route, 'methods');
         $property->setAccessible(true);
@@ -485,7 +557,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
     public function testDispatch()
     {
         $this->expectOutputString('Hello josh');
-        $route = new \Wave\Application\Route('/hello/:name', function ($name) { echo "Hello $name"; });
+        $route = new \Wave\Application\Route('/hello/:name', function ($name) {
+            echo "Hello $name";
+        });
         $route->matches('/hello/josh'); //<-- Extracts params from resource URI
         $route->dispatch();
     }

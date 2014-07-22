@@ -2,11 +2,13 @@
 
 namespace Wave\View;
 
+use Wave\Pattern\Observer\Subject;
+
 /**
  * Class Engine
  * @package Wave\View
  */
-class Engine extends AbstractEngine
+class Engine extends Subject
 {
     protected $path = null;
     protected $templates = array();
@@ -55,6 +57,25 @@ class Engine extends AbstractEngine
     }
 
     /**
+     * Magic call method, for extensions
+     *
+     * @param $name string Name of the extension
+     * @param $args mixed extensions arguments
+     *
+     * @return mixed
+     */
+    public function __call($name, $args)
+    {
+        if ('ext' === strtolower($name)) {
+            if (isset($this->extensions[$args[0]])) {
+                return $this->extensions[$args[0]];
+            }
+
+            return null;
+        }
+    }
+
+    /**
      * @param $name string Name of the extension
      * @param $extension callable an extension for the current viewer
      *
@@ -63,6 +84,14 @@ class Engine extends AbstractEngine
     public function loadExtension($name, $extension)
     {
         $this->extensions[$name] = $extension;
+
+
+        $this->state('extensionLoaded');
+        if (method_exists($extension, 'getCallable')) {
+            $this->notify($extension->getCallable());
+        } else {
+            $this->notify($name);
+        }
 
         return $this;
     }
