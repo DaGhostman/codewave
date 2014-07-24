@@ -308,7 +308,7 @@ class RouteTest extends PHPUnit_Framework_TestCase
     /*
      * Route should match URI with valid path component according to rfc2396
      *
-     * "Uniform Resource Identifiers (URI): Generic Syntax" http://www.ietf.org/rfc/rfc2396.txt
+     * "Uniform Resource Identifiers (URI): Generic Parser" http://www.ietf.org/rfc/rfc2396.txt
      *
      * Excludes "+" which is valid but decodes into a space character
      */
@@ -325,7 +325,7 @@ class RouteTest extends PHPUnit_Framework_TestCase
     /*
      * Route should match URI including unreserved punctuation marks from rfc2396
      *
-     * "Uniform Resource Identifiers (URI): Generic Syntax" http://www.ietf.org/rfc/rfc2396.txt
+     * "Uniform Resource Identifiers (URI): Generic Parser" http://www.ietf.org/rfc/rfc2396.txt
      */
     public function testMatchesWithUnreservedMarks()
     {
