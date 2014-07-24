@@ -52,31 +52,23 @@ class Loader extends Subject
     protected $config = null;
 
     /**
+     * View engine
+     */
+    protected $view = null;
+
+    /**
      * Constructs the Loader class and injects an array with dependencies
      * for the application.
      * After the instantiation only the containers
      * for Environment and Controller are available.
      *
      * @param mixed $config
-     *            Zend_Config instance or array with configurations
+     *            array|Zend_Config instance or array with configurations
      *
-     * @param string $directory The user-land code for the application
-     *
-     * @param mixed $routes Zend_Config instance or array with route definitions
+     * @param mixed $routes array|Zend_Config instance or array with route definitions
      */
-    public function __construct($config = array(), $directory = '../app', $routes = array())
+    public function __construct($config = array(), $routes = array())
     {
-        if (!defined("APPLICATION_PATH")) {
-            define("APPLICATION_PATH", realpath($directory) . DIRECTORY_SEPARATOR);
-        }
-
-        if ($config instanceof \Zend_Config) {
-            $config = $config->toArray();
-        }
-
-        if ($routes instanceof \Zend_Config) {
-            $routes = $routes->toArray();
-        }
 
         $this->config = new Registry(array(
             "mutable" => false,
@@ -85,8 +77,6 @@ class Loader extends Subject
         ));
 
         $env = array(
-            'request.protocol' => (isset($_SERVER['SERVER_PROTOCOL']) ?
-                    $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1'),
             'request.port' => (isset($_SERVER['SERVER_PORT']) ?
                     $_SERVER['SERVER_PORT'] : 80),
             'request.uri' => (isset($_SERVER['REQUEST_URI']) ?
@@ -95,21 +85,18 @@ class Loader extends Subject
                     $_SERVER['REQUEST_METHOD'] : 'GET')
         );
 
-        if (isset($config['environment'])) {
-            $env = array_merge($env, $config['environment']);
-        }
-
 
         $this->controller = new Controller();
         $this->environement = new Registry(array(
             'mutable' => true,
             'override' => false,
-            'data' => $env
+            'data' => array_merge($env, $config['environment'])
         ));
 
 
         foreach ($routes as $route) {
-            $r = $this->map($route["pattern"], $route['callback']);
+
+            $r = $this->map($route['pattern'], $route['callback']);
             call_user_func_array(array($r, 'via'), $route['method']);
 
             if (isset($route['name']) && $route['name'] != null) {
@@ -132,6 +119,11 @@ class Loader extends Subject
         );
 
         $this->state('httpAfter')->notify($this->environement);
+    }
+
+    public function setView($viewer)
+    {
+        $this->view = $viewer;
     }
 
     /**

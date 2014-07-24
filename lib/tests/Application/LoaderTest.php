@@ -233,7 +233,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
                 'request.method' => 'GET'
             ),
             'debug' => true
-        ), '../app', array(array(
+        ), array(array(
             'pattern' => '/:bar',
             'callback' => '\Tests\StubController:stubAction',
             'method' => array('GET'),
@@ -336,5 +336,14 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         });
         
         $loader->run();
+    }
+
+    public function testViewerAssign()
+    {
+        $app = new Loader(array('environment' => array()));
+        $app->setView(new \stdClass());
+
+        $this->assertInstanceOf('\stdClass', $app->view);
+        $this->assertInstanceOf('\stdClass', $app->view());
     }
 }
