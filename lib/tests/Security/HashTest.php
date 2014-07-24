@@ -89,5 +89,11 @@ class HashTest extends \PHPUnit_Framework_TestCase
     {
         $h = new \Wave\Security\Hash();
         $h->hash('password');
+
+        define('PHALANGER', true);
+        $obj = new \Wave\Security\Hash();
+
+        $this->assertEquals(60, strlen($obj->hash('simple')));
     }
+
 }

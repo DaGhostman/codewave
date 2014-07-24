@@ -85,6 +85,7 @@ class Hash
         return $result;
     }
 
+
     /**
      * Generates a salt from one of the following sources
      *      mcrypt, /dev/urandom or mt_rand()
