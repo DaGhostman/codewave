@@ -41,7 +41,7 @@ class Template
             $value = $this->data[$key];
         }
 
-        return $value;
+        return htmlspecialchars($value);
     }
 
     /**
@@ -109,8 +109,9 @@ class Template
 
     public function getDOM()
     {
-        $this->dom = ($this->dom instanceof \DOMDocument ?
-            $this->dom : new \DOMDocument());
+        if (!$this->dom instanceof \DOMDocument) {
+            $this->dom = new \DOMDocument();
+        }
 
         return $this->dom;
     }
