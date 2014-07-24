@@ -12,6 +12,7 @@
                 <directory prefix="Abstract">.</directory>
                 <directory prefix="">lib/Wave/Application/State</directory>
                 <directory suffix="Observer.php">lib/Wave/Application/Observers</directory>
+                <directory suffix="Stream.php">lib/Wave/View</directory>
             </exclude>
         </whitelist>
     </filter>
