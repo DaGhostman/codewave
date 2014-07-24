@@ -8,7 +8,10 @@
 
 namespace Wave\View\Parser;
 
-
+/**
+ * Class General
+ * @package Wave\View\Parser
+ */
 class General
 {
     protected $ext = array();
@@ -44,6 +47,11 @@ class General
         return $this;
     }
 
+    /**
+     * @param $doc
+     *
+     * @return mixed
+     */
     public function parse($doc)
     {
         $pattern = '/<!--(.*)-->/Ui';
@@ -52,7 +60,7 @@ class General
         foreach ($matches as $match) {
             preg_match('/(extension|filter)\:([a-z]{1,})\s*\(([^\)]*)\)/i', trim($match[1]), $components);
 
-            @list(, $type, $component, $args)=$components;
+            list(, $type, $component, $args)=$components;
             $args = (!empty($args) ? $args : '');
             preg_match_all('/([^=]+)=([^=]+)(?:,|$)/i', trim($args), $pairs, PREG_SET_ORDER);
             $arguments = array();
@@ -86,6 +94,12 @@ class General
         return $doc;
     }
 
+    /**
+     * @param       $name
+     * @param array $args
+     *
+     * @return bool
+     */
     public function callExtension($name, $args = array())
     {
         if (array_key_exists($name, $this->ext)) {
@@ -95,6 +109,12 @@ class General
         return false;
     }
 
+    /**
+     * @param       $name
+     * @param array $args
+     *
+     * @return mixed
+     */
     public function callFilter($name, $args = array())
     {
         return $this->filters[$name]($args);

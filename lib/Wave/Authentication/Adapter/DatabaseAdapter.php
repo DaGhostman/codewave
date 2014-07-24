@@ -1,6 +1,12 @@
 <?php
 namespace Wave\Authentication\Adapter;
 
+use Wave\Database\Engine;
+
+/**
+ * Class DatabaseAdapter
+ * @package Wave\Authentication\Adapter
+ */
 class DatabaseAdapter extends AbstractAdapter
 {
 
@@ -30,18 +36,20 @@ class DatabaseAdapter extends AbstractAdapter
     /**
      * Injects the database handler in to the authentication adapter
      *
-     * @param \Wave\Database\Engine $db
+     * @param Engine $database
      *            The database handler
      * @return object Current instances
      * @throws \InvalidArgumentException
      */
-    public function setDatabase($db)
+    public function setDatabase($database)
     {
-        if (! $db instanceof \Wave\Database\Engine) {
-            throw new \InvalidArgumentException("Expected instance of Wave\Database\Engine");
+        if (! $database instanceof Engine) {
+            throw new \InvalidArgumentException(
+                "Expected instance of Wave\\Database\\Engine"
+            );
         }
         
-        $this->database = $db;
+        $this->database = $database;
         
         return $this;
     }
@@ -51,9 +59,9 @@ class DatabaseAdapter extends AbstractAdapter
      * 
      * @see \Wave\Authentication\Adapter\AbstractAdapter::get()
      */
-    public function get($auth_string)
+    public function get($authString)
     {
-        list ($credential, $secret) = explode('[:]', $auth_string);
+        list ($credential, $secret) = explode('[:]', $authString);
         
         $condition = "%s = :credential AND %s = :secret";
         

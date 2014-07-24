@@ -13,19 +13,6 @@ class Response
     );
     
     /**
-     * This is to make sure that the Status codes are being sent 
-     * correctyl and understood correctly by the browser.
-     * 
-     * @param string $protocol The protocol currently in use
-     */
-    public function __construct($protocol = null)
-    {
-        if ($protocol !== null) {
-            $this->protocol = $protocol;
-        }
-    }
-    
-    /**
      * Redirects the client to the location.
      *
      * @param string $location

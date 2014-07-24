@@ -22,12 +22,12 @@ abstract class AbstractProvider
     /**
      * Returns the identity as container instance
      */
-    abstract public function getIndentity();
+    abstract public function getIdentity();
 
     /**
      * Do the authentication
      */
-    abstract public function authenticate($creadential, $secret);
+    abstract public function authenticate($credential, $secret);
 
     /**
      * Validates the authentication tokens with the $callback

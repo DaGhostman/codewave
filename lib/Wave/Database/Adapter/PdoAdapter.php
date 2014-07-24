@@ -1,8 +1,6 @@
 <?php
 namespace Wave\Database\Adapter;
 
-use \Wave\Database\Adapter\AbstractAdapter;
-
 class PdoAdapter extends AbstractAdapter
 {
 
@@ -39,14 +37,12 @@ class PdoAdapter extends AbstractAdapter
      *            'username' (Optional) Username
      *            'password' (Optional) Password
      *            'port' (Optional) Port to use when connecting
-     *            
-     * @param array $options
-     *            Array with valid PDO options
+     *
      *            
      * @throws \InvalidArgumentException
      *
      */
-    public function __construct($config, $options = array())
+    public function __construct($config)
     {
         foreach ($config as $key => $value) {
             $$key = $value;
@@ -143,6 +139,8 @@ class PdoAdapter extends AbstractAdapter
      *            Array of prepared values
      * @see PDO::execute
      * @throws \RuntimeException
+     *
+     * @return mixed
      */
     public function execute($params = array())
     {
@@ -162,7 +160,7 @@ class PdoAdapter extends AbstractAdapter
     {
         $this->connect();
         if ($this->stmt == null || !method_exists($this->stmt, 'fetch')) {
-            throw new \RuntimeException("No statement prepared for exectution");
+            throw new \RuntimeException("No statement prepared for execution");
         }
         return $this->stmt->fetch();
     }
@@ -180,8 +178,10 @@ class PdoAdapter extends AbstractAdapter
     /**
      * Returns the last inserted ID
      *
+     * @param $name mixed
      * @return int The ID of the last insert
      * @see \PDO::lastInsertId
+     *
      */
     public function lastInsertId($name = null)
     {

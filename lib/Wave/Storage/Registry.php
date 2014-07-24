@@ -15,6 +15,9 @@ class Registry implements \Countable, \Serializable, \ArrayAccess
 
     protected $name = null;
 
+    /**
+     * @param array $options
+     */
     public function __construct($options = array())
     {
         $this->mutable = (isset($options['mutable']) ?
@@ -29,6 +32,13 @@ class Registry implements \Countable, \Serializable, \ArrayAccess
         }
     }
 
+    /**
+     * @param $key
+     * @param $value
+     *
+     * @return null
+     * @throws \RuntimeException
+     */
     public function set($key, $value)
     {
         if ($this->mutable) {
@@ -36,7 +46,7 @@ class Registry implements \Countable, \Serializable, \ArrayAccess
                 $this->storage[$key] = $value;
             } else {
                 if (isset($this->storage[$key])) {
-                    return false;
+                    return;
                 }
 
                 $this->storage[$key] = $value;
@@ -46,6 +56,11 @@ class Registry implements \Countable, \Serializable, \ArrayAccess
         }
     }
 
+    /**
+     * @param $key
+     *
+     * @throws \RuntimeException
+     */
     public function remove($key)
     {
         if ($this->isMutable()) {
@@ -55,6 +70,11 @@ class Registry implements \Countable, \Serializable, \ArrayAccess
         }
     }
 
+    /**
+     * @param $key
+     *
+     * @return null
+     */
     public function get($key)
     {
         if (!array_key_exists($key, $this->storage)) {
@@ -65,26 +85,43 @@ class Registry implements \Countable, \Serializable, \ArrayAccess
         return $this->storage[$key];
     }
 
+    /**
+     * @param $key
+     *
+     * @return bool
+     */
     public function exists($key)
     {
         return array_key_exists($key, $this->storage);
     }
 
+    /**
+     * @return bool
+     */
     public function isMutable()
     {
         return $this->mutable;
     }
 
+    /**
+     * @return bool
+     */
     public function isOverridable()
     {
         return $this->override;
     }
 
+    /**
+     * @return int
+     */
     public function count()
     {
         return count($this->storage);
     }
 
+    /**
+     * @return string
+     */
     public function serialize()
     {
         return serialize(array(
@@ -94,6 +131,9 @@ class Registry implements \Countable, \Serializable, \ArrayAccess
         ));
     }
 
+    /**
+     * @param string $data
+     */
     public function unserialize($data)
     {
         foreach (unserialize($data) as $key => $value) {
@@ -101,41 +141,75 @@ class Registry implements \Countable, \Serializable, \ArrayAccess
         }
     }
 
+    /**
+     * @param mixed $key
+     *
+     * @return bool
+     */
     public function offsetExists($key)
     {
         return $this->exists($key);
     }
 
+    /**
+     * @param mixed $key
+     * @param mixed $value
+     */
     public function offsetSet($key, $value)
     {
         $this->set($key, $value);
     }
 
+    /**
+     * @param mixed $key
+     *
+     * @return mixed|null
+     */
     public function offsetGet($key)
     {
         return $this->get($key);
     }
 
+    /**
+     * @param mixed $key
+     */
     public function offsetUnset($key)
     {
         $this->remove($key);
     }
 
+    /**
+     * @param $key
+     *
+     * @return bool
+     */
     public function __isset($key)
     {
         return $this->exists($key);
     }
 
+    /**
+     * @param $key
+     * @param $value
+     */
     public function __set($key, $value)
     {
         $this->set($key, $value);
     }
 
+    /**
+     * @param $key
+     *
+     * @return null
+     */
     public function __get($key)
     {
         return $this->get($key);
     }
 
+    /**
+     * @param $key
+     */
     public function __unset($key)
     {
         $this->remove($key);

@@ -8,7 +8,10 @@
 
 namespace Wave\View\Extensions\HTML\Components;
 
-
+/**
+ * Class Script
+ * @package Wave\View\Extensions\HTML\Components
+ */
 class Script
 {
     protected $content = '';
@@ -16,12 +19,19 @@ class Script
 
     protected $doc = null;
 
+    /**
+     * @param       $doc
+     * @param array $options
+     */
     public function __construct($doc, $options = array())
     {
         $this->doc = $doc;
         $this->options = $options;
     }
 
+    /**
+     * @return mixed
+     */
     public function getScript()
     {
         $doc = $this->doc;

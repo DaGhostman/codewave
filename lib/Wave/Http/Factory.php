@@ -1,6 +1,10 @@
 <?php
 namespace Wave\Http;
 
+/**
+ * Class Factory
+ * @package Wave\Http
+ */
 class Factory implements \ArrayAccess
 {
 

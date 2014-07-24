@@ -70,11 +70,13 @@ class Template
         if (array_key_exists($method, $this->ext)) {
             return call_user_func_array($this->ext[$method], $args);
         }
+
+        return null;
     }
 
     /**
-     * @param $key The key used in the template
-     * @param $value The value for it
+     * @param $key string, The key used in the template
+     * @param $value mixed The value for it
      *
      * @return $this
      *
@@ -107,6 +109,9 @@ class Template
         $this->ext[$name] = $obj;
     }
 
+    /**
+     * @return \DOMDocument
+     */
     public function getDOM()
     {
         if (!$this->dom instanceof \DOMDocument) {

@@ -12,11 +12,11 @@ abstract class AbstractAdapter
 {
 
     /**
-     * Gets the identity reccord from the database.
+     * Gets the identity record from the database.
      *
-     * @param string $auth_string
-     *            Concated authentication string.
-     * @return array Array containing the identity of the reccord
+     * @param string $authString
+     *            Concatenated authentication string.
+     * @return array Array containing the identity of the record
      */
-    abstract public function get($auth_string);
+    abstract public function get($authString);
 }

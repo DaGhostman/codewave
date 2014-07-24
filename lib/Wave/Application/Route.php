@@ -340,7 +340,7 @@ class Route
     /**
      * Append supported HTTP methods (alias for Route::appendHttpMethods)
      * 
-     * @return \Wave\Route
+     * @return Route
      */
     public function via()
     {
@@ -411,23 +411,23 @@ class Route
      * Convert a URL parameter (e.g.
      * ":id", ":id+") into a regular expression
      * 
-     * @param array $m
+     * @param array $match
      *            URL parameters
      * @return string Regular expression for URL parameter
      */
-    protected function matchesCallback($m)
+    protected function matchesCallback($match)
     {
-        $this->paramNames[] = $m[1];
-        if (isset($this->conditions[$m[1]])) {
-            return '(?P<' . $m[1] . '>' . $this->conditions[$m[1]] . ')';
+        $this->paramNames[] = $match[1];
+        if (isset($this->conditions[$match[1]])) {
+            return '(?P<' . $match[1] . '>' . $this->conditions[$match[1]] . ')';
         }
-        if (substr($m[0], - 1) === '+') {
-            $this->paramNamesPath[$m[1]] = 1;
+        if (substr($match[0], - 1) === '+') {
+            $this->paramNamesPath[$match[1]] = 1;
             
-            return '(?P<' . $m[1] . '>.+)';
+            return '(?P<' . $match[1] . '>.+)';
         }
         
-        return '(?P<' . $m[1] . '>[^/]+)';
+        return '(?P<' . $match[1] . '>[^/]+)';
     }
 
     /**
@@ -435,7 +435,7 @@ class Route
      * 
      * @param string $name
      *            The name of the route
-     * @return \Wave\Route
+     * @return Route
      */
     public function name($name)
     {
@@ -449,7 +449,7 @@ class Route
      * 
      * @param array $conditions
      *            Key-value array of URL parameter conditions
-     * @return \Wave\Route
+     * @return Route
      */
     public function conditions(array $conditions)
     {

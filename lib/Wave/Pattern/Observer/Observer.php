@@ -1,7 +1,6 @@
 <?php
 namespace Wave\Pattern\Observer;
 
-use \Wave\Pattern\Observer\Subject;
 
 /**
  *
@@ -28,7 +27,7 @@ class Observer
      * @method __construct
      * @access public
      *        
-     * @param
+     * @param Subject $subject The subject to be observed
      *            \Wave\Pattern\Observer\Subject The subject of observation
      * @throws \InvalidArgumentException Invalid subject specified
      */
@@ -39,19 +38,13 @@ class Observer
 
     /**
      *
-     *
-     *
-     *
-     *
-     * Triggeres the handlers for the current state
+     * Triggers the handlers for the current state
      * of the subject. Passes all arguments to the
      * handlers with <em>call_user_func_array</em>
      *
      * @method update
      * @access public
-     *        
-     * @param mixed $argv
-     *            all params to pass to the handlers
+     *
      * @return object Current object for chaining
      */
     public function update()

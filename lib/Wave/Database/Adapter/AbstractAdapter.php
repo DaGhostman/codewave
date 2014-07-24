@@ -62,10 +62,11 @@ abstract class AbstractAdapter
     /**
      * Returns the last inserted ID
      *
+     * @param $name mixed
      * @return int The ID of the last insert
      * @see \PDO::lastInsertId
      */
-    abstract public function lastInsertid($name);
+    abstract public function lastInsertId($name);
 
     /**
      * Fethces the first result that matches

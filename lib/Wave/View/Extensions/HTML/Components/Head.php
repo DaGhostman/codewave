@@ -8,7 +8,10 @@
 
 namespace Wave\View\Extensions\HTML\Components;
 
-
+/**
+ * Class Head
+ * @package Wave\View\Extensions\HTML\Components
+ */
 class Head
 {
     protected $meta = array();
@@ -22,6 +25,13 @@ class Head
 
     protected $content = '';
 
+    /**
+     * @param       $title
+     * @param array $meta
+     * @param array $link
+     * @param array $script
+     * @param null  $custom
+     */
     public function __construct(
         $title,
         $meta = array(),
@@ -49,6 +59,11 @@ class Head
         $this->doc = new \DOMDocument();
     }
 
+    /**
+     * @param $args
+     *
+     * @return $this
+     */
     public function addMeta($args)
     {
         array_push($this->meta, $args);
@@ -56,6 +71,12 @@ class Head
         return $this;
     }
 
+    /**
+     * @param $tag
+     * @param $args
+     *
+     * @return $this
+     */
     public function addCustom($tag, $args)
     {
         $this->custom[$tag] = $args;
@@ -63,6 +84,11 @@ class Head
         return $this;
     }
 
+    /**
+     * @param $args
+     *
+     * @return $this
+     */
     public function addLink($args)
     {
         array_push($this->link, $args);
@@ -70,6 +96,11 @@ class Head
         return $this;
     }
 
+    /**
+     * @param $args
+     *
+     * @return $this
+     */
     public function addScript($args)
     {
         array_push($this->script, $args);
@@ -77,7 +108,13 @@ class Head
         return $this;
     }
 
-
+    /**
+     * @param        $name
+     * @param        $args
+     * @param string $value
+     *
+     * @return \DOMElement
+     */
     public function generateTag($name, $args, $value = '')
     {
 
@@ -93,6 +130,9 @@ class Head
         return $element;
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         $doc = $this->doc;

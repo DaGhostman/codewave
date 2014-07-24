@@ -100,14 +100,14 @@ class Hash
             }
 
             if (is_readable('/dev/urandom')) {
-                $fp = fopen('/dev/urandom', 'r');
+                $filePointer = fopen('/dev/urandom', 'r');
                 $buffer = null;
 
                 while ($this->strlen($buffer) < 16) {
-                    $buffer .= fread($fp, 16 - $this->strlen($buffer));
+                    $buffer .= fread($filePointer, 16 - $this->strlen($buffer));
                 }
 
-                fclose($fp);
+                fclose($filePointer);
 
                 if ($this->strlen($buffer) >= 16) {
                     return $buffer;
@@ -124,6 +124,13 @@ class Hash
         return $buffer;
     }
 
+    /**
+     * Encodes a string
+     *
+     * @param $string string String to be encoded
+     *
+     * @return string
+     */
     public function encode($string)
     {
         $base64_digits =
@@ -169,6 +176,14 @@ class Hash
         return $result;
     }
 
+    /**
+     * Verify a hashed password against a hash
+     *
+     * @param $password
+     * @param $hash
+     *
+     * @return bool
+     */
     public function verify($password, $hash)
     {
         $result = crypt($password, $hash);

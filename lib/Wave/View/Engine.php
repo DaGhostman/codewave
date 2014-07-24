@@ -38,6 +38,10 @@ class Engine extends Subject
         }
     }
 
+    /**
+     * @param $key
+     * @param $value
+     */
     public function __set($key, $value)
     {
         $this->data[$key] = $value;
@@ -60,7 +64,7 @@ class Engine extends Subject
     }
 
     /**
-     * @param $parser object Parser for template syntax.
+     * @param $parser mixed Parser for template syntax.
      * @throws \InvalidArgumentException
      */
     public function setParser($parser)

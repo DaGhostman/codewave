@@ -41,6 +41,7 @@
  */
 namespace Wave\Application;
 
+
 /**
  * Router
  *
@@ -67,7 +68,8 @@ class Controller
 
     /**
      *
-     * @var array Lookup hash of named route objects, keyed by route name (lazy-loaded)
+     * @var array Lookup hash of named route objects,
+     *              keyed by route name (lazy-loaded)
      */
     protected $namedRoutes;
 
@@ -93,9 +95,10 @@ class Controller
     }
 
     /**
-     * Get Current Route object or the first matched one if matching has been performed
+     * Get Current Route object or the first matched one,
+     *            if matching has been performed
      * 
-     * @return \Wave\Route null
+     * @return Route null
      */
     public function getCurrentRoute()
     {
@@ -126,7 +129,8 @@ class Controller
         if ($reload || is_null($this->matchedRoutes)) {
             $this->matchedRoutes = array();
             foreach ($this->routes as $route) {
-                if (! $route->supportsHttpMethod($httpMethod) && ! $route->supportsHttpMethod("ANY")) {
+                if (! $route->supportsHttpMethod($httpMethod) &&
+                    ! $route->supportsHttpMethod("ANY")) {
                     continue;
                 }
                 
@@ -141,10 +145,10 @@ class Controller
     /**
      * Add a route object to the router
      * 
-     * @param \Wave\Application\Route $route
+     * @param Route $route
      *            The Wave Route
      */
-    public function map(\Wave\Application\Route $route)
+    public function map(Route $route)
     {
         $route->setPattern($route->getPattern());
         $this->routes[] = $route;
@@ -169,7 +173,11 @@ class Controller
         foreach ($params as $key => $value) {
             $search[] = '#:' . preg_quote($key, '#') . '\+?(?!\w)#';
         }
-        $pattern = preg_replace($search, $params, $this->getNamedRoute($name)->getPattern());
+        $pattern = preg_replace(
+            $search,
+            $params,
+            $this->getNamedRoute($name)->getPattern()
+        );
         
         // Remove remnants of unpopulated, trailing optional pattern segments, escaped special characters
         return preg_replace('#\(/?:.+\)|\(|\)|\\\\#', '', $pattern);
@@ -180,11 +188,12 @@ class Controller
      * 
      * @param string $name
      *            The route name
-     * @param \Wave\Application\Route $route
+     * @param Route $route
      *            The route object
-     * @throws \RuntimeException If a named route already exists with the same name
+     *
+*@throws \RuntimeException If a named route already exists with the same name
      */
-    public function addNamedRoute($name, \Wave\Application\Route $route)
+    public function addNamedRoute($name, Route $route)
     {
         if ($this->hasNamedRoute($name)) {
             throw new \RuntimeException('Named route already exists with name: ' . $name);
@@ -210,7 +219,8 @@ class Controller
      * Get named route
      * 
      * @param string $name            
-     * @return \Wave\Route null
+     *
+*@return Route null
      */
     public function getNamedRoute($name)
     {

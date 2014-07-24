@@ -1,8 +1,6 @@
 <?php
 namespace Wave\Pattern\Observer;
 
-use Wave\Pattern\Observer\Observer;
-
 /**
  *
  * @author phpAcorn <phpacorn@gmail.com>
@@ -93,8 +91,6 @@ class Subject
      *
      * @method notify
      * @access public
-     * @param mixed $params
-     *            Arguments to pass to each observer
      */
     public function notify()
     {
@@ -115,10 +111,8 @@ class Subject
      *
      * @method state
      * @access public
-     * @param string $method
-     *            The called method, namely <em>state</em>
-     * @param mixed $args
-     *            Arguments passed to the method, the new state
+     * @param string $state
+     *            The state of the object
      *            
      * @return mixed On success Object for chaining
      */

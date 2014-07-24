@@ -68,7 +68,7 @@ class BasicProvider extends AbstractProvider
         return false;
     }
 
-    public function getIndentity()
+    public function getIdentity()
     {
         return $this->identity;
     }

@@ -94,8 +94,7 @@ class GeneralTest extends \PHPUnit_Framework_TestCase
         $parser->register('extension', 'json', function ($data) {
             $json = $data['json'];
 
-            if (array_key_exists('version', $json) && array_key_exists('php', $json))
-            {
+            if (array_key_exists('version', $json) && array_key_exists('php', $json)) {
                 return true;
             }
         });

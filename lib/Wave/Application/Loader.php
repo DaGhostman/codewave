@@ -1,9 +1,9 @@
 <?php
 namespace Wave\Application;
 
-use \Wave\Http;
-use \Wave\Pattern\Observer\Subject;
-use \Wave\Application;
+use Wave\Application;
+use Wave\Http;
+use Wave\Pattern\Observer\Subject;
 use Wave\Storage\Registry;
 
 /**
@@ -19,7 +19,7 @@ class Loader extends Subject
     /**
      * Container for the Environment object
      * 
-     * @var \Wave\Application\Environment
+     * @var \Wave\Storage\Registry
      */
     protected $environment = null;
 
@@ -85,10 +85,14 @@ class Loader extends Subject
         ));
 
         $env = array(
-            'request.protocol' => (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1'),
-            'request.port' => (isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : 80),
-            'request.uri' => (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/'),
-            'request.method' => (isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET')
+            'request.protocol' => (isset($_SERVER['SERVER_PROTOCOL']) ?
+                    $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1'),
+            'request.port' => (isset($_SERVER['SERVER_PORT']) ?
+                    $_SERVER['SERVER_PORT'] : 80),
+            'request.uri' => (isset($_SERVER['REQUEST_URI']) ?
+                    $_SERVER['REQUEST_URI'] : '/'),
+            'request.method' => (isset($_SERVER['REQUEST_METHOD']) ?
+                    $_SERVER['REQUEST_METHOD'] : 'GET')
         );
 
         if (isset($config['environment'])) {
@@ -96,7 +100,7 @@ class Loader extends Subject
         }
 
 
-        $this->controller = new Application\Controller();
+        $this->controller = new Controller();
         $this->environement = new Registry(array(
             'mutable' => true,
             'override' => false,
@@ -124,7 +128,7 @@ class Loader extends Subject
 
         $this->http = new Http\Factory(
             new Http\Request($this->environement),
-            new Http\Response($this->environement['request.protocol'])
+            new Http\Response()
         );
 
         $this->state('httpAfter')->notify($this->environement);
@@ -146,7 +150,8 @@ class Loader extends Subject
 
     /**
      * @param string $name The variable name to access
-     * @param array $args the key of the value to retrieve, currently only useful for
+     * @param array $args the key of the value to retrieve,
+     *                    currently only useful for
      *                    when getting config options.
      *
      * @return mixed|null
@@ -154,6 +159,16 @@ class Loader extends Subject
     public function __call($name, $args = array())
     {
         $result = null;
+
+        $methods = array(
+            'get', 'head', 'post', 'put', 'delete', 'trace', 'connect', 'options'
+        );
+
+        if (in_array(strtolower($name), $methods)) {
+            $args = func_get_args();
+
+            return $this->mapRoute($args)->via(strtoupper($name));
+        }
 
         if (isset($this->$name)) {
             if (!empty($args)) {
@@ -196,140 +211,7 @@ class Loader extends Subject
      *****************************/
     
     
-    /**
-     * This method creates a route for GET requests with a pattern, which
-     * when is matched will call the $callback.
-     * In addition to the callables, $callback could also be
-     * a string containing '\Full\Class\Name:method'. This is
-     * as of the time of writing (10/06/2014) the specific
-     * controller/action syntax for Slim Framework,see documentation
-     * for information.
-     *
-     * @param string $pattern
-     *            Pattern for the route (See Docs)
-     * @param mixed $callback
-     *            Callback to fire when the pattern is matched
-     * @return \Wave\Application\Route
-     */
-    public function get()
-    {
-        $args = func_get_args();
-        
-        return $this->mapRoute($args)->via('GET', 'HEAD');
-    }
 
-    /**
-     * This method creates the route for POST requests
-     *
-     * @see \Wave\Application\Loader::get()
-     * @param string $pattern
-     *            Pattern for the route (See Docs)
-     * @param mixed $callback
-     *            Callback to fire when the pattern is matched
-     * @return \Wave\Route
-     */
-    public function post()
-    {
-        $args = func_get_args();
-        
-        return $this->mapRoute($args)->via('POST');
-    }
-
-    /**
-     * This method creates the route for PUT requests
-     *
-     * @see \Wave\Application\Loader::get()
-     * @param string $pattern
-     *            Pattern for the route (See Docs)
-     * @param mixed $callback
-     *            Callback to fire when the pattern is matched
-     * @return \Wave\Route
-     */
-    public function put()
-    {
-        $args = func_get_args();
-        
-        return $this->mapRoute($args)->via('PUT');
-    }
-
-    /**
-     * This method creates the route for DELETE requests
-     *
-     * @see \Wave\Application\Loader::get()
-     * @param string $pattern
-     *            Pattern for the route (See Docs)
-     * @param mixed $callback
-     *            Callback to fire when the pattern is matched
-     * @return \Wave\Route
-     */
-    public function delete()
-    {
-        $args = func_get_args();
-        
-        return $this->mapRoute($args)->via('DELETE');
-    }
-
-    /**
-     * This method creates the route for TRACE requests
-     *
-     * @see \Wave\Application\Loader::get()
-     * @param string $pattern
-     *            Pattern for the route (See Docs)
-     * @param mixed $callback
-     *            Callback to fire when the pattern is matched
-     * @return \Wave\Route
-     */
-    public function trace()
-    {
-        $args = func_get_args();
-        
-        return $this->mapRoute($args)->via('TRACE');
-    }
-
-    /**
-     * This method creates the route for CONNECT requests
-     *
-     * @see \Wave\Application\Loader::get()
-     * @param string $pattern
-     *            Pattern for the route (See Docs)
-     * @param mixed $callback
-     *            Callback to fire when the pattern is matched
-     * @return \Wave\Route
-     */
-    public function connect()
-    {
-        $args = func_get_args();
-        
-        return $this->mapRoute($args)->via('CONNECT');
-    }
-
-    /**
-     * This method creates the route for OPTIONS requests
-     *
-     * @see \Wave\Application\Loader::get()
-     * @param string $pattern
-     *            Pattern for the route (See Docs)
-     * @param mixed $callback
-     *            Callback to fire when the pattern is matched
-     * @return \Wave\Application\Route
-     */
-    public function options()
-    {
-        $args = func_get_args();
-        
-        return $this->mapRoute($args)->via('OPTIONS');
-    }
-
-    /**
-     * This method creates the route for OPTIONS requests
-     *
-     * @see \Wave\Application\Loader::mapRoute()
-     * @param string $pattern
-     *            Pattern for the route (See Docs)
-     * @param mixed $callback
-     *            Callback to fire when the pattern is matched
-     * @return \Wave\Application\Route
-     */
     public function map()
     {
         $args = func_get_args();

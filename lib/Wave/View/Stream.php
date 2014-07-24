@@ -20,7 +20,7 @@ class Stream
     protected $_data = 0;
     protected $_stat = null;
 
-    public function stream_open($path, $mode = "r", $options, &$opened_path)
+    public function stream_open($path, $mode, $options, &$opened_path)
     {
         $path = str_replace('view://', '', $path);
         if (!is_readable($path)) {
