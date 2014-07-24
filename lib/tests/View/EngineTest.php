@@ -3,6 +3,7 @@
 namespace Tests\View;
 
 use Wave\View\Engine;
+use Wave\View\Parser\General;
 
 class EngineTest extends \PHPUnit_Framework_TestCase
 {
@@ -81,23 +82,36 @@ class EngineTest extends \PHPUnit_Framework_TestCase
     {
         $engine = new \Wave\View\Engine('tests/small/');
         $engine->register("test", '/ro/');
+        $engine->setParser(new General());
         $engine->loadExtension('upper', function ($str) {
             return strtoupper($str);
+        });
+        $engine->loadExtension('date', function () {
+            return '2014';
         });
 
         if (!file_exists('tests/small/ro/ext.phtml')) {
             file_put_contents(
                 'tests/small/ro/ext.phtml',
-                '<!DOCTYPE html><p>Hello, <?php echo $this->upper($this->name); ?></p>'
+                '<!DOCTYPE html><p>Hello, <?php echo $this->upper($this->name); ?>!<br>Date implemented: <!-- extension:date ( format="Y" ) --></p>'
             );
         }
         $engine->name = "Small and simple";
 
-        $this->expectOutputString('<!DOCTYPE html>'.PHP_EOL.'<html><body><p>Hello, SMALL AND SIMPLE</p></body></html>');
+        $this->expectOutputString('<!DOCTYPE html>'.PHP_EOL.'<html><body><p>Hello, SMALL AND SIMPLE!<br>Date implemented: 2014</p></body></html>');
 
         print $engine->render('test::ext');
 
         unlink('tests/small/ro/ext.phtml');
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testParserSetter()
+    {
+        $engine = new \Wave\View\Engine('tests/small/');
+        $engine->setParser('string');
     }
 
     public function __destruct()

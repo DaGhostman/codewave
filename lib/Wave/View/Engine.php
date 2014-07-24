@@ -14,15 +14,18 @@ class Engine extends Subject
     protected $templates = array();
     protected $templateExtension = 'phtml';
 
+    protected $parser = null;
+
     private $extensions = array();
     private $data = array();
 
     /**
      * @param $path string The path to the templates directory
+     * @param $parser object The parser for the templates or null
      *
      * @throws \RuntimeException
      */
-    public function __construct($path = '../application/templates')
+    public function __construct($path = '../application/templates', $parser = null)
     {
         $this->path = realpath($path);
 
@@ -57,6 +60,20 @@ class Engine extends Subject
     }
 
     /**
+     * @param $parser object Parser for template syntax.
+     * @throws \InvalidArgumentException
+     */
+    public function setParser($parser)
+    {
+        if (!is_object($parser)) {
+            throw new \InvalidArgumentException(
+                'Invalid parser specified'
+            );
+        }
+        $this->parser = $parser;
+    }
+
+    /**
      * Magic call method, for extensions
      *
      * @param $name string Name of the extension
@@ -70,9 +87,8 @@ class Engine extends Subject
             if (isset($this->extensions[$args[0]])) {
                 return $this->extensions[$args[0]];
             }
-
-            return null;
         }
+        return null;
     }
 
     /**
@@ -85,16 +101,9 @@ class Engine extends Subject
     {
         $this->extensions[$name] = $extension;
 
-
-        $this->state('extensionLoaded');
-        if (method_exists($extension, 'getCallable')) {
-            $this->notify($extension->getCallable());
-        } else {
-            $this->notify($name);
-        }
-
         return $this;
     }
+
 
     /**
      * @param $ext string The extension of the template files
@@ -128,11 +137,17 @@ class Engine extends Subject
         if (!empty($this->extensions)) {
             foreach ($this->extensions as $name => $callable) {
                 $template->addExtension($name, $callable);
+                if (is_object($this->parser) && method_exists($this->parser, 'register')) {
+                    $this->parser->register('extension', $name, $callable);
+                }
             }
         }
 
         $template->assignAll($this->data);
 
+        if (is_object($this->parser)) {
+            $template = $this->parser->parse((string) $template);
+        }
         return $template;
     }
 }
