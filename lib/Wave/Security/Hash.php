@@ -32,15 +32,11 @@ class Hash
             );
         }
 
-        $this->cycles = (
-            isset($options['cost']) && !is_null($options['cost']) ?
-                $options['cost'] : 10
-        );
+        $this->cycles = isset($options['cost']) && !is_null($options['cost']) ?
+                $options['cost'] : 10;
 
-        $this->salt = (
-            isset($options['salt']) && !is_null($options['salt']) ?
-                $options['salt'] : null
-        );
+        $this->salt = isset($options['salt']) && !is_null($options['salt']) ?
+                $options['salt'] : null;
     }
 
     /**

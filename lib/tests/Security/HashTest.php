@@ -6,7 +6,6 @@
  * Time: 11:49
  */
 
-namespace Tests\Security;
 
 /**
  * Class HashTest
@@ -95,5 +94,4 @@ class HashTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(60, strlen($obj->hash('simple')));
     }
-
 }
