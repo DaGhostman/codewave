@@ -21,11 +21,10 @@ class Engine extends Subject
 
     /**
      * @param $path string The path to the templates directory
-     * @param $parser object The parser for the templates or null
      *
      * @throws \RuntimeException
      */
-    public function __construct($path = '../application/templates', $parser = null)
+    public function __construct($path = '../application/templates')
     {
         $this->path = realpath($path);
 
