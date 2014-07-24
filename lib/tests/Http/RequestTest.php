@@ -1,8 +1,9 @@
 <?php
 
-use Wave\Http\Request;
-use Wave\Application\Environment;
-class RequestTest extends PHPUnit_Framework_TestCase
+    use Wave\Application\Environment;
+    use Wave\Http\Request;
+
+    class RequestTest extends PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
@@ -63,6 +64,9 @@ class RequestTest extends PHPUnit_Framework_TestCase
         $_SERVER['X_REQUESTED_WITH'] = 'Ugly Service';
         $req = new Request(new \Wave\Storage\Registry());
         $this->assertFalse($req->isAjax());
+
+        $req = new Request(new \Wave\Storage\Registry());
+        $this->assertNull($req->noExist());
     }
     
     public function testMethodGetter()

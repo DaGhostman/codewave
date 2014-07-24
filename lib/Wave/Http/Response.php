@@ -17,9 +17,9 @@ class Response
      *
      * @param string $location
      *            The location of the redirect
-     * @param string $permanent
+     * @param bool $permanent
      *            True = 301 redirect, false = 302
-     * @return \Wave\Http\Response
+     * @return Response
      */
     public function redirect($location, $permanent = false)
     {

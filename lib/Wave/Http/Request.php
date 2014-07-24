@@ -77,6 +77,8 @@ class Request
                     break;
             }
         }
+
+        return null;
     }
 
     /**
