@@ -85,7 +85,7 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
 
 
         $this->assertFalse($mutable->get('key2'));
-        $this->assertFalse($mutable->set('key', false));
+        $this->assertNull($mutable->set('key', false));
 
         $this->assertTrue($mutable->key);
     }

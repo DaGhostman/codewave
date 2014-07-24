@@ -46,8 +46,6 @@ class BasicProvider extends AbstractProvider
                 $secret
             ));
         }
-        
-        return null;
     }
 
     /**

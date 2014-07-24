@@ -165,27 +165,25 @@ class Loader extends Subject
         );
 
         if (in_array(strtolower($name), $methods)) {
-            $args = func_get_args();
-
             return $this->mapRoute($args)->via(strtoupper($name));
-        }
-
-        if (isset($this->$name)) {
-            if (!empty($args)) {
-                if ($this->$name instanceof Registry) {
-                    $result = $this->$name->get($args[0]);
-                } else {
-                    if (isset($this->{$name}[$args[0]])) {
-                        $result = $this->{$name}[$args[0]];
+        } else {
+            if (isset($this->$name)) {
+                if (!empty($args)) {
+                    if ($this->$name instanceof Registry) {
+                        $result = $this->$name->get($args[0]);
                     } else {
-                        $result = null;
+                        if (isset($this->{$name}[$args[0]])) {
+                            $result = $this->{$name}[$args[0]];
+                        } else {
+                            $result = null;
+                        }
                     }
+                } else {
+                    $result = $this->$name;
                 }
             } else {
-                $result = $this->$name;
+                $result = null;
             }
-        } else {
-            $result = null;
         }
 
         return $result;

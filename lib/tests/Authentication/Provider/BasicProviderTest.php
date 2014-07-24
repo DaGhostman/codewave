@@ -1,8 +1,10 @@
 <?php
 
+namespace Tests;
+
 use Wave\Authentication\Provider\BasicProvider;
 
-class BasicProviderTest extends PHPUnit_Framework_TestCase
+class BasicProviderTest extends \PHPUnit_Framework_TestCase
 {
     private $adapter;
     private $container;
@@ -12,12 +14,12 @@ class BasicProviderTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->adapter = $this->getMockBuilder(
-	       '\Wave\Authentication\Adapter\DatabaseAdapter'
+            '\Wave\Authentication\Adapter\DatabaseAdapter'
         )->disableOriginalConstructor()
         ->getMock();
         
         $this->container = $this->getMockbuilder(
-	       '\Wave\Session\Container\BasicContainer'
+            '\Wave\Session\Container\BasicContainer'
         )->disableOriginalConstructor()
         ->getMock();
         
@@ -46,20 +48,23 @@ class BasicProviderTest extends PHPUnit_Framework_TestCase
     
     public function testTokensValidation()
     {
-        $this->assertTrue($this->provider->validate('credential', 'secret', function($credential, $secret){
-        	if ($credential === 'credential' && $secret === 'secret')
-        	    return true;
-        	
-        	return false;
+        $this->assertTrue($this->provider->validate('credential', 'secret', function ($credential, $secret) {
+            if (($credential === 'credential') && ($secret === 'secret')) {
+                return true;
+            }
+
+            return false;
         }));
         
-        function validMe($credential, $secret) {
-            if ($credential === 'credential' && $secret === 'secret')
+        function validMe($credential, $secret)
+        {
+            if (($credential === 'credential') && ($secret === 'secret')) {
                 return true;
-             
+            }
+
             return false;
         }
-        $this->assertTrue($this->provider->validate('credential', 'secret', 'validMe'));
+        $this->assertTrue($this->provider->validate('credential', 'secret', '\Tests\validMe'));
         
         $this->assertNull($this->provider->validate('credential', 'secret', 'someFunctionthatDoesNotExist'));
     }
@@ -97,6 +102,6 @@ class BasicProviderTest extends PHPUnit_Framework_TestCase
     
     public function testIdentityEmpty()
     {
-        $this->assertNull($this->provider->getIndentity());
+        $this->assertNull($this->provider->getIdentity());
     }
 }

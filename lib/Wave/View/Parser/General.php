@@ -58,37 +58,37 @@ class General
         preg_match_all($pattern, $doc, $matches, PREG_SET_ORDER);
 
         foreach ($matches as $match) {
-            preg_match('/(extension|filter)\:([a-z]{1,})\s*\(([^\)]*)\)/i', trim($match[1]), $components);
+            if (1 <= preg_match('/(extension|filter)\:([a-z]{1,})\s*\(([^\)]*)\)/i', trim($match[1]), $components)) {
 
-            list(, $type, $component, $args)=$components;
-            $args = (!empty($args) ? $args : '');
-            preg_match_all('/([^=]+)=([^=]+)(?:,|$)/i', trim($args), $pairs, PREG_SET_ORDER);
-            $arguments = array();
+                list(, $type, $component, $args)=$components;
+                $args = (!empty($args) ? $args : '');
+                preg_match_all('/([^=]+)=([^=]+)(?:,|$)/i', trim($args), $pairs, PREG_SET_ORDER);
+                $arguments = array();
 
-            foreach ($pairs as $pair) {
-                if (preg_match('/\{.*?\}/s', $pair[2]) >= 1) {
-                    $arguments[$pair[1]] = json_decode($pair[2], true);
-                } else {
-                    $arguments[$pair[1]] = str_replace(array('\'', '"'), '', $pair[2]);
+                foreach ($pairs as $pair) {
+                    if (preg_match('/\{.*?\}/s', $pair[2]) >= 1) {
+                        $arguments[$pair[1]] = json_decode($pair[2], true);
+                    } else {
+                        $arguments[$pair[1]] = str_replace(array('\'', '"'), '', $pair[2]);
+                    }
+
                 }
 
+
+
+                switch (strtolower($type)) {
+                    case 'extension':
+                        $output = $this->callExtension($component, $arguments);
+                        $doc = str_replace($match[0], $output, $doc);
+                        break;
+                    case 'filter':
+                        $output = $this->callFilter($component, $arguments);
+                        $doc = str_replace($match[0], $output, $doc);
+                        break;
+                    default:
+                        break;
+                }
             }
-
-
-
-            switch (strtolower($type)) {
-                case 'extension':
-                    $output = $this->callExtension($component, $arguments);
-                    $doc = str_replace($match[0], $output, $doc);
-                    break;
-                case 'filter':
-                    $output = $this->callFilter($component, $arguments);
-                    $doc = str_replace($match[0], $output, $doc);
-                    break;
-                default:
-                    break;
-            }
-
         }
 
         return $doc;

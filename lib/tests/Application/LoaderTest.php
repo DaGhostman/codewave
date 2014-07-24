@@ -108,7 +108,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         });
     
         $this->assertInstanceOf('\Wave\Application\Route', $route);
-        $this->assertSame(array('GET','HEAD'), $route->getHttpMethods());
+        $this->assertSame(array('GET'), $route->getHttpMethods());
     }
     
     public function testPostRouteGeneration()
