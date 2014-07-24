@@ -23,8 +23,8 @@ class General
     /**
      * Registers the components for use within templates.
      *
-     * <code><!-- ext layout ( template=head ) --></code>
-     * <code><!-- filter pattern ( regex=/<!--(.*)-->/i --> )</code>
+     * <code><!-- ext:layout ( template=head ) --></code>
+     * <code><!-- filter:pattern ( regex=/<!--(.*)-->/i )</code>
      *
      * @param $type string What to register: extension, filter or validator
      * @param $name string The name of the addition
@@ -58,18 +58,25 @@ class General
         preg_match_all($pattern, $doc, $matches, PREG_SET_ORDER);
 
         foreach ($matches as $match) {
-            if (1 <= preg_match('/(extension|filter)\:([a-z]{1,})\s*\(([^\)]*)\)/i', trim($match[1]), $components)) {
+            if (1 == preg_match(
+                '/(extension|filter)\:([a-z]{1,})\s*\(([^\)]*)\)(:?\@(.*))?/i',
+                trim($match[1]),
+                $components
+            )) {
 
-                list(, $type, $component, $args)=$components;
+                array_push($components, null);
+                list(, $type, $component, $args, $flag)=$components;
+
+
                 $args = (!empty($args) ? $args : '');
-                preg_match_all('/([^=]+)=([^=]+)(?:,|$)/i', trim($args), $pairs, PREG_SET_ORDER);
+                preg_match_all('/([^=]+)=([^=]+)(?:\[(.*)])?(?:,|$)/i', trim($args), $pairs, PREG_SET_ORDER);
                 $arguments = array();
 
                 foreach ($pairs as $pair) {
                     if (preg_match('/\{.*?\}/s', $pair[2]) >= 1) {
                         $arguments[$pair[1]] = json_decode($pair[2], true);
                     } else {
-                        $arguments[$pair[1]] = str_replace(array('\'', '"'), '', $pair[2]);
+                        $arguments[$pair[1]] = $this->parseValue(substr($pair[2], 1, -1));
                     }
 
                 }
@@ -85,13 +92,39 @@ class General
                         $output = $this->callFilter($component, $arguments);
                         $doc = str_replace($match[0], $output, $doc);
                         break;
-                    default:
-                        break;
                 }
             }
         }
 
         return $doc;
+    }
+
+    /**
+     * Parses a variable to determinate its real type
+     *
+     * @param $val mixed value to be parsed
+     * @return mixed Variable in its real type
+     */
+    public function parseValue($val)
+    {
+        if ((substr($val, 0, 1) == '"' && substr($val, -1) == '"') ||
+            (substr($val, 0, 1) == '\'' && substr($val, -1) == '\'')
+        ) {
+            return substr($val, 1, -1);
+        } elseif (strtolower($val) == 'true') {
+            return true;
+        } elseif (strtolower($val) == 'false') {
+            return false;
+        } elseif (is_numeric($val)) {
+        // Numeric value, determine if int or float and then cast
+            if ((float) $val == (int) $val) {
+                return (int) $val;
+            } else {
+                return (float) $val;
+            }
+        }
+
+        return $val;
     }
 
     /**

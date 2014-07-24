@@ -101,4 +101,23 @@ class GeneralTest extends \PHPUnit_Framework_TestCase
 
         $parser->parse($doc);
     }
+
+    public function testValueTypeGuessing()
+    {
+        $string_sq = "'string'";
+        $string_dq = '"string"';
+        $int = '1';
+        $bool_t = 'true';
+        $bool_f = 'false';
+        $float = '3.1416';
+
+        $parser = new General();
+
+        $this->assertSame('string', $parser->parseValue($string_sq));
+        $this->assertSame('string', $parser->parseValue($string_dq));
+        $this->assertSame(1, $parser->parseValue($int));
+        $this->assertSame(true, $parser->parseValue($bool_t));
+        $this->assertSame(false, $parser->parseValue($bool_f));
+        $this->assertSame(3.1416, $parser->parseValue($float));
+    }
 }
