@@ -8,7 +8,12 @@
 
 namespace Wave\View;
 
-
+/**
+ * Class Stream
+ * @package Wave\View
+ *
+ * @codeCoverageIgnore
+ */
 class Stream
 {
     protected $pos = 0;
