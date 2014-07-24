@@ -55,10 +55,11 @@ class Request
 
     /**
      * @param $name string Called function name
+     * @param $args array Arguments passed during the call
      *
      * @return bool
      */
-    public function __call($name)
+    public function __call($name, $args = array())
     {
         if ('is' == substr($name, 0, 2)) {
             switch (($method = ucfirst(substr($name, 2)))) {
