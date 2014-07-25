@@ -11,7 +11,6 @@
         "zf1/zend-config": "Better functionality when parsing configuration files"
     },
     "require-dev": {
-        "satooshi/php-coveralls": "dev-master",
         "ircmaxell/password-compat": "1.0.3"
     },
     "license": "MIT",
