@@ -14,7 +14,7 @@ class TemplateTest extends \PHPUnit_Framework_TestCase
             mkdir('tests/ro', 0755, true);
         }
         touch('tests/ro/index.phtml');
-        file_put_contents('tests/ro/index.phtml', '<!DOCTYPE html>'.PHP_EOL.'<html><body><strong>hey</strong></body></html>');
+        file_put_contents('tests/ro/index.phtml', '<!DOCTYPE html><html><body><strong>hey</strong></body></html>');
         $this->template = new Template('index', 'tests/ro', 'phtml');
     }
 
@@ -55,12 +55,6 @@ class TemplateTest extends \PHPUnit_Framework_TestCase
     public function testRenderingWDOM()
     {
         $this->expectOutputString('<!DOCTYPE html><html><body><strong>hey</strong></body></html>');
-        print $this->template;
-    }
-    public function testRenderingWODOM()
-    {
-        $this->expectOutputString('<!DOCTYPE html><html><body><strong>hey</strong></body></html>');
-        $this->template->useDOM(false);
         print $this->template;
     }
 }

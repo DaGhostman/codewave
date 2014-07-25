@@ -60,7 +60,7 @@ class EngineTest extends \PHPUnit_Framework_TestCase
         }
 
 
-        $this->expectOutputString("<!DOCTYPE html>".PHP_EOL."<html><body><p>Hello, Small and simple</p></body></html>");
+        $this->expectOutputString('<!DOCTYPE html><html><body><p>Hello, Small and simple</p></body></html>');
 
         print $engine->render('test::index');
 
@@ -98,7 +98,7 @@ class EngineTest extends \PHPUnit_Framework_TestCase
         }
         $engine->name = "Small and simple";
 
-        $this->expectOutputString('<!DOCTYPE html>'.PHP_EOL.'<html><body><p>Hello, SMALL AND SIMPLE!<br>Date implemented: 2014</p></body></html>');
+        $this->expectOutputString('<!DOCTYPE html><p>Hello, SMALL AND SIMPLE!<br>Date implemented: 2014</p>');
 
         print $engine->render('test::ext');
 
