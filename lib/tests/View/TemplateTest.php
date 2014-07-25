@@ -54,12 +54,12 @@ class TemplateTest extends \PHPUnit_Framework_TestCase
 
     public function testRenderingWDOM()
     {
-        $this->expectOutputString('<!DOCTYPE html>'.PHP_EOL.'<html><body><strong>hey</strong></body></html>');
+        $this->expectOutputString('<!DOCTYPE html><html><body><strong>hey</strong></body></html>');
         print $this->template;
     }
     public function testRenderingWODOM()
     {
-        $this->expectOutputString('<!DOCTYPE html>'.PHP_EOL.'<html><body><strong>hey</strong></body></html>');
+        $this->expectOutputString('<!DOCTYPE html><html><body><strong>hey</strong></body></html>');
         $this->template->useDOM(false);
         print $this->template;
     }
