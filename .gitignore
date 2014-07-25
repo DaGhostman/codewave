@@ -2,6 +2,7 @@
 /lib/.settings/
 /lib/.project
 /build
+/dist
 /web
 phpdoc.dist.xml
 *~
@@ -9,5 +10,5 @@ phpdoc.dist.xml
 .buildpath
 .externalToolBuilders
 .settings
-lib/Wave/Di
 composer.lock
+build.xml
