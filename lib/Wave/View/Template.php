@@ -14,9 +14,6 @@ class Template
     private $template = null;
     private $ext = array();
 
-    protected $dom = null;
-    protected $useDOM = true;
-
     /**
      * Constructs a template object.
      *
@@ -45,17 +42,6 @@ class Template
         }
 
         return htmlspecialchars($value);
-    }
-
-    /**
-     * Enables\Disables the usage of \DOMDocument for
-     *      template processing.
-     *
-     * @param bool $switch Should use DOM
-     */
-    public function useDOM($switch = true)
-    {
-        $this->useDOM = $switch;
     }
 
     /**
