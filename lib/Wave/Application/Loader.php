@@ -121,6 +121,11 @@ class Loader extends Subject
         $this->state('httpAfter')->notify($this->environement);
     }
 
+    /**
+     * Setter for view objects, which should handle template generation
+     *
+     * @param $viewer mixed View handling object
+     */
     public function setView($viewer)
     {
         $this->view = $viewer;
@@ -141,6 +146,9 @@ class Loader extends Subject
     }
 
     /**
+     * Responsible for route registering and as a magic getter of
+     *          object properties.
+     *
      * @param string $name The variable name to access
      * @param array $args the key of the value to retrieve,
      *                    currently only useful for
@@ -199,9 +207,13 @@ class Loader extends Subject
     /*****************************
      * Slim specific code follows *
      *****************************/
-    
-    
 
+
+    /**
+     * Maps first argument as pattern for the callable (second argument)
+     *
+     * @return Route
+     */
     public function map()
     {
         $args = func_get_args();
@@ -235,9 +247,9 @@ class Loader extends Subject
      * directly return a 404 to the user, except cases where the headers
      * are already sent.
      *
-     * Notifys observers using 'map_before' and 'map_after', respectively in the mapping phase.
-     * Notifys observers using 'dispatch_before' and 'dispatch_after', respectively in the routing phase.
-     * Notifys observers using 'application_after' once the mapping has finished.
+     * Notifies observers using 'map_before' and 'map_after', respectively in the mapping phase.
+     * Notifies observers using 'dispatch_before' and 'dispatch_after', respectively in the routing phase.
+     * Notifies observers using 'application_after' once the mapping has finished.
      *
      * @throws \Exception
      */

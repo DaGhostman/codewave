@@ -63,9 +63,4 @@ class TemplateTest extends \PHPUnit_Framework_TestCase
         $this->template->useDOM(false);
         print $this->template;
     }
-
-    public function testDOMGetter()
-    {
-        $this->assertInstanceOf('\DOMDocument', $this->template->getDOM());
-    }
 }

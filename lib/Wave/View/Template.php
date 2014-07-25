@@ -18,6 +18,8 @@ class Template
     protected $useDOM = true;
 
     /**
+     * Constructs a template object.
+     *
      * @param $template string Template file
      * @param $path string Template directory
      * @param $extension string Template Extension
@@ -28,7 +30,8 @@ class Template
     }
 
     /**
-     * Returns the variable for the template or null
+     * Returns the variable for the template or null. Escapes all returned
+     *          values with <em>htmlspecialchars()</em>
      *
      * @param $key string The assigned value to retrieve
      *
@@ -109,17 +112,6 @@ class Template
         $this->ext[$name] = $obj;
     }
 
-    /**
-     * @return \DOMDocument
-     */
-    public function getDOM()
-    {
-        if (!$this->dom instanceof \DOMDocument) {
-            $this->dom = new \DOMDocument();
-        }
-
-        return $this->dom;
-    }
 
     /**
      * @return string The template output
@@ -129,16 +121,7 @@ class Template
         ob_start();
         include('view://'.$this->template);
         $source = ob_get_clean();
-        if ($this->useDOM) {
-            /*
-             * @FIXME: Workaround for errors with
-             */
-            libxml_use_internal_errors(true);
-            $this->getDOM()->loadHTML($source);
-            libxml_clear_errors();
-            return trim($this->getDOM()->saveHTML());
-        } else {
-            return trim($source);
-        }
+
+        return trim($source);
     }
 }

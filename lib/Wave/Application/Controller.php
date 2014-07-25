@@ -202,7 +202,7 @@ class Controller
     }
 
     /**
-     * Has named route
+     * Checks if a named route with <em>$name</em> exists
      * 
      * @param string $name
      *            The route name
@@ -216,11 +216,12 @@ class Controller
     }
 
     /**
-     * Get named route
+     * Returns route with specified <em>$name</em> if exists,
+     *          null otherwise.
      * 
      * @param string $name            
      *
-*@return Route null
+     * @return mixed Route or null
      */
     public function getNamedRoute($name)
     {
@@ -233,7 +234,7 @@ class Controller
     }
 
     /**
-     * Get named routes
+     * Gets all named routes
      * 
      * @return \ArrayIterator
      */

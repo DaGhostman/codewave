@@ -121,11 +121,13 @@ class Engine extends Subject
     }
 
     /**
+     * Renders the template corresponding to the <em>$templateStr</em>
+     *
      * @param $templateStr string A template string in the format 'alias::file'
      *                            without the file extension
      *
-     * @throws \InvalidArgumentException
-     * @return null
+     * @throws \InvalidArgumentException if <em>$templateStr</em> is not valid
+     * @return string The parsed template
      */
     public function render($templateStr)
     {

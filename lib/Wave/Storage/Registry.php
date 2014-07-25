@@ -16,7 +16,10 @@ class Registry implements \Countable, \Serializable, \ArrayAccess
     protected $name = null;
 
     /**
-     * @param array $options
+     * @param array $options Options for the registry. Valid keys are:
+     *                       mutable - determines if the object is mutable
+     *                       override - allows overriding of keys, when object is mutable
+     *                       data - array which should be preset (Only way to write when immutable)
      */
     public function __construct($options = array())
     {
@@ -33,11 +36,13 @@ class Registry implements \Countable, \Serializable, \ArrayAccess
     }
 
     /**
-     * @param $key
-     * @param $value
+     * Adds entry to the registry, if mutable
      *
-     * @return null
-     * @throws \RuntimeException
+     * @param $key string key to assign <em>$value</em> to
+     * @param $value mixed The value to assign
+     *
+     * @return null Does not return anything
+     * @throws \RuntimeException if trying to modify immutable object
      */
     public function set($key, $value)
     {
@@ -57,9 +62,11 @@ class Registry implements \Countable, \Serializable, \ArrayAccess
     }
 
     /**
-     * @param $key
+     * Removes entry from the object
      *
-     * @throws \RuntimeException
+     * @param $key string Key to remove
+     *
+     * @throws \RuntimeException if trying to modify immutable object
      */
     public function remove($key)
     {
@@ -71,9 +78,10 @@ class Registry implements \Countable, \Serializable, \ArrayAccess
     }
 
     /**
-     * @param $key
+     * Returns the value assigned to the <em>$key</em>
+     * @param $key string The key to lookup
      *
-     * @return null
+     * @return mixed Null if key was not found, its value otherwise
      */
     public function get($key)
     {
@@ -86,7 +94,9 @@ class Registry implements \Countable, \Serializable, \ArrayAccess
     }
 
     /**
-     * @param $key
+     * Check if a key exists in the object
+     *
+     * @param $key string The key to look for
      *
      * @return bool
      */
@@ -96,6 +106,8 @@ class Registry implements \Countable, \Serializable, \ArrayAccess
     }
 
     /**
+     * Check if object is mutable
+     *
      * @return bool
      */
     public function isMutable()
@@ -104,6 +116,8 @@ class Registry implements \Countable, \Serializable, \ArrayAccess
     }
 
     /**
+     * Check if object can be overridden
+     *
      * @return bool
      */
     public function isOverridable()
@@ -112,6 +126,7 @@ class Registry implements \Countable, \Serializable, \ArrayAccess
     }
 
     /**
+     * The number of entries in the object
      * @return int
      */
     public function count()

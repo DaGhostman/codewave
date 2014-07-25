@@ -23,8 +23,16 @@ class General
     /**
      * Registers the components for use within templates.
      *
-     * <code><!-- ext:layout ( template=head ) --></code>
-     * <code><!-- filter:pattern ( regex=/<!--(.*)-->/i )</code>
+     * @example <code><!-- extension:layout ( template=head )@cache --></code>
+     *          This is example of a valid call to the layout extension with array of
+     *          arguments. The flag is to hint that it should use caching.
+     *
+     * More general syntax is:
+     *  <code><!-- type:name (arguments,..,..)[@flag]</code>
+     * Where <strong>type</strong> is either extensions or filter, name is
+     *          the name of any registered component, arguments are passed as
+     *          array (first argument) and flag is optional. It can be used to hint
+     *          some functionality to the component.
      *
      * @param $type string What to register: extension, filter or validator
      * @param $name string The name of the addition
@@ -48,7 +56,9 @@ class General
     }
 
     /**
-     * @param $doc
+     * Parses the template to evaluate the comment syntax.
+     *
+     * @param $doc string Full template contents
      *
      * @return mixed
      */
@@ -81,15 +91,13 @@ class General
 
                 }
 
-
-
                 switch (strtolower($type)) {
                     case 'extension':
-                        $output = $this->callExtension($component, $arguments);
+                        $output = $this->callExtension($component, $arguments, $flag);
                         $doc = str_replace($match[0], $output, $doc);
                         break;
                     case 'filter':
-                        $output = $this->callFilter($component, $arguments);
+                        $output = $this->callFilter($component, $arguments, $flag);
                         $doc = str_replace($match[0], $output, $doc);
                         break;
                 }
@@ -128,28 +136,34 @@ class General
     }
 
     /**
-     * @param       $name
-     * @param array $args
+     * Calls a registered extension and returns the result of the execution
+     *
+     * @param $name string
+     * @param $args array Array of arguments
+     * @param $flag mixed Flag to pass to the extension
      *
      * @return bool
      */
-    public function callExtension($name, $args = array())
+    public function callExtension($name, $args = array(), $flag = false)
     {
         if (array_key_exists($name, $this->ext)) {
-            return $this->ext[$name]($args);
+            return $this->ext[$name]($args, $flag);
         }
 
         return false;
     }
 
     /**
-     * @param       $name
-     * @param array $args
+     * Calls a filter and returns its output
+     *
+     * @param $name string
+     * @param $args array Arguments to pass to the filter
+     * @param $flag mixed Flag to pass to the filter
      *
      * @return mixed
      */
-    public function callFilter($name, $args = array())
+    public function callFilter($name, $args = array(), $flag = null)
     {
-        return $this->filters[$name]($args);
+        return $this->filters[$name]($args, $flag);
     }
 }
