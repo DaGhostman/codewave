@@ -12,6 +12,7 @@ matrix:
     - php: hhvm
 
 before_script:
+  - pear install pear/PHP_CodeSniffer
   - composer self-update
   - composer require satooshi/php-coveralls:dev-master --no-update --dev
   - composer install
@@ -19,7 +20,7 @@ before_script:
 script:
   - mkdir -p build/logs
   - phpunit --coverage-text
-  - ./vendor/bin/phpcs lib/Wave --standard=psr2 --ignore=lib/Wave/View/Stream.php
+  - phpcs lib/Wave --standard=psr2 --ignore=lib/Wave/View/Stream.php
 
 after_script:
   - ./vendor/bin/coveralls -v
