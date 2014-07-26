@@ -105,7 +105,8 @@ class Loader extends Subject
         $this->environement = new Registry(array(
             'mutable' => true,
             'override' => false,
-            'data' => array_merge($env, $config['environment'])
+            'data' => array_merge($env, (isset($config['environment']) ?
+                $config['environment'] : array()))
         ));
 
 
