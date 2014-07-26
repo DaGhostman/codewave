@@ -45,7 +45,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->loader->some_function());
         $this->assertInstanceOf(
             '\Wave\Storage\Registry',
-            $this->loader->environement()
+            $this->loader->environment()
         );
     }
     
@@ -62,7 +62,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         ));
         $loader->bootstrap();
         
-        $this->assertInstanceOf('\Wave\Storage\Registry', $loader->environement);
+        $this->assertInstanceOf('\Wave\Storage\Registry', $loader->environment);
         $this->assertInstanceOf('\Wave\Http\Factory', $loader->http);
         $this->assertInstanceOf('\Wave\Http\Request', $loader->http->request());
         $this->assertInstanceOf('\Wave\Http\Response', $loader->http->response());
@@ -207,7 +207,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
         ));
         
         $loader->bootstrap();
-        
+
         $loader->get('/bar', function () {
             echo 'Foo';
             //throw new \Wave\Application\State\Halt();

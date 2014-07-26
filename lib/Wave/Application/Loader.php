@@ -100,17 +100,17 @@ class Loader extends Subject
                     $_SERVER['REQUEST_METHOD'] : 'GET')
         );
 
-        $this->registerRoutes($routes);
 
 
-        $this->controller = new Controller();
+
+        $this->controller = new Controller;
         $this->environment = new Registry(array(
             'mutable' => true,
             'override' => false,
             'data' => array_merge($env, (isset($config['environment']) ?
                 $config['environment'] : array()))
         ));
-
+        $this->registerRoutes($routes);
 
         /*
          * Build the HTTP handlers
@@ -283,14 +283,14 @@ class Loader extends Subject
     public function run()
     {
         $this->state('mapBefore')
-            ->notify($this->environement);
+            ->notify($this->environment);
         
         try {
             $dispatched = false;
             $matchedRoutes = $this->controller
                 ->getMatchedRoutes(
-                    $this->environement['request.method'],
-                    $this->environement['request.uri']
+                    $this->environment['request.method'],
+                    $this->environment['request.uri']
                 );
             
             foreach ($matchedRoutes as $route) {
@@ -321,8 +321,8 @@ class Loader extends Subject
             }
         }
         
-        $this->state('mapAfter')->notify($this->environement);
+        $this->state('mapAfter')->notify($this->environment);
         
-        $this->state('applicationAfter')->notify($this->environement);
+        $this->state('applicationAfter')->notify($this->environment);
     }
 }
