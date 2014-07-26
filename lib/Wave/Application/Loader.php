@@ -102,7 +102,7 @@ class Loader extends Subject
 
 
         $this->controller = new Controller();
-        $this->environement = new Registry(array(
+        $this->environment = new Registry(array(
             'mutable' => true,
             'override' => false,
             'data' => array_merge($env, (isset($config['environment']) ?
