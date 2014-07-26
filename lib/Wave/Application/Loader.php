@@ -100,6 +100,8 @@ class Loader extends Subject
                     $_SERVER['REQUEST_METHOD'] : 'GET')
         );
 
+        $this->registerRoutes($routes);
+
 
         $this->controller = new Controller();
         $this->environment = new Registry(array(
@@ -110,6 +112,26 @@ class Loader extends Subject
         ));
 
 
+        /*
+         * Build the HTTP handlers
+         */
+        $this->state('httpBefore')->notify($this->environment);
+
+        $this->http = new Http\Factory(
+            new Http\Request($this->environment),
+            new Http\Response()
+        );
+
+        $this->state('httpAfter')->notify($this->environment);
+    }
+
+    /**
+     * Register routes in bulk. Useful for automating route generation
+     *
+     * @param $routes array
+     */
+    public function registerRoutes($routes)
+    {
         foreach ($routes as $route) {
 
             $r = $this->map($route['pattern'], $route['callback']);
@@ -122,24 +144,6 @@ class Loader extends Subject
                 $r->conditions($route['conditions']);
             }
         }
-
-
-        /*
-         * Build the HTTP handlers
-         */
-        $this->state('httpBefore')->notify($this->environement);
-
-        $this->http = new Http\Factory(
-            new Http\Request($this->environement),
-            new Http\Response()
-        );
-
-        $this->state('httpAfter')->notify($this->environement);
-    }
-
-    public function registerRoutes($routes)
-    {
-
     }
 
     /**
