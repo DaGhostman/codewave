@@ -3,6 +3,10 @@
 namespace Wave\View;
 
 /**
+ * @author DaGhostman
+ */
+
+/**
  * Class Template
  * @package Wave\View
  */

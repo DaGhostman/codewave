@@ -16,6 +16,10 @@ class Registry implements \Countable, \Serializable, \ArrayAccess
     protected $name = null;
 
     /**
+     * Setts options for the object and optionally injects data into it.
+     *
+     * @access public
+     * @method Registry::__construct Object constructor
      * @param array $options Options for the registry. Valid keys are:
      *                       mutable - determines if the object is mutable
      *                       override - allows overriding of keys, when object is mutable

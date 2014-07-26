@@ -55,26 +55,26 @@ class Controller
 {
 
     /**
-     *
+     * Holds the current matched route
      * @var Route The current route (most recently dispatched)
      */
     protected $currentRoute;
 
     /**
-     *
+     * Holds all route objects
      * @var array Lookup hash of all route objects
      */
     protected $routes;
 
     /**
-     *
+     * Holds all named routes
      * @var array Lookup hash of named route objects,
      *              keyed by route name (lazy-loaded)
      */
     protected $namedRoutes;
 
     /**
-     *
+     * Holds all matched routes
      * @var array Array of route objects that match the request URI (lazy-loaded)
      */
     protected $matchedRoutes;
@@ -191,7 +191,7 @@ class Controller
      * @param Route $route
      *            The route object
      *
-*@throws \RuntimeException If a named route already exists with the same name
+     * @throws \RuntimeException If a named route already exists with the same name
      */
     public function addNamedRoute($name, Route $route)
     {

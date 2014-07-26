@@ -12,6 +12,19 @@ use Wave\Storage\Registry;
  * @package Wave
  * @author Dimitar Dimitrov
  * @since 1.0.0
+ *
+ * @method Route get(string $pattern, callable $callback) Defines a GET route
+ * @method Route post(string $pattern, callable $callback) Defines a POST route
+ * @method Route put(string $pattern, callable $callback) Defines a PUT route
+ * @method Route delete(string $pattern, callable $callback) Defines a DELETE route
+ * @method Route head(string $pattern, callable $callback) Defines a HEAD route
+ * @method Route trace(string $pattern, callable $callback) Defines a TRACE route
+ * @method Route connect(string $pattern, callable $callback) Defines a CONNECT route
+ * @method Route options(string $pattern, callable $callback) Defines a OPTIONS route
+ * @method Registry environment() Getter for environment
+ * @method Registry config() Getter for configuration passed to __construct
+ * @method Controller controller() Returns the Controller object
+ * @method Http\Factory http(string $key) Getter for Http objects. Valid values 'request', 'response'
  */
 class Loader extends Subject
 {
@@ -19,7 +32,7 @@ class Loader extends Subject
     /**
      * Container for the Environment object
      * 
-     * @var \Wave\Storage\Registry
+     * @var Registry
      */
     protected $environment = null;
 
@@ -77,6 +90,8 @@ class Loader extends Subject
         ));
 
         $env = array(
+            'request.protocol' => (isset($_SERVER['SERVER_PROTOCOL']) ?
+                $_SERVER['SERVER_PROTOCOL'] : 'HTTP\1.1'),
             'request.port' => (isset($_SERVER['SERVER_PORT']) ?
                     $_SERVER['SERVER_PORT'] : 80),
             'request.uri' => (isset($_SERVER['REQUEST_URI']) ?
@@ -121,6 +136,11 @@ class Loader extends Subject
         $this->state('httpAfter')->notify($this->environement);
     }
 
+    public function registerRoutes($routes)
+    {
+
+    }
+
     /**
      * Setter for view objects, which should handle template generation
      *
@@ -148,6 +168,8 @@ class Loader extends Subject
     /**
      * Responsible for route registering and as a magic getter of
      *          object properties.
+     *
+     *
      *
      * @param string $name The variable name to access
      * @param array $args the key of the value to retrieve,

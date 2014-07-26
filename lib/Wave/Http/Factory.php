@@ -69,7 +69,7 @@ class Factory implements \ArrayAccess
      *
      * @return mixed Can return all value types.
      */
-    public function &offsetGet($offset)
+    public function offsetGet($offset)
     {
         $result = (isset($this->$offset) ? $this->$offset : null);
 
