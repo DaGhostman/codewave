@@ -90,33 +90,33 @@ class Hash
      */
     public function generateSalt()
     {
-        if (!defined('PHALANGER')) {
-            if (function_exists('mcrypt_create_iv')) {
+        if (function_exists('mcrypt_create_iv') && !defined('PHALANGER')) {
                 return mcrypt_create_iv(16, MCRYPT_DEV_URANDOM);
+        }
+
+        if (is_readable('/dev/urandom')) {
+            $filePointer = fopen('/dev/urandom', 'r');
+            $buffer = null;
+
+            while ($this->strlen($buffer) < 16) {
+                $buffer .= fread($filePointer, 16 - $this->strlen($buffer));
             }
 
-            if (is_readable('/dev/urandom')) {
-                $filePointer = fopen('/dev/urandom', 'r');
-                $buffer = null;
+            fclose($filePointer);
 
-                while ($this->strlen($buffer) < 16) {
-                    $buffer .= fread($filePointer, 16 - $this->strlen($buffer));
-                }
-
-                fclose($filePointer);
-
-                if ($this->strlen($buffer) >= 16) {
-                    return $buffer;
+            if ($this->strlen($buffer) >= 16) {
+                return $buffer;
+            }
+        } else {
+            $buffer = null;
+            for ($i = 0; $i < 16; $i++) {
+                if ($i < $this->strlen($buffer)) {
+                    $buffer[$i] = $buffer[$i] ^ chr(mt_rand(0, 255));
+                } else {
+                    $buffer .= chr(mt_rand(0, 255));
                 }
             }
         }
-
-
-        $buffer = null;
-        for ($i=0; $i<16; $i++) {
-            $buffer .= chr(mt_rand(0, 255));
-        }
-
         return $buffer;
     }
 
