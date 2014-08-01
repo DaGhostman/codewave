@@ -12,3 +12,5 @@ phpdoc.dist.xml
 .settings
 composer.lock
 build.xml
+
+IoC_blueprint

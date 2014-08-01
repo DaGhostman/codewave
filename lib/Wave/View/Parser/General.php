@@ -88,16 +88,26 @@ class General
                     } else {
                         $arguments[$pair[1]] = $this->parseValue(substr($pair[2], 1, -1));
                     }
-
                 }
 
                 switch (strtolower($type)) {
                     case 'extension':
-                        $output = $this->callExtension($component, $arguments, $flag);
+                        $output = call_user_func(
+                            array($this, 'callExtension'),
+                            $component,
+                            $arguments,
+                            $flag
+                        );
+
                         $doc = str_replace($match[0], $output, $doc);
                         break;
                     case 'filter':
-                        $output = $this->callFilter($component, $arguments, $flag);
+                        $output = call_user_func(
+                            array($this, 'callFilter'),
+                            $component,
+                            $arguments,
+                            $flag
+                        );
                         $doc = str_replace($match[0], $output, $doc);
                         break;
                 }
@@ -147,7 +157,7 @@ class General
     public function callExtension($name, $args = array(), $flag = false)
     {
         if (array_key_exists($name, $this->ext)) {
-            return $this->ext[$name]($args, $flag);
+            return call_user_func($this->ext[$name], $args, $flag);
         }
 
         return false;
@@ -164,6 +174,6 @@ class General
      */
     public function callFilter($name, $args = array(), $flag = null)
     {
-        return $this->filters[$name]($args, $flag);
+        return call_user_func($this->filters[$name], $args, $flag);
     }
 }
