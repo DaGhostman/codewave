@@ -38,8 +38,7 @@ class Container
             array_push($this->immutable, $alias);
         }
 
-        $this->container[$alias] = $this->with(call_user_func($callback), $this)
-            ->resolve('\Wave\Di\Dependency');
+        $this->container[$alias] = call_user_func($callback, $this);
 
         return $this;
     }
@@ -65,7 +64,7 @@ class Container
      */
     public function with()
     {
-        $this->arguments = array_merge($this->arguments, func_get_args());
+        $this->arguments = func_get_args();
 
         return $this;
     }
@@ -105,14 +104,10 @@ class Container
 
         $dependencies = array();
         foreach ($matches[1] as $match) {
-            if (!array_key_exists($match, $this->arguments)) {
-                array_push($dependencies, $this->resolve($match, null, true));
-            } else {
-                array_push($dependencies, $this->arguments[$match]);
-            }
+            array_push($dependencies, $this->resolve($match, null, true));
         }
 
-        return $dependencies;
+        return array_merge($dependencies, $this->arguments);
     }
 
     /**
@@ -141,31 +136,26 @@ class Container
             ));
         }
 
-
-
         $result = $subject;
         if ($reflection instanceof \ReflectionObject || $reflection instanceof \ReflectionClass) {
 
             if ($reflection->hasMethod($method)) {
                 $result = call_user_func_array(
-                    array($this->resolve($subject), $method),
+                    array($subject, $method),
                     $this->getDependencies($reflection->getMethod($method))
                 );
             } elseif (is_string($subject) && class_exists($subject, true)) {
                 if ($reflection->getConstructor() != null) {
                     $constructor = $reflection->getConstructor();
 
-                    $result = new Dependency($reflection->newInstanceArgs(
-                        array_merge($this->getDependencies($constructor), $this->arguments)
-                    ), $this);
+                    $result = $reflection->newInstanceArgs(
+                        $this->getDependencies($constructor)
+                    );
                 } else {
-                    $result = new Dependency($reflection->newInstance(), $this);
+                    $result = $reflection->newInstance();
                 }
-
             }
         }
-
-        $this->arguments = array();
 
         if ($save && $method == null) {
             $this->container[$reflection->getName()] = $result;
