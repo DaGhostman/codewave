@@ -57,11 +57,21 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         }));
     }
 
+    /**
+     * @runInSeparateProcesses
+     * @preserveGlobalState disabled
+     */
+    public function testStringResolve()
+    {
+        $this->assertSame(5, $this->container->resolve('\Tests\Di\DependencyStub', 'getInteger'));
+    }
+
     public function testGet()
     {
         $this->container->register('stub', function () {
             return new DependencyStub();
         });
+
 
         $this->assertInstanceOf('\Wave\Di\Dependency', $this->container->resolve('\Tests\Di\ResolveStub', null, true));
         $this->assertInstanceOf('\Wave\Di\Dependency', $this->container->resolve('\Tests\Di\ResolveStub'));
@@ -69,6 +79,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\Wave\Di\Dependency', $this->container->get('stub'));
         $this->assertNull($this->container->get('non_existing'));
         $this->assertInstanceOf('\Wave\Di\Dependency', $this->container->resolve('stub'));
+
     }
 
     /**

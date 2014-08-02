@@ -32,6 +32,13 @@ class Dependency
         $this->blueprint = $footprint;
     }
 
+    public function raw()
+    {
+        $this->invoke();
+
+        return $this->object;
+    }
+
     /**
      * (Magic function)
      *
@@ -59,6 +66,8 @@ class Dependency
 
         return call_user_func_array(array($this->object, $name), $args);
     }
+
+
 
     public function invoke()
     {

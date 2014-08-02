@@ -105,7 +105,11 @@ class Container
 
         $dependencies = array();
         foreach ($matches[1] as $match) {
-            array_push($dependencies, $this->resolve($match, null, true));
+            if (!array_key_exists($match, $this->arguments)) {
+                array_push($dependencies, $this->resolve($match, null, true));
+            } else {
+                array_push($dependencies, $this->arguments[$match]);
+            }
         }
 
         return $dependencies;
@@ -139,27 +143,21 @@ class Container
 
 
 
-        $result = null;
+        $result = $subject;
         if ($reflection instanceof \ReflectionObject || $reflection instanceof \ReflectionClass) {
 
             if ($reflection->hasMethod($method)) {
-                $methodReflection = $reflection->getMethod($method);
-
-                $result = $methodReflection->invokeArgs(
-                    $subject,
-                    array_merge(
-                        $this->getDependencies($methodReflection),
-                        $this->arguments
-                    )
+                $result = call_user_func_array(
+                    array($this->resolve($subject), $method),
+                    $this->getDependencies($reflection->getMethod($method))
                 );
             } elseif (is_string($subject) && class_exists($subject, true)) {
                 if ($reflection->getConstructor() != null) {
                     $constructor = $reflection->getConstructor();
 
-                    $result = new Dependency($reflection->newInstanceArgs(array_merge(
-                        $this->getDependencies($constructor),
-                        $this->arguments
-                    )), $this);
+                    $result = new Dependency($reflection->newInstanceArgs(
+                        $this->getDependencies($constructor)
+                    ), $this);
                 } else {
                     $result = new Dependency($reflection->newInstanceWithoutConstructor(), $this);
                 }
