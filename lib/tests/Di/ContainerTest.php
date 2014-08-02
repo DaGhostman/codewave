@@ -63,10 +63,12 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             return new DependencyStub();
         });
 
+        $this->assertInstanceOf('\Wave\Di\Dependency', $this->container->resolve('\Tests\Di\ResolveStub', null, true));
         $this->assertInstanceOf('\Wave\Di\Dependency', $this->container->resolve('\Tests\Di\ResolveStub'));
         $this->assertSame(5, $this->container->resolve('\Tests\Di\ResolveStub')->getInteger());
         $this->assertInstanceOf('\Wave\Di\Dependency', $this->container->get('stub'));
         $this->assertNull($this->container->get('non_existing'));
+        $this->assertInstanceOf('\Wave\Di\Dependency', $this->container->resolve('stub'));
     }
 
     /**

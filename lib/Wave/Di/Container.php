@@ -17,6 +17,11 @@ class Container
     private $arguments = array();
 
     /**
+     * Register a dependency which can be resolved using the alias.
+     *
+     * Usage: '@inject $alias' Container::resolve() looks up predefined objects, before
+     *          attempting to create all the necessary dependencies.
+     *
      * @param $alias string Alias to access the definition
      * @param $callback callable The callback which constructs the dependency
      * @param $immutable boolean Can the definition be overridden?
@@ -65,6 +70,11 @@ class Container
         return $this;
     }
 
+    /**
+     * @param $subject mixed The class/object which to reflect
+     *
+     * @return null|\ReflectionClass|\ReflectionObject
+     */
     public function createReflection($subject)
     {
         $reflection = null;
@@ -77,6 +87,14 @@ class Container
         return $reflection;
     }
 
+    /**
+     * Parses object/method's annotations and extracting the dependencies defined in
+     *              the annotations
+     *
+     * @param $reflection mixed An instance of \ReflectionClass or \ReflectionObject
+     *
+     * @return array array of the dependencies
+     */
     public function getDependencies($reflection)
     {
         preg_match_all(
@@ -87,20 +105,39 @@ class Container
 
         $dependencies = array();
         foreach ($matches[1] as $match) {
-            array_push($dependencies, $this->resolve($match));
+            array_push($dependencies, $this->resolve($match, null, true));
         }
 
         return $dependencies;
     }
 
-    public function resolve($subject, $method = null)
+    /**
+     * Attempts to automatically resolve object/method dependencies and returns them
+     *
+     * @param mixed $subject Class name or class instance (useful when resolving methods
+     *                       of already existing classes)
+     * @param mixed $method String if a specific method should get invoked. Default null
+     * @param bool $save Should the class get saved in the container for later. Default true
+     *
+     * @return mixed Dependency object wrapping the resolved object or the result of
+     *                       the method execution.
+     *
+     * @throws \RuntimeException If $subject cannot be reflected (invalid object/class name)
+     */
+    public function resolve($subject, $method = null, $save = true)
     {
+
+        if (is_string($subject) && array_key_exists($subject, $this->container)) {
+            return $this->container[$subject];
+        }
         if (($reflection = $this->createReflection($subject)) == null) {
             throw new \RuntimeException(sprintf(
                 "Unable to create reflection of subject: %s",
                 (is_string($subject) ? $subject : print_r($subject, true))
             ));
         }
+
+
 
         $result = null;
         if ($reflection instanceof \ReflectionObject || $reflection instanceof \ReflectionClass) {
@@ -131,6 +168,11 @@ class Container
         }
 
         $this->arguments = array();
+
+        if ($save && $method == null) {
+            $this->container[$reflection->getName()] = $result;
+        }
+
         return $result;
     }
 }
