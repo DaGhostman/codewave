@@ -156,10 +156,10 @@ class Container
                     $constructor = $reflection->getConstructor();
 
                     $result = new Dependency($reflection->newInstanceArgs(
-                        $this->getDependencies($constructor)
+                        array_merge($this->getDependencies($constructor), $this->arguments)
                     ), $this);
                 } else {
-                    $result = new Dependency($reflection->newInstanceWithoutConstructor(), $this);
+                    $result = new Dependency($reflection->newInstance(), $this);
                 }
 
             }
