@@ -74,6 +74,8 @@ class Dependency
         if (is_null($this->object)) {
             if ($this->blueprint instanceof \Closure) {
                 $this->object = call_user_func($this->blueprint);
+            } elseif ($this->blueprint instanceof Dependency) {
+                $this->object = $this->blueprint->raw();
             } else {
                 $this->object = $this->blueprint;
             }
