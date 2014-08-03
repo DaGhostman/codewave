@@ -57,15 +57,6 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         }));
     }
 
-    /**
-     * @runInSeparateProcesses
-     * @preserveGlobalState disabled
-     */
-    public function testStringResolve()
-    {
-        $this->assertSame(5, $this->container->resolve('\Tests\Di\DependencyStub', 'getInteger'));
-    }
-
     public function testGet()
     {
         $this->container->register('stub', function () {
@@ -73,7 +64,6 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         });
 
 
-        $this->assertInstanceOf('\Tests\Di\ResolveStub', $this->container->resolve('\Tests\Di\ResolveStub', null, true));
         $this->assertInstanceOf('\Tests\Di\ResolveStub', $this->container->resolve('\Tests\Di\ResolveStub'));
         $this->assertSame(5, $this->container->with(
             $this->container->resolve('stub')

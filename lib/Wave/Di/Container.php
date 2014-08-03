@@ -141,7 +141,7 @@ class Container
 
             if ($reflection->hasMethod($method)) {
                 $result = call_user_func_array(
-                    array($subject, $method),
+                    array($this->resolve($subject), $method),
                     $this->getDependencies($reflection->getMethod($method))
                 );
             } elseif (is_string($subject) && class_exists($subject, true)) {
