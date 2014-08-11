@@ -12,3 +12,4 @@ phpdoc.dist.xml
 .settings
 composer.lock
 build.xml
+./bin/*
