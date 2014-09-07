@@ -140,11 +140,6 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(1, count($this->immutable));
     }
 
-    public function testSerialize()
-    {
-        $this->assertSame('C:31:"Wave\Framework\Storage\Registry":76:{a:3:{s:7:"mutable";b:1;s:7:"replace";b:0;s:7:"storage";a:1:{s:3:"key";b:1;}}}', serialize($this->mutable));
-    }
-
     public function testUnserialize()
     {
         $ser = serialize($this->immutable);

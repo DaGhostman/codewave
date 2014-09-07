@@ -152,41 +152,6 @@ class CoreTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(1, $app->numControllers());
     }
 
-
-    public function testSerialization()
-    {
-        $app = new Core();
-        $this->assertSame(
-            'C:31:"Wave\Framework\Application\Core":23:{C:8:"SplQueue":4:{i:4;}}',
-            serialize($app)
-        );
-
-        $app->controller('/', 'GET', function() {});
-
-        $this->assertSame(
-            'C:31:"Wave\Framework\Application\Core":23:{C:8:"SplQueue":4:{i:4;}}',
-            serialize($app)
-        );
-
-        $app->controller('/', 'GET', array('\Tests\Application\ControllerStub', 'action'));
-
-        $this->assertSame(
-            'C:31:"Wave\Framework\Application\Core":220:{C:8:"SplQueue":199:{i:4;:C:37:"Wave\Framework\Application\Controller":143:{a:3:{s:7:"pattern";s:1:"/";s:7:"methods";a:1:{i:0;s:3:"GET";}s:6:"action";a:2:{i:0;s:33:"\Tests\Application\ControllerStub";i:1;s:6:"action";}}}}}',
-            serialize($app)
-        );
-    }
-
-    public function testUnserialize()
-    {
-        $app = new Core();
-        $unserializedEmpty =
-            'C:31:"Wave\Framework\Application\Core":23:{C:8:"SplQueue":4:{i:4;}}';
-        $this->assertEquals(
-            $app,
-            unserialize($unserializedEmpty)
-        );
-    }
-
     public function testManualIteration()
     {
         $app = new Core;
