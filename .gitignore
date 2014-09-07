@@ -1,9 +1,5 @@
 /vendor/
-/lib/.settings/
-/lib/.project
 /build
-/dist
-/web
 phpdoc.dist.xml
 *~
 .project
@@ -11,5 +7,4 @@ phpdoc.dist.xml
 .externalToolBuilders
 .settings
 composer.lock
-build.xml
-./bin/*
+./legacy
