@@ -2,7 +2,7 @@ Wave Framework ![Build Status](https://travis-ci.org/phpAcorn/wave-framework.svg
 
 ==============
 
-Small extensible framework for PHP, diesigned with extensibility and security in mind.
+Small extensible framework for PHP, designed with extensibility and security in mind.
 
 ---------------
 
