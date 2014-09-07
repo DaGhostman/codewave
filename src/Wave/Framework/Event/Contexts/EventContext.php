@@ -27,7 +27,7 @@ class EventContext implements ContextInterface
      *
      * @param $scope object The calling class
      */
-    public function __construct ($scope)
+    public function __construct($scope)
     {
         $this->scope = $scope;
     }
@@ -40,7 +40,7 @@ class EventContext implements ContextInterface
      *
      * @return $this
      */
-    public function push ($key, $value)
+    public function push($key, $value)
     {
         $this->store[$key] = $value;
     }
@@ -53,7 +53,7 @@ class EventContext implements ContextInterface
      *
      * @return mixed
      */
-    public function fetch ($key)
+    public function fetch($key)
     {
         if (array_key_exists($key, $this->store)) {
             return $this->store[$key];

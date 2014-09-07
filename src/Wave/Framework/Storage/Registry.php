@@ -246,7 +246,7 @@ class Registry implements \Countable, \Serializable, \ArrayAccess, \IteratorAggr
      * @return Traversable An instance of an object implementing <b>Iterator</b> or
      * <b>Traversable</b>
      */
-    public function getIterator ()
+    public function getIterator()
     {
         return new \ArrayIterator($this->storage, \ArrayIterator::ARRAY_AS_PROPS);
     }

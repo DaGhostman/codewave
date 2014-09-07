@@ -17,7 +17,8 @@ before_script:
   - composer install
 
 script:
-  - mkdir -p build/logs
+  - mkdir -p build/reports
+  - mkdir -p build/coverage/html
   - phpunit --coverage-text
   - ./vendor/bin/phpcs src/Wave --standard=psr2
 

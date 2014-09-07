@@ -85,7 +85,7 @@ class ArgumentsContext implements ContextInterface, \IteratorAggregate
      *
      * @return $this
      */
-    public function push ($key, $value)
+    public function push($key, $value)
     {
         if (!array_key_exists($key, $this->store)) {
             $this->store[$key] = $value;
@@ -114,7 +114,7 @@ class ArgumentsContext implements ContextInterface, \IteratorAggregate
      * @return Traversable An instance of an object implementing <b>Iterator</b> or
      * <b>Traversable</b>
      */
-    public function getIterator ()
+    public function getIterator()
     {
         return new \ArrayIterator($this->store);
     }

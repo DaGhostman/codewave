@@ -10,14 +10,14 @@ namespace Tests\Application\Contexts;
 
 
 use Wave\Framework\Application\Contexts\ArgumentsContext;
-use Wave\Framework\Application\Contexts\ContextInterface;
+use Wave\Framework\Application\Interfaces\ContextInterface;
 
 class StubContext implements ContextInterface {
     protected $context, $scope;
-    public function addContext (ContextInterface $context){ $this->context = $context; }
-    public function getContext () { return $this->context; }
-    public function scope ($object){ $this->scope = $object; }
-    public function getScope () { return $this->scope; }
+    public function __construct($scope) {$this->scope = $scope;}
+    public function scope (){ return $this->scope; }
+    public function push ($key, $value) { $this->context[$key] = $value; }
+    public function fetch ($key) { return $this->context[$key];}
 }
 
 class ArgumentsContextTest extends \PHPUnit_Framework_TestCase {

@@ -29,7 +29,7 @@ class IoC
      *
      * @return mixed
      */
-    public function register ($alias, $callback, $immutable = false)
+    public function register($alias, $callback, $immutable = false)
     {
         if (in_array($alias, $this->immutable)) {
             return false;
@@ -49,7 +49,7 @@ class IoC
      *
      * @return mixed Dependency or null when entry doesn't exist
      */
-    public function get ($alias)
+    public function get($alias)
     {
         if (!array_key_exists($alias, $this->container)) {
             return null;

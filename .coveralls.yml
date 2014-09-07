@@ -1,2 +1,2 @@
-src_dir: lib/Wave
+src_dir: src/Wave
 coverage_clover: build/coverage/clover.xml

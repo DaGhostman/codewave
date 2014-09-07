@@ -20,12 +20,4 @@
         <log type="coverage-html" target="build/coverage/html" charset="UTF-8" yui="true" highlight="true"/>
         <log type="coverage-clover" target="build/coverage/clover.xml"/>
     </logging>
-    <php>
-        <var name="PDO_DRIVER"   value="sqlite" />
-		<var name="PDO_HOSTNAME" value="localhost" />
-        <var name="PDO_DATABASE" value=":memory:" />
-        <var name="PDO_USERNAME" value="root" />
-        <var name="PDO_PASSWORD" value="root" />
-        <var name="PDO_PORT"     value="3306" />
-    </php>
 </phpunit>

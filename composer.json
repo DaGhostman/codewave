@@ -7,9 +7,6 @@
     "require": {
         "php": ">=5.3"
     },
-    "suggests": {
-        "zf1/zend-config": "Better functionality when parsing configuration files"
-    },
     "license": "MIT",
     "authors": [
         {
