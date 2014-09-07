@@ -218,7 +218,7 @@ class Password
 
     public function needsRehash($hash, $algo, array $options = array())
     {
-        $info = password_get_info($hash);
+        $info = $this->getInfo($hash);
         if ($info['algo'] != $algo) {
             return true;
         }
