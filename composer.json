@@ -10,11 +10,6 @@
     "suggests": {
         "zf1/zend-config": "Better functionality when parsing configuration files"
     },
-    "require-dev": {
-        "squizlabs/php_codesniffer": ">1.5",
-        "ircmaxell/password-compat": "1.0.3",
-        "phpdocumentor/phpdocumentor": "2.*"
-    },
     "license": "MIT",
     "authors": [
         {
@@ -25,6 +20,12 @@
     ],
     "minimum-stability": "stable",
     "autoload": {
-        "psr-0": { "Wave\\": "lib" }
+        "psr-0": { "Wave\\Framework\\": "src" }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*",
+        "squizlabs/php_codesniffer": ">1.5",
+        "ircmaxell/password-compat": "1.0.3",
+        "phpdocumentor/phpdocumentor": "2.*"
     }
 }

@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit colors="true" bootstrap="vendor/autoload.php">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/3.7/phpunit.xsd" colors="true" processIsolation="true" backupGlobals="false" strict="true" bootstrap="vendor/autoload.php" stopOnFailure="true">
     <testsuites>
         <testsuite name="all">
-            <directory suffix="Test.php">lib/tests/</directory>
+            <directory suffix="Test.php">tests/</directory>
         </testsuite>
     </testsuites>
     <filter>
         <whitelist>
-            <directory suffix=".php">lib/Wave/</directory>
+            <directory suffix=".php">src/Wave/</directory>
             <exclude>
-                <directory prefix="Abstract">.</directory>
-                <directory prefix="">lib/Wave/Application/State</directory>
-                <directory suffix="Observer.php">lib/Wave/Application/Observers</directory>
-                <directory suffix="Stream.php">lib/Wave/View</directory>
+                <directory suffix="Interface">.</directory>
             </exclude>
         </whitelist>
     </filter>
