@@ -37,16 +37,6 @@ class PasswordTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testHashing()
-    {
-        $obj = new Password($this->options);
-
-        $this->assertSame(
-            password_hash('mypassword', PASSWORD_DEFAULT, $this->options),
-            $obj->hash('mypassword')
-        );
-    }
-
     public function testHashLength()
     {
         $obj = new Password($this->options);
