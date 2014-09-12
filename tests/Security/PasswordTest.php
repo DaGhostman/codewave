@@ -21,13 +21,16 @@ use Wave\Framework\Security\Password;
 class PasswordTest extends \PHPUnit_Framework_TestCase
 {
     private $obj = null;
-    private $options = array(
-        'cost' => 10,
-        'salt' => '0123456789abcdefghijklm'
-    );
+    private $options = null;
 
     protected function setUp()
     {
+
+        $this->options =array(
+            'cost' => 10,
+            'salt' => '0123456789abcdefghijk2'
+        );
+
         if (strnatcmp(phpversion(), '5.5') < 0) {
             $hash = '$2y$04$usesomesillystringfore7hnbRJHxXVLeakoG8K30oukPsA.ztMG';
             $test = crypt("password", $hash);
@@ -46,7 +49,7 @@ class PasswordTest extends \PHPUnit_Framework_TestCase
 
     public function testRawSalt()
     {
-        $obj = new Password(array('salt' => "123456789012345678901".chr(0)));
+        $obj = new Password(array('salt' => "123456789012345678901h"));
 
         $this->assertEquals(60, strlen($obj->hash('simple')));
     }
@@ -124,5 +127,18 @@ class PasswordTest extends \PHPUnit_Framework_TestCase
 
         $obj = new Password();
         $this->assertEquals($info, $obj->getInfo($hash));
+    }
+
+    /*
+     * Little strange usage, but with unexpected results.
+     * One would expect this to work (seems logical?), as generateSalt
+     * is the method which generates the salts.
+     */
+    public function testCustomSaltGeneratedFromGetSalt()
+    {
+        $generator = new Password();
+        $obj = new Password(array('salt' => $generator->generateSalt()));
+
+        $this->assertEquals(60, strlen($obj->hash('password')));
     }
 }

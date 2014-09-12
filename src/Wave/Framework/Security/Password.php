@@ -59,17 +59,17 @@ class Password
             $this->salt = $this->encode($this->generateSalt());
         }
 
+        if (0 == preg_match("#^[a-zA-Z0-9./]+$#D", $this->salt)) {
+            $this->salt = $this->encode($this->salt);
+        }
+
         /*
          * Salt set and with valid size
          */
         if ($this->strlen((string) $this->salt) < 22) {
             throw new \RuntimeException(
-                "Invalid salt length"
+                sprintf("Invalid salt length, expected 22 got %d", strlen($this->salt))
             );
-        }
-
-        if (0 == preg_match("#^[a-zA-Z0-9./]+$#D", $this->salt)) {
-            $this->salt = $this->encode($this->salt);
         }
 
         $result = crypt($password, sprintf('$2y$%02d$', $this->cycles) . $this->substr($this->salt, 0, 22));
@@ -103,10 +103,6 @@ class Password
             }
 
             fclose($filePointer);
-
-            if ($this->strlen($buffer) >= 16) {
-                return $buffer;
-            }
         } else {
             $buffer = null;
             for ($i = 0; $i < 16; $i++) {
