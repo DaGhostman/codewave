@@ -50,6 +50,7 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
     public function testModuleControllersGeneration()
     {
         $core = new CoreMock();
+        $controllers = $core->getControllers();
         $module = new Module($core, 'module', sys_get_temp_dir(), '/root');
 
         $this->assertEquals(
@@ -60,7 +61,7 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
                       array(),
                       '\Wave\Framework\Application\Controller'
             ),
-            $core->getControllers()[1]
+            $controllers[1]
         );
     }
 }
