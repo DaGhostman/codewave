@@ -20,7 +20,6 @@ class EmitterTest extends \PHPUnit_Framework_TestCase {
 
     public function testEventCreation()
     {
-        $this->assertFalse(Emitter::setUp());
         Emitter::defineEvent('test');
         $this->assertTrue(Emitter::hasEvent('test'));
     }
@@ -29,8 +28,9 @@ class EmitterTest extends \PHPUnit_Framework_TestCase {
     {
         $this->expectOutputString('Event Called');
 
-        $this->assertFalse(Emitter::setUp());
-        Emitter::on('test', function() {print "Event Called";});
+        Emitter::on('test', function () {
+            print "Event Called";
+        });
         Emitter::trigger('test');
     }
 
@@ -38,7 +38,6 @@ class EmitterTest extends \PHPUnit_Framework_TestCase {
     {
         $this->expectOutputString("Got Bar");
 
-        $this->assertFalse(Emitter::setUp());
         Emitter::on('test', function($e) {echo sprintf("Got %s", $e->foo);});
         Emitter::trigger('test', array('foo' => 'Bar'));
     }
@@ -46,14 +45,12 @@ class EmitterTest extends \PHPUnit_Framework_TestCase {
     public function testScopeInstance()
     {
         $this->expectOutputString('stdClass');
-        $this->assertFalse(Emitter::setUp());
         Emitter::on('test', function($e) {echo get_class($e->scope());});
         Emitter::trigger('test', null, new \stdClass());
     }
 
     public function testEventResetting()
     {
-        $this->assertFalse(Emitter::setUp());
         Emitter::on('test', function(){});
 
         $this->assertSame(1, count(Emitter::getListeners('test')));
