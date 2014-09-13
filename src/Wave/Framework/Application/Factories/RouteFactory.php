@@ -24,7 +24,7 @@ class RouteFactory
      * @static
      * @access public
      * @param $map string Route map file or XML string
-     * @param $app \Wave\Framework\Application\Core
+     * @param $app \Wave\Framework\Application\Core|\Wave\Framework\Application\Module
      */
     public static function build($map, &$app)
     {
