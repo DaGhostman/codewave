@@ -10,7 +10,8 @@ namespace Tests\Application;
 
 use Wave\Framework\Application\Module;
 
-class CoreMock {
+class CoreMock
+{
     private $controllers = array();
 
     public function controller()
@@ -50,18 +51,17 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
     public function testModuleControllersGeneration()
     {
         $core = new CoreMock();
-        $controllers = $core->getControllers();
         $module = new Module($core, 'module', sys_get_temp_dir(), '/root');
 
         $this->assertEquals(
-            array(
+            array(array(
                       '/root/',
                       array('GET'),
                       array(new \Tests\Application\ControllerMock(), 'method'),
                       array(),
                       '\Wave\Framework\Application\Controller'
-            ),
-            $controllers[1]
+            )),
+            $core->getControllers()
         );
     }
 }

@@ -34,14 +34,12 @@ class Module
      * @param $path string Path to the directory with XML routes file
      * @param $prefix string Route prefix of the routes
      */
-    public function __construct($app, $name, $path, $prefix)
+    public function __construct(&$app, $name, $path, $prefix)
     {
         $this->application = $app;
         $this->prefix = $prefix;
 
-        $app->controller(sprintf('%s(/.+)', $prefix), array('GET', 'POST', 'PUT', 'DELETE'), function () use ($app) {
-            $app->clearControllers();
-        });
+        $app->clearControllers();
 
         RouteFactory::build(sprintf("%s/%s.xml", realpath($path), $name), $this);
     }
