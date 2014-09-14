@@ -39,8 +39,6 @@ class Module
         $this->application = $app;
         $this->prefix = $prefix;
 
-        $app->clearControllers();
-
         RouteFactory::build(sprintf("%s/%s.xml", realpath($path), $name), $this);
     }
 
