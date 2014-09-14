@@ -98,7 +98,7 @@ class CoreTest extends \PHPUnit_Framework_TestCase
     {
         $this->expectOutputString('');
         $app = new Core();
-        $app->controller('/:name', 'GET', function($arguments, $context) {
+        $app->controller('/:name', 'GET', function ($arguments, $context) {
             print "Not Called";
         }, array(
             'name' => '[a-z]{1,}'
@@ -174,5 +174,31 @@ class CoreTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(3, count($app));
         $app->clearControllers();
         $this->assertSame(0, count($app));
+    }
+
+    public function testRedirection()
+    {
+        $this->expectOutputString('Redirected');
+        $app = new Core;
+        $app->controller('/test', 'GET', function () {
+            echo 'Redirected';
+        });
+        $app->controller('/', 'GET', function () use ($app) {
+            $app->redirect('/test');
+        });
+        $app->run(new RequestStub());
+    }
+
+    public function test404Callback()
+    {
+        $this->expectOutputString('Not Found');
+        $app = new Core;
+        $app->notFound('/404', function () {
+            echo 'Not Found';
+        });
+        $app->controller('/why', 'GET', function () {
+            echo 'Why?';
+        });
+        $app->run(new RequestStub());
     }
 }

@@ -2,6 +2,7 @@
 namespace Wave\Framework\Application;
 
 use Wave\Framework\Application\Interfaces\ControllerInterface;
+use Wave\Framework\Http\Request;
 
 /**
  * Created by PhpStorm.
@@ -15,6 +16,8 @@ class Core implements \Serializable, \Iterator, \Countable
     protected $controllers;
     private $ioc;
     protected $debug = false;
+
+    protected $notFoundPattern = null;
 
     /**
      * Setups the required properties
@@ -89,6 +92,8 @@ class Core implements \Serializable, \Iterator, \Countable
             \SplQueue::IT_MODE_FIFO | \SplQueue::IT_MODE_KEEP
         );
 
+        $matched = false;
+
         $this->rewind();
         while ($this->valid()) {
             /**
@@ -96,12 +101,16 @@ class Core implements \Serializable, \Iterator, \Countable
              */
             $controller = $this->current();
 
-
             if ($controller->match($uri) && $controller->supportsHTTP($method)) {
                 $controller->invoke($data);
+                $matched = true;
             }
 
             $this->next();
+        }
+
+        if (!$matched && $this->notFoundPattern) {
+            $this->redirect($this->notFoundPattern, $data);
         }
     }
 
@@ -115,6 +124,36 @@ class Core implements \Serializable, \Iterator, \Countable
         $this->controllers = new \SplQueue();
 
         return $this;
+    }
+
+    /**
+     * Defines a default 404 handle, triggered when no route have matched the request
+     *
+     * @param $pattern string defines a pattern for the 404 page
+     * @param $callback callable Callback to invoke if no route is matched
+     */
+    public function notFound($pattern, $callback)
+    {
+        $this->notFoundPattern = $pattern;
+        $this->controller($pattern, array('GET', 'POST', 'PUT', 'DELETE'), $callback);
+    }
+
+
+    /**
+     * Performs internal redirection and once the redirection has finished, it
+     * terminates the script execution using 'exit(0);' so no further execution
+     * will happen.
+     *
+     * @param string $location The uri to redirect to
+     * @param array $data Same as 3rd argument of Core::run
+     */
+    public function redirect($location, $data = array())
+    {
+        $req = array_merge($_SERVER, array('REQUEST_URI' => $location, 'REQUEST_METHOD' => 'GET'));
+
+        $request = new Request($req);
+
+        $this->run($request, null, $data);
     }
 
     /**
@@ -235,7 +274,6 @@ class Core implements \Serializable, \Iterator, \Countable
      */
     public function run($request, $response = null, $data = array())
     {
-
         try {
             $this->invoke($request->uri(), $request->method(), $data);
         } catch (\Exception $e) {
@@ -265,6 +303,9 @@ class Core implements \Serializable, \Iterator, \Countable
         }
     }
 
+    /**
+     * @return int
+     */
     public function count()
     {
         return count($this->controllers);
