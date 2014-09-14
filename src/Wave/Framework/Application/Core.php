@@ -154,6 +154,7 @@ class Core implements \Serializable, \Iterator, \Countable
         $request = new Request($req);
 
         $this->run($request, null, $data);
+        $this->clearControllers();
     }
 
     /**
