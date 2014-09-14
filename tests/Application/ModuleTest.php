@@ -53,15 +53,8 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
         $core = new CoreMock();
         $module = new Module($core, 'module', sys_get_temp_dir(), '/root');
 
-        $this->assertEquals(
-            array(array(
-                      '/root/',
-                      array('GET'),
-                      array(new \Tests\Application\ControllerMock(), 'method'),
-                      array(),
-                      '\Wave\Framework\Application\Controller'
-            )),
-            $core->getControllers()
-        );
+        $controllers = $core->getControllers();
+        $this->assertEquals('/root(/.+)', $controllers[0][0]);
+        $this->assertEquals(array('GET', 'POST', 'PUT', 'DELETE'), $controllers[0][1]);
     }
 }

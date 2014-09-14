@@ -38,8 +38,17 @@ class Module
     {
         $this->application = $app;
         $this->prefix = $prefix;
+        $self = $this;
 
-        RouteFactory::build(sprintf("%s/%s.xml", realpath($path), $name), $this);
+
+        $app->controller(
+            sprintf('%s(/.+)', $prefix),
+            array('GET', 'POST', 'PUT', 'DELETE'),
+            function () use (&$app, $name, $path, $self) {
+                RouteFactory::build(sprintf("%s/%s.xml", realpath($path), $name), $self);
+            }
+        );
+
     }
 
     /**
