@@ -135,7 +135,7 @@ class Core implements \Serializable, \Iterator, \Countable
     public function notFound($pattern, $callback)
     {
         $this->notFoundPattern = $pattern;
-        $this->controller($pattern, array('GET', 'POST', 'PUT', 'DELETE'), $callback);
+        $this->controller($pattern, array('GET', 'POST', 'PUT', 'DELETE', 'CLI'), $callback);
     }
 
 
