@@ -55,6 +55,6 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
 
         $controllers = $core->getControllers();
         $this->assertEquals('/root(/.+)', $controllers[0][0]);
-        $this->assertEquals(array('GET', 'POST', 'PUT', 'DELETE'), $controllers[0][1]);
+        $this->assertEquals(array('GET', 'POST', 'PUT', 'DELETE','CLI'), $controllers[0][1]);
     }
 }
