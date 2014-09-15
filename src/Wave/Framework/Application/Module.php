@@ -43,7 +43,7 @@ class Module
 
         $app->controller(
             sprintf('%s(/.+)', $prefix),
-            array('GET', 'POST', 'PUT', 'DELETE'),
+            array('GET', 'POST', 'PUT', 'DELETE', 'CLI'),
             function () use (&$app, $name, $path, $self) {
                 RouteFactory::build(sprintf("%s/%s.xml", realpath($path), $name), $self);
             }
