@@ -73,6 +73,9 @@ class Session extends Decoratable implements \ArrayAccess
         return ($this->storage->exists($key) || $cookie->exists());
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function __unset($key)
     {
         $cookie = new Cookie($key);

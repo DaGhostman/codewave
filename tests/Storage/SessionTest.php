@@ -31,6 +31,9 @@ class SessionTest extends \PHPUnit_Framework_TestCase
         $session = new Session();
         $this->assertSame('i_am_unique_id', $session->getId());
         $this->assertSame('i_am_unique_id', $session->x_session_id);
+        $this->assertSame('i_am_unique_id', $session->x_session_id);
+        $this->assertTrue(isset($session->x_session_id));
+
         $session->num = 3;
     }
 }

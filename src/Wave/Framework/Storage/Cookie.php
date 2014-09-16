@@ -47,6 +47,8 @@ class Cookie
      * @param $domain string Set domain for the cookie
      *
      * @return $this
+     *
+     * @codeCoverageIgnore
      */
     public function setDomain($domain)
     {
@@ -68,6 +70,8 @@ class Cookie
      * @param $path string Set the path parameter of the cookie
      *
      * @return $this
+     *
+     * @codeCoverageIgnore
      */
     public function setPath($path)
     {
@@ -79,6 +83,8 @@ class Cookie
     /**
      * @param $secure bool True to set as secure cookie, false otherwise
      * @return $this
+     *
+     * @codeCoverageIgnore
      */
     public function setSecure($secure)
     {
@@ -91,6 +97,8 @@ class Cookie
      * @param $seconds int Seconds, after which to expire
      *
      * @return $this
+     *
+     * @codeCoverageIgnore
      */
     public function setExpiry($seconds)
     {
