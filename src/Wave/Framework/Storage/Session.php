@@ -49,7 +49,9 @@ class Session extends Decoratable implements \ArrayAccess
 
     public function __set($key, $value)
     {
-        $this->storage->set($key, $value);
+        if ($key != $this->sessionName) {
+            $this->storage->set($key, $value);
+        }
     }
 
     public function __get($key)
@@ -95,7 +97,9 @@ class Session extends Decoratable implements \ArrayAccess
      */
     public function offsetSet($key, $value)
     {
-        $this->storage->set($key, $value);
+        if ($key != $this->sessionName) {
+            $this->storage->set($key, $value);
+        }
     }
 
     /**

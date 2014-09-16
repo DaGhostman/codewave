@@ -29,7 +29,7 @@ class SessionTest extends \PHPUnit_Framework_TestCase
     public function testSessionInit()
     {
         $session = new Session();
-        $this->assertSame(serialize('i_am_unique_id'), $session->getId());
+        $this->assertSame('i_am_unique_id', $session->getId());
         $this->assertSame('i_am_unique_id', $session->x_session_id);
         $session->num = 3;
     }
