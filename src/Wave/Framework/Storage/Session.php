@@ -11,7 +11,7 @@ namespace Wave\Framework\Storage;
 
 use Wave\Framework\Decorator\Decoratable;
 
-class Session extends Decoratable
+class Session extends Decoratable implements \ArrayAccess
 {
     protected $sessionName = 'x_session_id';
     protected $uid = null;
@@ -59,6 +59,21 @@ class Session extends Decoratable
         return $this->storage->get($key);
     }
 
+    public function __isset($key)
+    {
+        $cookie = new Cookie($key);
+
+        return ($this->storage->exists($key) || $cookie->exists());
+    }
+
+    public function __unset($key)
+    {
+        $cookie = new Cookie($key);
+
+        $this->storage->remove($key);
+        $cookie->expire();
+    }
+
     public function __destruct()
     {
         $iterator = $this->storage->getIterator();
@@ -68,5 +83,47 @@ class Session extends Decoratable
             $cookie->set($this->invokeCommitDecorators($iterator->current()));
             $iterator->next();
         }
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function offsetSet($key, $value)
+    {
+        $this->storage->set($key, $value);
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function offsetGet($key)
+    {
+        $cookie = new Cookie($key);
+        if (!$this->storage->exists($key) && $cookie->exists()) {
+            $value = $this->invokeRollbackDecorators($cookie->get());
+            $this->storage->set($key, $value);
+            return $value;
+        }
+
+        return $this->storage->get($key);
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function offsetExists($key)
+    {
+        return $this->storage->exists($key);
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function offsetUnset($key)
+    {
+        $cookie = new Cookie($key);
+        $cookie->expire();
+
+        $this->storage->remove($key);
     }
 }
