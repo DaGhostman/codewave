@@ -7,7 +7,7 @@
     "require": {
         "php": ">=5.3"
     },
-    "bin": ["bin/breeze"],
+    "bin": ["bin/breeze.phar"],
     "license": "MIT",
     "authors": [
         {
