@@ -20,6 +20,10 @@
     "autoload": {
         "psr-0": { "Wave\\Framework\\": "src" }
     },
+    "suggest": {
+        "ext-mcrypt": "Version >= 2.4 Allows usage of Decorator\\Encrypt and Decorator\\Decrypt decorators.",
+        "php-5.4" : "Better performance"
+    },
     "require-dev": {
         "phpunit/phpunit": "3.7.*",
         "squizlabs/php_codesniffer": ">1.5",
