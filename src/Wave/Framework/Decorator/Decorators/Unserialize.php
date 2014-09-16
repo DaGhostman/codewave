@@ -9,7 +9,7 @@
 namespace Wave\Framework\Decorator\Decorators;
 
 
-class Unserialize  extends BaseDecorator
+class Unserialize extends BaseDecorator
 {
     public function call()
     {
