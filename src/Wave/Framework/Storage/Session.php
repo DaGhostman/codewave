@@ -10,6 +10,8 @@ namespace Wave\Framework\Storage;
 
 
 use Wave\Framework\Decorator\Decoratable;
+use Wave\Framework\Decorator\Decorators\Serialize;
+use Wave\Framework\Decorator\Decorators\Unserialize;
 
 class Session extends Decoratable implements \ArrayAccess
 {
@@ -25,6 +27,9 @@ class Session extends Decoratable implements \ArrayAccess
         if (!$cookie->exists()) {
             $cookie->set(uniqid(null, true));
         }
+
+        $this->commitDecorator = new Serialize();
+        $this->rollbackDecorator = new Unserialize();
 
         $this->storage = new Registry(array(
             'mutable' => true,
