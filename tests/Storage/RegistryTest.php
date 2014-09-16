@@ -169,4 +169,17 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
         $override->key = true;
         $this->assertTrue($override->key);
     }
+
+    public function testToArray()
+    {
+        $registry = new Registry(array(
+            'mutable' => true,
+            'replace' => true,
+            'storage' => array(
+                'key' => 'value'
+            )
+        ));
+
+        $this->assertSame(array('key' => 'value'), $registry->toArray());
+    }
 }

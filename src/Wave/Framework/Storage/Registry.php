@@ -135,6 +135,16 @@ class Registry implements \Countable, \Serializable, \ArrayAccess, \IteratorAggr
     }
 
     /**
+     * Returns the current content of storage as array
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->storage;
+    }
+
+    /**
      * The number of entries in the object
      * @return int
      */
