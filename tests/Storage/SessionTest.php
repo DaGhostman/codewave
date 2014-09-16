@@ -23,13 +23,13 @@ class SessionTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        $_COOKIE['x_session_id'] = 'i_am_unique_id';
+        $_COOKIE['x_session_id'] = serialize('i_am_unique_id');
     }
 
     public function testSessionInit()
     {
         $session = new Session();
-        $this->assertSame('i_am_unique_id', $session->getId());
+        $this->assertSame(serialize('i_am_unique_id'), $session->getId());
         $this->assertSame('i_am_unique_id', $session->x_session_id);
         $session->num = 3;
     }

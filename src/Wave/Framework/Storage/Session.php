@@ -44,7 +44,7 @@ class Session extends Decoratable implements \ArrayAccess
         if (!$cookie->exists()) {
             throw new \LogicException("Session isn't instantiated properly.");
         }
-        return $cookie->get();
+        return $this->rollbackDecorator->call($cookie->get());
     }
 
     public function __set($key, $value)
