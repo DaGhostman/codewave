@@ -175,7 +175,7 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
         $registry = new Registry(array(
             'mutable' => true,
             'replace' => true,
-            'storage' => array(
+            'data' => array(
                 'key' => 'value'
             )
         ));
