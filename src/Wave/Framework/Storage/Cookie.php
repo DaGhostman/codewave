@@ -113,6 +113,14 @@ class Cookie
     }
 
     /**
+     * @codeCoverageIgnore
+     */
+    public function expire()
+    {
+        setcookie($this->name);
+    }
+
+    /**
      * @return string
      */
     public function __toString()
