@@ -13,11 +13,12 @@ class Serialize extends BaseDecorator
 {
     public function call()
     {
-        $args = func_get_args();
+        $result = array_shift(func_get_args());
+
         if ($this->hasNext()) {
-            return $this->next()->call(serialize($args[0]));
+            $result = $this->next()->call($result);
         }
 
-        return serialize($args[0]);
+        return serialize($result);
     }
 }

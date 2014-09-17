@@ -13,12 +13,12 @@ class Base64Decode extends BaseDecorator
 {
     public function call()
     {
-        $args = func_get_args();
+        $result = array_shift(func_get_args());
 
         if ($this->hasNext()) {
-            return $this->next()->call(base64_decode($args[0], true));
+            $result = $this->next()->call($result);
         }
 
-        return base64_decode($args[0], true);
+        return base64_decode($result, true);
     }
 }

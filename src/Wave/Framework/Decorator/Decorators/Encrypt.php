@@ -43,15 +43,18 @@ class Encrypt extends BaseDecorator
     }
     public function call()
     {
-        $args = func_get_args();
-        $mcrypt = mcrypt_module_open(MCRYPT_RIJNDAEL_256, "", MCRYPT_MODE_CBC, "");
-        mcrypt_generic_init($mcrypt, $this->key, $this->vector);
-        $result = mcrypt_generic($mcrypt, $args[0]);
-        mcrypt_generic_deinit($mcrypt);
+        $result = array_shift(func_get_args());
 
         if ($this->hasNext()) {
-            return $this->next()->call($result);
+            $result = $this->next()->call($result);
         }
+
+        $mcrypt = mcrypt_module_open(MCRYPT_RIJNDAEL_256, "", MCRYPT_MODE_CBC, "");
+        mcrypt_generic_init($mcrypt, $this->key, $this->vector);
+        $result = mcrypt_generic($mcrypt, $result);
+        mcrypt_generic_deinit($mcrypt);
+
+
 
         return $result;
     }
