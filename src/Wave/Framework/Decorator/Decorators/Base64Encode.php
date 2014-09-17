@@ -13,7 +13,8 @@ class Base64Encode extends BaseDecorator
 {
     public function call()
     {
-        $result = array_shift(func_get_args());
+        $args = func_get_args();
+        $result = array_shift($args);
 
         if ($this->hasNext()) {
             $result = $this->next()->call($result);
