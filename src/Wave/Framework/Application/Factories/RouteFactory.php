@@ -38,12 +38,21 @@ class RouteFactory
                 continue;
             }
 
-            $arguments = array();
+            $conditions = array();
             if (isset($route->conditions)) {
                 foreach ($route->conditions->condition as $condition) {
                     if ($condition['rule']) {
-                        $arguments[(string) $condition['name']] = (string) $condition['rule'];
+                        $conditions[(string) $condition['name']] = (string) $condition['rule'];
                     }
+                }
+            }
+
+            $handler = '\Wave\Framework\Application\Controller';
+            if (isset($route['handler'])) {
+                if (!class_exists($route['handler'], true)) {
+                    throw new \LogicException(
+                        sprintf("Invalid Controller Handler specified for controller #%d", $index)
+                    );
                 }
             }
 
@@ -53,7 +62,8 @@ class RouteFactory
                 (string) $route['pattern'],
                 explode(';', $route['via']),
                 array(new $controller, (string) $route['method']),
-                $arguments
+                $conditions,
+                $handler
             );
         }
     }
