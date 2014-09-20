@@ -28,6 +28,7 @@
         "squizlabs/php_codesniffer": ">1.5",
         "ircmaxell/password-compat": "1.0.3",
         "phpdocumentor/phpdocumentor": "2.*",
-        "satooshi/php-coveralls": "dev-master"
+        "satooshi/php-coveralls": "dev-master",
+        "mikey179/vfsStream": "dev-master"
     }
 }
