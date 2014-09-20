@@ -23,8 +23,11 @@ class RouteFactory
      *
      * @static
      * @access public
+     *
      * @param $map string Route map file or XML string
      * @param $app \Wave\Framework\Application\Core|\Wave\Framework\Application\Module
+     *
+     * @throws \LogicException
      */
     public static function build($map, &$app)
     {
@@ -34,9 +37,7 @@ class RouteFactory
 
         foreach ($xml->route as $index => $route) {
 
-            if (!self::validateRoute($route, $index)) {
-                continue;
-            }
+            self::validateRoute($route, $index);
 
             $conditions = array();
             if (isset($route->conditions)) {

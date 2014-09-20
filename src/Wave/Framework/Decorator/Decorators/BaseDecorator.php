@@ -16,6 +16,10 @@ abstract class BaseDecorator
      */
     protected $next = null;
 
+    /**
+     * @return mixed
+     * @codeCoverageIgnore
+     */
     abstract public function call();
 
     /**

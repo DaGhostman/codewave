@@ -218,6 +218,8 @@ class Core implements \Serializable, \Iterator, \Countable
      * String representation of object
      * @link http://php.net/manual/en/serializable.serialize.php
      * @return string the string representation of the object or null
+     *
+     * @codeCoverageIgnore
      */
     public function serialize()
     {
@@ -247,6 +249,7 @@ class Core implements \Serializable, \Iterator, \Countable
      *                           </p>
      *
      * @return void
+     * @codeCoverageIgnore
      */
     public function unserialize($serialized)
     {
@@ -292,13 +295,16 @@ class Core implements \Serializable, \Iterator, \Countable
             }
 
             /**
-             * @codeCoverageIgnore
+             * @codeCoverageIgnoreStart
              */
             if ($response) {
                 $response->internalError();
                 $response->header('Content-Type: text/plain');
                 $response->send();
             }
+            /**
+             * @codeCoverageIgnoreEnd
+             */
 
             echo ob_get_clean();
         }

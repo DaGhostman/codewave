@@ -61,6 +61,8 @@ class Module
      * @param callable $callback
      * @param array  $conditions
      * @param string $handler
+     *
+     * @codeCoverageIgnore
      */
     public function controller(
         $pattern,

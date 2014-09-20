@@ -125,4 +125,27 @@ class RouteFactoryTest extends \PHPUnit_Framework_TestCase {
 
         $factory::build($xml, $app);
     }
+
+    /**
+     * @expectedException \LogicException
+     * @expectedExceptionMessage Invalid Controller Handler specified for controller #
+     */
+    public function testInvalidHandler()
+    {
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>
+        <routes>
+            <route
+                pattern="/"
+                controller="\Tests\Application\ApplicationStub"
+                method="getEntry"
+                via="GET"
+                handler="\Some\Bad\Class"
+                 />
+        </routes>';
+
+        $factory = new RouteFactory();
+        $app = new ApplicationStub();
+
+        $factory::build($xml, $app);
+    }
 }
