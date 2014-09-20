@@ -150,7 +150,7 @@ class MAC implements \Serializable
     /**
      * @codeCoverageIgnore
      */
-    public function serialize ()
+    public function serialize()
     {
         throw new \LogicException('Serialization of MAC object is not allowed');
     }
@@ -158,7 +158,7 @@ class MAC implements \Serializable
     /**
      * @codeCoverageIgnore
      */
-    public function unserialize ($serialized)
+    public function unserialize($serialized)
     {
         return;
     }
