@@ -10,4 +10,4 @@ interface GroupAwareInterface
      * @return \Wave\Framework\ACL\Components\Group Returns the current object's group
      */
     public function group();
-} 
+}

@@ -6,6 +6,8 @@
  * Time: 23:49
  */
 
+namespace Wave\Framework\ACL\Interfaces;
+
 interface RoleAwareInterface
 {
     /**

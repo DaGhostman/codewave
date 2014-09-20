@@ -21,7 +21,8 @@ class Role extends PermissionsHelper
      *
      * @return bool
      */
-    public function hasAccess($id) {
+    public function hasAccess($id)
+    {
         return in_array($id, $this->permissions);
     }
-} 
+}

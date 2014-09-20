@@ -26,4 +26,4 @@ class Group extends PermissionsHelper
     {
         return !in_array($id, $this->permissions);
     }
-} 
+}

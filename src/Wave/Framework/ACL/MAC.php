@@ -30,7 +30,8 @@ class MAC implements \Serializable
     /**
      * @codeCoverageIgnore
      */
-    private function __clone() {
+    private function __clone()
+    {
         return null;
     }
 
