@@ -21,7 +21,7 @@ class DependencyStub
 class ResolveStub
 {
     /**
-     * @inject \Tests\Application\DependencyStub
+     * @inject \Tests\Application\DependencyStub $arg
      */
     public function getInteger($arg)
     {
@@ -46,17 +46,6 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(5, $this->container->get('stub')->getInteger());
     }
 
-    public function testDefinitionOverride()
-    {
-        $this->container->register('stub', function () {
-            return new DependencyStub();
-        }, true);
-
-        $this->assertFalse($this->container->register('stub', function () {
-            return 'Should not get registered';
-        }));
-    }
-
     public function testGet()
     {
         $this->container->register('stub', function () {
@@ -65,12 +54,8 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
 
         $this->assertInstanceOf('\Tests\Application\ResolveStub', $this->container->resolve('\Tests\Application\ResolveStub'));
-        $this->assertSame(5, $this->container->with(
-            $this->container->resolve('stub')
-        )->resolve('\Tests\Application\ResolveStub', 'getInteger'));
+        $this->assertSame(5, $this->container->resolve('\Tests\Application\ResolveStub', 'getInteger'));
         $this->assertInstanceOf('\Tests\Application\DependencyStub', $this->container->get('stub'));
-        $this->assertNull($this->container->get('non_existing'));
-        $this->assertInstanceOf('\Tests\Application\DependencyStub', $this->container->resolve('stub'));
 
     }
 
@@ -80,7 +65,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \RuntimeException
+     * @expectedException \LogicException
      */
     public function testResolveException()
     {
