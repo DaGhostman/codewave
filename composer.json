@@ -21,7 +21,11 @@
     },
     "suggest": {
         "ext-mcrypt": "Version >= 2.4 Allows usage of Decorator\\Encrypt and Decorator\\Decrypt decorators.",
-        "php-5.4" : "Better performance"
+        "php-5.4" : "Better performance",
+        "twig/twig": "Allows usage of Twig templates",
+        "smarty/smarty": "Allows usage of Smarty v3 templates",
+        "league/plates": "Using native PHP like templates",
+        "wave/wave-database": "For simple OO database access"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*",
@@ -29,6 +33,7 @@
         "ircmaxell/password-compat": "1.0.3",
         "phpdocumentor/phpdocumentor": "2.*",
         "satooshi/php-coveralls": "dev-master",
-        "mikey179/vfsStream": "dev-master"
+        "mikey179/vfsStream": "dev-master",
+        "twig/twig": ">=1.16"
     }
 }
