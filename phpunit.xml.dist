@@ -11,6 +11,10 @@
             <directory suffix=".php">src/Wave/</directory>
             <exclude>
                 <directory suffix="Interface">.</directory>
+                <file>src/Wave/Framework/View/AbstractWrapper.php</file>
+                <file>src/Wave/Framework/View/Smarty/Wrapper.php</file>
+                <file>src/Wave/Framework/View/Twig/Wrapper.php</file>
+                <file>src/Wave/Framework/View/Plates/Wrapper.php</file>
             </exclude>
         </whitelist>
     </filter>

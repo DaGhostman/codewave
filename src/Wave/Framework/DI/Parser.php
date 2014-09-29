@@ -29,9 +29,6 @@ class Parser
         preg_match_all($regex, $docblock, $matches);
 
         foreach ($matches as $match) {
-            if (empty($match)) {
-                continue;
-            }
 
             preg_match('#^@[a-zA-Z ]{1,}#is', $match[0], $type);
 
