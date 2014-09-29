@@ -26,7 +26,7 @@ class DependencyTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->dependency = new Dependency('\Tests\DI\Resolution');
+        $this->dependency = new Dependency(new Resolution());
     }
 
     public function testDependencyWithConstructor()
