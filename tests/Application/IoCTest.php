@@ -53,8 +53,14 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         });
 
 
-        $this->assertInstanceOf('\Tests\Application\ResolveStub', $this->container->resolve('\Tests\Application\ResolveStub'));
-        $this->assertSame(5, $this->container->resolve('\Tests\Application\ResolveStub', 'getInteger'));
+        $this->assertInstanceOf(
+            '\Tests\Application\ResolveStub',
+            $this->container->resolve('\Tests\Application\ResolveStub')
+        );
+        $this->assertSame(5, $this->container->resolve(
+            $this->container->resolve('\Tests\Application\ResolveStub'),
+            'getInteger'
+        ));
         $this->assertInstanceOf('\Tests\Application\DependencyStub', $this->container->get('stub'));
 
     }

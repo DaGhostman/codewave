@@ -138,7 +138,7 @@ class Cookie
 
     public function __destruct()
     {
-        if ((!isset($_COOKIE[$this->name])) || ($_COOKIE[$this->name] != $this->value)) {
+        if ((!isset($_COOKIE[$this->name]) || ($_COOKIE[$this->name] != $this->value)) && !headers_sent()) {
             setcookie(
                 $this->name,
                 $this->value,

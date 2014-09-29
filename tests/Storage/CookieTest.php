@@ -11,13 +11,6 @@ namespace Tests\Storage {
     $_COOKIE = array('test' => true);
     use Wave\Framework\Storage\Cookie;
 
-    if (!function_exists('\Tests\Storage\setcookie')) {
-        function setcookie()
-        {
-            return null;
-        }
-    }
-
 
     class CookieTest extends \PHPUnit_Framework_TestCase
     {
@@ -36,14 +29,14 @@ namespace Tests\Storage {
 
         }
 
-        public function testCookieGetter() {
+        public function testCookieGetter()
+        {
             $cookie = new Cookie('test');
             $cookie->set('false');
 
             $this->assertSame('false', $cookie->get());
             $this->assertTrue($cookie->exists());
             $this->assertSame('false', (string) $cookie);
-
         }
     }
 }

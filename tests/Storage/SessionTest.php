@@ -11,14 +11,6 @@ namespace Tests\Storage;
 use Wave\Framework\Decorator\BaseDecorator;
 use Wave\Framework\Storage\Session;
 
-if (!function_exists('\Tests\Storage\setcookie')) {
-    function setcookie($name, $val)
-    {
-        return null;
-    }
-}
-
-
 class SessionTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
