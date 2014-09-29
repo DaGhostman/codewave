@@ -76,7 +76,7 @@ class Wrapper extends AbstractWrapper
      *
      * @return $this
      */
-    public function debug ($state = true)
+    public function debug($state = true)
     {
         $this->options['debug'] = $state;
 
@@ -141,7 +141,7 @@ class Wrapper extends AbstractWrapper
      *
      * @return $this
      */
-    public function loadExtension ($extension)
+    public function loadExtension($extension)
     {
         if (!$extension instanceof \Twig_Extension) {
             throw new \InvalidArgumentException(
@@ -208,7 +208,7 @@ class Wrapper extends AbstractWrapper
      *
      * @return string
      */
-    public function render ($template)
+    public function render($template)
     {
         return $this->getInstance()
             ->render($template, $this->data);
@@ -222,7 +222,7 @@ class Wrapper extends AbstractWrapper
      *
      * @return null
      */
-    public function display ($template)
+    public function display($template)
     {
         echo $this->render($template);
     }

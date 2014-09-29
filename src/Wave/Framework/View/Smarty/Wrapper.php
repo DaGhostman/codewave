@@ -22,7 +22,7 @@ class Wrapper extends AbstractWrapper
      * @param $templates string Path to the 'templates' directory
      * @throws \InvalidArgumentException
      */
-    public function __construct ($templates)
+    public function __construct($templates)
     {
         if (!is_dir($templates)) {
             throw new \InvalidArgumentException(

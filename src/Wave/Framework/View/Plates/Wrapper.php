@@ -57,7 +57,7 @@ class Wrapper extends AbstractWrapper
      *
      * @return $this
      */
-    public function loadExtension ($extension)
+    public function loadExtension($extension)
     {
         $this->instance->loadExtension($extension);
 
@@ -71,7 +71,7 @@ class Wrapper extends AbstractWrapper
      *
      * @return string
      */
-    public function render ($template)
+    public function render($template)
     {
         return $this->instance->render($template, $this->data);
     }
@@ -84,7 +84,7 @@ class Wrapper extends AbstractWrapper
      *
      * @return null
      */
-    public function display ($template)
+    public function display($template)
     {
         echo $this->render($template);
     }
