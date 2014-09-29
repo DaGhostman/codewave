@@ -60,12 +60,5 @@ abstract class AbstractWrapper
         $this->data[$key] = $value;
     }
 
-    public function __get($key)
-    {
-        if (!array_key_exists($key, $this->data)) {
-            return null;
-        }
-
-        return $this->data[$key];
-    }
+    abstract public function getInstance();
 }

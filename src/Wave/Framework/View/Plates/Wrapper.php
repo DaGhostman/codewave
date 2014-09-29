@@ -9,7 +9,10 @@
 namespace Wave\Framework\View\Plates;
 
 
-class Wrapper extends \Wave\Framework\View\AbstractWrapper
+use League\Plates\Engine;
+use Wave\Framework\View\AbstractWrapper;
+
+class Wrapper extends AbstractWrapper
 {
 
     protected $instance = null;
@@ -32,7 +35,7 @@ class Wrapper extends \Wave\Framework\View\AbstractWrapper
             );
         }
 
-        $this->instance = new \League\Plates\Engine($templates, 'tpl');
+        $this->instance = new Engine($templates, 'tpl');
     }
 
     public function addPath()
@@ -46,12 +49,6 @@ class Wrapper extends \Wave\Framework\View\AbstractWrapper
     {
         $this->instance->setFileExtension($extension);
     }
-
-    public function __set($key, $value)
-    {
-        $this->data[$key] = $value;
-    }
-
 
     /**
      * Load an extension to the view processor
@@ -90,5 +87,10 @@ class Wrapper extends \Wave\Framework\View\AbstractWrapper
     public function display ($template)
     {
         echo $this->render($template);
+    }
+
+    public function getInstance()
+    {
+        return $this->instance;
     }
 }
