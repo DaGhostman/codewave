@@ -31,14 +31,6 @@ abstract class AbstractWrapper
     abstract public function __construct($templates);
 
     /**
-     * Enables debugging of the viewer (if supported)
-     * @param $state bool true to enable or false to disable
-     *
-     * @return $this
-     */
-    abstract public function debug($state);
-
-    /**
      * Load an extension to the view processor
      * @param $extension mixed Extension to add to the core
      *
