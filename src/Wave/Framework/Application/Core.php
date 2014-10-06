@@ -32,16 +32,10 @@ class Core implements \Serializable, \Iterator, \Countable
         ob_start();
         $this->ioc = new IoC();
 
-        $app = $this;
-
 
         $this->controllers = new \SplQueue();
 
         $this->config = array_merge($this->config, $options);
-
-        $this->ioc->register('app', function () use ($app) {
-            return $app;
-        });
 
     }
 
@@ -121,6 +115,7 @@ class Core implements \Serializable, \Iterator, \Countable
      *
      * @param $uri string The URI of the request
      * @param $method string The method of the request
+     * @param $request object The request object passed to run
      * @param $data array Data to pass to the controller
      *
      * @throws \Exception
