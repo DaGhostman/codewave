@@ -15,6 +15,8 @@ class Request
     protected $request = array();
     protected $headers = array();
 
+    protected $source = array();
+
     protected $params = array();
 
     /**
@@ -29,6 +31,7 @@ class Request
      */
     public function __construct($source)
     {
+        $this->source = $source; // For access with __get
 
         $this->params = array_merge($_GET, $_POST);
         foreach ($source as $name => $value) {
@@ -149,5 +152,14 @@ class Request
     public function params()
     {
         return $this->params;
+    }
+
+    public function __get($key)
+    {
+        if (!array_key_exists($key, $this->source)) {
+            return null;
+        }
+
+        return $this->source[$key];
     }
 }
