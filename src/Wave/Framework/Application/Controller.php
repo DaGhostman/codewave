@@ -21,7 +21,14 @@ class Controller implements \Serializable, ControllerInterface
 
     protected $conditions = array();
 
+    private $strict = false;
+
     private $arguments = array();
+
+    public function setStrict($strict)
+    {
+        $this->strict = $strict;
+    }
 
     /**
      * Sets the pattern of the object/controller
@@ -131,7 +138,12 @@ class Controller implements \Serializable, ControllerInterface
             $pattern .= '?';
         }
 
-        $regex = '#^' . $pattern . '$#i';
+        $regex = '#^' . $pattern . '#i';
+        if ($this->strict) {
+            $regex = '#^' . $pattern . '$#i';
+        }
+
+
 
         if (preg_match($regex, urldecode($path), $values)) {
             $this->arguments = new ArgumentsContext($this, $values);
