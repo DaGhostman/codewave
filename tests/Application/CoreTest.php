@@ -13,6 +13,7 @@ use Wave\Framework\Application\Core;
 class ControllerStub {
     public function action(){}
     public function throwException(){throw new \RuntimeException("It works!");}
+    public function setStrict() { return null; }
 }
 
 class RequestStub {
@@ -26,6 +27,7 @@ class RequestStub {
 
     public function uri() { return $this->uri; }
     public function method() { return $this->method; }
+    public function __get($key) { return null;}
 }
 
 
@@ -179,7 +181,7 @@ class CoreTest extends \PHPUnit_Framework_TestCase
     public function testRedirection()
     {
         $this->expectOutputString('Redirected');
-        $app = new Core;
+        $app = new Core('app', array('strictPatterns' => true));
         $app->controller('/test', 'GET', function () {
             echo 'Redirected';
         });

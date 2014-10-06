@@ -17,17 +17,48 @@ class Core implements \Serializable, \Iterator, \Countable
     private $ioc;
     protected $debug = false;
 
+    protected $config = array(
+        'strictPatterns' => false,
+        'controllerHandler' => '\Wave\Framework\Application\Controller'
+    );
+
     protected $notFoundPattern = null;
 
     /**
      * Setups the required properties
      */
-    public function __construct($name = 'application')
+    public function __construct($name = 'application', $options = array())
     {
         ob_start();
         $this->ioc = new IoC();
+
+        $app = $this;
+
+
         $this->controllers = new \SplQueue();
 
+        $this->config = array_merge($this->config, $options);
+
+        $this->ioc->register('app', function () use ($app) {
+            return $app;
+        });
+
+    }
+
+    /**
+     * Getter for the configurations
+     *
+     * @param $key string The configuration which needs to be retrieved
+     *
+     * @return mixed
+     */
+    public function config($key)
+    {
+        if (!isset($this->config[$key])) {
+            return null;
+        }
+
+        return $this->config[$key];
     }
 
     /**
@@ -49,13 +80,21 @@ class Core implements \Serializable, \Iterator, \Countable
         $method,
         $callback,
         array $conditions = array(),
-        $handler = '\Wave\Framework\Application\Controller'
+        $handler = null
     ) {
+
+        if (is_null($handler)) {
+            $handler = $this->config('controllerHandler');
+        }
+
         $controller = $this->ioc->resolve($handler);
+
 
         if (!$controller instanceof ControllerInterface) {
             throw new \InvalidArgumentException("Invalid Controller handler specified");
         }
+
+        $controller->setStrict($this->config('strictPatterns'));
 
         $controller->setPattern($pattern)
             ->action($callback)
@@ -86,8 +125,11 @@ class Core implements \Serializable, \Iterator, \Countable
      *
      * @throws \Exception
      */
-    public function invoke($uri, $method, $data = array())
+    public function invoke($uri, $method, $request, $data = array())
     {
+        $script = $request->SCRIPT_NAME;
+        $query = '?' . $request->QUERY_STRING;
+
         $this->controllers->setIteratorMode(
             \SplQueue::IT_MODE_FIFO | \SplQueue::IT_MODE_KEEP
         );
@@ -100,6 +142,14 @@ class Core implements \Serializable, \Iterator, \Countable
              * @var \Wave\Framework\Application\Interfaces\ControllerInterface
              */
             $controller = $this->current();
+
+            if (substr(urldecode($uri), 0, strlen($script)) == $script) {
+                $uri = substr($uri, strlen($script));
+                if (substr($uri, 0, (-1 * abs(strlen($query)))) == $query) {
+                    $uri = substr($uri, 0, strlen($query));
+                }
+            }
+
 
             if ($controller->match($uri) && $controller->supportsHTTP($method)) {
                 $controller->invoke($data);
@@ -279,7 +329,7 @@ class Core implements \Serializable, \Iterator, \Countable
     public function run($request, $response = null, $data = array())
     {
         try {
-            $this->invoke($request->uri(), $request->method(), $data);
+            $this->invoke($request->uri(), $request->method(), $request, $data);
         } catch (\Exception $e) {
             if ($this->debug) {
                 ob_clean();
