@@ -59,4 +59,6 @@ interface ControllerInterface
      * @return bool
      */
     public function match($path);
+
+    public function setStrict($config);
 }
