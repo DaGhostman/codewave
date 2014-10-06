@@ -40,19 +40,24 @@ class Core implements \Serializable, \Iterator, \Countable
     }
 
     /**
-     * Getter for the configurations
+     * Getter/Setter for the configurations
      *
      * @param $key string The configuration which needs to be retrieved
+     * @param $value mixed Optional value if method used as setter
      *
      * @return mixed
      */
-    public function config($key)
+    public function config($key, $value = null)
     {
-        if (!isset($this->config[$key])) {
-            return null;
+        if (is_null($value)) {
+            if (!isset($this->config[$key])) {
+                return null;
+            }
+
+            return $this->config[$key];
         }
 
-        return $this->config[$key];
+        $this->config[$key] = $value;
     }
 
     /**
