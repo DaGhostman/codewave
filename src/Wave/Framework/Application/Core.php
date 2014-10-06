@@ -58,6 +58,8 @@ class Core implements \Serializable, \Iterator, \Countable
         }
 
         $this->config[$key] = $value;
+
+        return null;
     }
 
     /**

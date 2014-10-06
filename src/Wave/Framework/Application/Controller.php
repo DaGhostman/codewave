@@ -38,6 +38,9 @@ class Controller implements \Serializable, ControllerInterface
      */
     public function setPattern($pattern)
     {
+        if ($this->strict && substr($pattern, -1) !== '/') {
+            $pattern = $pattern . '/';
+        }
         $this->pattern = $pattern;
 
         return $this;
@@ -134,16 +137,12 @@ class Controller implements \Serializable, ControllerInterface
             str_replace(')', ')?', (string) $this->pattern)
         );
 
+
         if (substr($this->pattern, - 1) === '/') {
             $pattern .= '?';
         }
 
-        $regex = '#^' . $pattern . '#i';
-        if ($this->strict) {
-            $regex = '#^' . $pattern . '$#i';
-        }
-
-
+        $regex = '#^' . $pattern . '$#i';
 
         if (preg_match($regex, urldecode($path), $values)) {
             $this->arguments = new ArgumentsContext($this, $values);

@@ -181,13 +181,14 @@ class CoreTest extends \PHPUnit_Framework_TestCase
     public function testRedirection()
     {
         $this->expectOutputString('Redirected');
-        $app = new Core('app', array('strictPatterns' => true));
+        $app = new Core('app');
         $app->controller('/test', 'GET', function () {
             echo 'Redirected';
         });
         $app->controller('/', 'GET', function () use ($app) {
             $app->redirect('/test');
         });
+
         $app->run(new RequestStub());
     }
 
