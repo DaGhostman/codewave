@@ -34,7 +34,7 @@ class DependencyTest extends \PHPUnit_Framework_TestCase
         $this->dependency->setMethod('__construct');
         $dep = $this->dependency;
         $dep();
-        $this->expectOutputString('Success');
+        $this->expectOutputString('SuccessSuccess');
     }
 
     public function testDependencyWithAnotherMethod()
@@ -44,12 +44,12 @@ class DependencyTest extends \PHPUnit_Framework_TestCase
 
         $dep();
 
-        $this->expectOutputString('Run');
+        $this->expectOutputString('SuccessRun');
     }
 
     public function testDependencyWithoutMethod()
     {
-        $this->expectOutputString('Success');
+        $this->expectOutputString('SuccessSuccess');
         $dep = $this->dependency;
         $this->assertInstanceOf('\Tests\DI\Resolution', $dep());
     }
@@ -62,7 +62,7 @@ class DependencyTest extends \PHPUnit_Framework_TestCase
         $dep = $this->dependency;
         $dep();
 
-        $this->expectOutputString(print_r(array('foo', 'bar', 'baz'), true));
+        $this->expectOutputString('Success'.print_r(array('foo', 'bar', 'baz'), true));
     }
 
     /**
@@ -71,6 +71,7 @@ class DependencyTest extends \PHPUnit_Framework_TestCase
      */
     public function testLogicException()
     {
+        $this->expectOutputString('Success');
         $dep = $this->dependency;
         $dep->addArgument('asd')
             ->setMethod('arguments');
@@ -80,6 +81,7 @@ class DependencyTest extends \PHPUnit_Framework_TestCase
 
     public function testDependencyHasMethod()
     {
+        $this->expectOutputString('Success');
         $this->assertFalse($this->dependency->hasMethod());
     }
 
