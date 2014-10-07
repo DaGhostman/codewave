@@ -1,8 +1,8 @@
 {
-    "name": "wave/wave",
+    "name": "codewave/codewave",
     "description": "Small extensible framework in PHP",
-    "keywords": ["wave", "wave-framework"],
-    "homepage": "https://phpAcorn.github.com/wave-framework",
+    "keywords": ["CodeWave", "PHP Framework", "MVC Framework"],
+    "homepage": "https://github.com/DaGhostman/codewave",
     "type": "library",
     "require": {
         "php": ">=5.3"
@@ -10,8 +10,8 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "phpAcorn",
-            "email": "phpacorn@gmail.com",
+            "name": "Dimitar Dimitrov",
+            "email": "daghostman.dimitrov@gmail.com",
             "role": "development"
         }
     ],
@@ -32,7 +32,6 @@
         "mockery/mockery": ">=0.9",
         "squizlabs/php_codesniffer": ">1.5",
         "ircmaxell/password-compat": "1.0.3",
-        "phpdocumentor/phpdocumentor": "2.*",
         "satooshi/php-coveralls": "dev-master",
         "mikey179/vfsStream": "dev-master",
         "twig/twig": ">=1.16"

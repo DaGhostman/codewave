@@ -1,4 +1,11 @@
-Wave Framework ![Build Status](https://travis-ci.org/phpAcorn/wave-framework.svg?branch=master)  [![Coverage Status](https://coveralls.io/repos/phpAcorn/wave-framework/badge.png?branch=master)](https://coveralls.io/r/phpAcorn/wave-framework?branch=master) [![License](https://poser.pugx.org/wave/wave/license.svg)](https://packagist.org/packages/wave/wave)
+# Renaming the framework
+ Due to name clash with www.waveframework.com this project is being renamed to CodeWave. The composer vendor\package is now codewave\codewave.
+
+ Sincere apologies!
+
+  ----
+
+CodeWave Framework ![Build Status](https://travis-ci.org/phpAcorn/wave-framework.svg?branch=master)  [![Coverage Status](https://coveralls.io/repos/phpAcorn/wave-framework/badge.png?branch=master)](https://coveralls.io/r/phpAcorn/wave-framework?branch=master) [![License](https://poser.pugx.org/wave/wave/license.svg)](https://packagist.org/packages/wave/wave)
 
 ==============
 
