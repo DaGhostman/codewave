@@ -38,7 +38,7 @@ class Controller implements \Serializable, ControllerInterface
      */
     public function setPattern($pattern)
     {
-        if ($this->strict && substr($pattern, -1) !== '/') {
+        if (!$this->strict && substr($pattern, -1) !== '/') {
             $pattern = $pattern . '/';
         }
         $this->pattern = $pattern;

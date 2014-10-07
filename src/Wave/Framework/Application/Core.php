@@ -147,11 +147,11 @@ class Core implements \Serializable, \Iterator, \Countable
 
             if (substr(urldecode($uri), 0, strlen($script)) == $script) {
                 $uri = substr($uri, strlen($script));
-                if (substr($uri, 0, (-1 * abs(strlen($query)))) == $query) {
-                    $uri = substr($uri, 0, strlen($query));
-                }
             }
 
+            if (substr($uri, strpos($uri, $query)) == $query) {
+                $uri = substr($uri, 0, strpos($uri, $query));
+            }
 
             if ($controller->match($uri) && $controller->supportsHTTP($method)) {
                 $controller->invoke($data);

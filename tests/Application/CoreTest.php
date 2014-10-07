@@ -20,9 +20,12 @@ class RequestStub {
     private $uri = null;
     private $method = null;
 
-    public function __construct($uri = '/', $method = 'GET') {
+    public $QUERY_STRING = null;
+
+    public function __construct($uri = '/', $method = 'GET', $query= '') {
         $this->uri = $uri;
         $this->method = $method;
+        $this->QUERY_STRING= $query;
     }
 
     public function uri() { return $this->uri; }
@@ -203,5 +206,16 @@ class CoreTest extends \PHPUnit_Framework_TestCase
             echo 'Why?';
         });
         $app->run(new RequestStub());
+    }
+
+    public function testWithQueryStringParams()
+    {
+        $this->expectOutputString('Matched');
+        $app = new Core('app');
+        $app->controller('/test', 'GET', function () {
+            echo 'Matched';
+        });
+
+        $app->run(new RequestStub('/test/?test=true', 'GET', 'test=true'));
     }
 }
