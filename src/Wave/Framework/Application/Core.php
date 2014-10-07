@@ -131,10 +131,19 @@ class Core implements \Serializable, \Iterator, \Countable
     {
         $script = $request->SCRIPT_NAME;
         $query = '?' . $request->QUERY_STRING;
+        $uri = urldecode($uri);
 
         $this->controllers->setIteratorMode(
             \SplQueue::IT_MODE_FIFO | \SplQueue::IT_MODE_KEEP
         );
+
+        if (substr($uri, 0, strlen($script)) == $script) {
+            $uri = substr($uri, strlen($script));
+        }
+
+        if (substr($uri, strpos($uri, $query)) == $query) {
+            $uri = substr($uri, 0, strpos($uri, $query));
+        }
 
         $matched = false;
 
@@ -144,14 +153,6 @@ class Core implements \Serializable, \Iterator, \Countable
              * @var \Wave\Framework\Application\Interfaces\ControllerInterface
              */
             $controller = $this->current();
-
-            if (substr(urldecode($uri), 0, strlen($script)) == $script) {
-                $uri = substr($uri, strlen($script));
-            }
-
-            if (substr($uri, strpos($uri, $query)) == $query) {
-                $uri = substr($uri, 0, strpos($uri, $query));
-            }
 
             if ($controller->match($uri) && $controller->supportsHTTP($method)) {
                 $controller->invoke($data);
