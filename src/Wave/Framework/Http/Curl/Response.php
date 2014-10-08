@@ -15,14 +15,26 @@ namespace Wave\Framework\Http\Curl;
  *
  * @codeCoverageIgnore
  */
-class Response
+class Response implements \ArrayAccess, \IteratorAggregate
 {
     protected $curl = null;
+
+    protected $headers = array();
+
+    protected $body = null;
 
     public function __construct($curl, $data = null)
     {
         $this->curl = $curl;
-        $this->data = $data;
+
+        $headerString = trim(substr($data, 0, $this->getHeaderSize()));
+        foreach (explode("\n\r", $headerString) as $pair) {
+            list($header, $value)=explode(':', $pair);
+            $this->headers[$header] = $value;
+        }
+
+
+        $this->data = trim(substr($data, $this->getHeaderSize()));
     }
 
     /**
@@ -48,6 +60,11 @@ class Response
         return curl_getinfo($this->curl, CURLINFO_CONTENT_TYPE);
     }
 
+    public function getJsonAsArray()
+    {
+        return json_decode($this->data, true);
+    }
+
     public function getData()
     {
         return $this->data;
@@ -61,5 +78,34 @@ class Response
     public function __destruct()
     {
         curl_close($this->curl);
+    }
+
+    public function offsetExists($key)
+    {
+        return array_key_exists($key, $this->headers);
+    }
+
+    public function offsetGet($key)
+    {
+        if (!array_key_exists($key, $this->headers)) {
+            return null;
+        }
+
+        return $this->headers[$key];
+    }
+
+    public function offsetSet($ket, $value)
+    {
+        throw new \LogicException('Unable to write. Curl\Response object is read-only.');
+    }
+
+    public function offsetUnset($key)
+    {
+        throw new \LogicException('Unable to write. Curl\Response object is read-only.');
+    }
+
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->headers, \ArrayIterator::ARRAY_AS_PROPS);
     }
 }
