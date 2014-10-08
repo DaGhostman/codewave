@@ -56,22 +56,30 @@ class Request
     public function setPort($port)
     {
         curl_setopt($this->curl, CURLOPT_PORT, $port);
+
+        return $this;
     }
 
     public function withHeaders($bool = true)
     {
         $this->withHeaders = $bool;
+
+        return $this;
     }
 
     /**
      *
      *
      * @param $data array key => value pairs of data to send
+     *
+     * @return $this
      */
     public function withPostData($data)
     {
         curl_setopt($this->curl, CURLOPT_POST, true);
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, $data);
+
+        return $this;
     }
 
     public function setMethod($method = 'GET')
@@ -111,6 +119,8 @@ class Request
     public function setTimeout($seconds)
     {
         $this->timeout = (int) $seconds;
+
+        return $this;
     }
 
     public function verifySSL($bool)
