@@ -76,7 +76,6 @@ class Request
      */
     public function withPostData($data)
     {
-        curl_setopt($this->curl, CURLOPT_POST, true);
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, $data);
 
         return $this;
