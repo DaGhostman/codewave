@@ -156,10 +156,10 @@ class Request
 
     public function __get($key)
     {
-        if (!array_key_exists($key, $this->source)) {
+        if (!array_key_exists(strtoupper($key), $this->source)) {
             return null;
         }
 
-        return $this->source[$key];
+        return $this->source[strtoupper($key)];
     }
 }
