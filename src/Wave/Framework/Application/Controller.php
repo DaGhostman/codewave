@@ -11,6 +11,7 @@ namespace Wave\Framework\Application;
 
 use Wave\Framework\Application\Contexts\ArgumentsContext;
 use Wave\Framework\Application\Interfaces\ControllerInterface;
+use Wave\Framework\Decorator\Decoratable;
 use Wave\Framework\Storage\Registry;
 
 class Controller implements \Serializable, ControllerInterface
@@ -73,6 +74,14 @@ class Controller implements \Serializable, ControllerInterface
      */
     public function invoke(array $data = array())
     {
+        if (is_array($this->action)) {
+            if (is_object($this->action[0]) && !$this->action[0] instanceof \Closure) {
+                if ($this->action[0] instanceof Decoratable) {
+                    $data = $this->action[0]->invokeCommitDecorators($data);
+                }
+            }
+        }
+
         return call_user_func($this->action, $this->arguments, new Registry(array(
             'mutable' => false,
             'data' => $data
