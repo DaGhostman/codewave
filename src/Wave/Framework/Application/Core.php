@@ -2,6 +2,7 @@
 namespace Wave\Framework\Application;
 
 use Wave\Framework\Application\Interfaces\ControllerInterface;
+use Wave\Framework\Decorator\Decoratable;
 use Wave\Framework\Http\Request;
 
 /**
@@ -81,7 +82,8 @@ class Core implements \Serializable, \Iterator, \Countable
         $method,
         $callback,
         array $conditions = array(),
-        $handler = null
+        $handler = null,
+        $decorators = null
     ) {
 
         if (is_null($handler)) {
@@ -102,9 +104,21 @@ class Core implements \Serializable, \Iterator, \Countable
             ->via($method)
             ->conditions($conditions);
 
+        $this->addDecorators($controller, $decorators);
+
         $this->controllers->enqueue($controller);
 
-        return $this;
+        return $controller;
+    }
+
+    public function addDecorators($controller, $decorators)
+    {
+
+        if ($controller instanceof Decoratable) {
+            if (!empty($decorators)) {
+                $controller->chainCommitDecorators($decorators);
+            }
+        }
     }
 
     /**
