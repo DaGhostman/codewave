@@ -25,7 +25,8 @@ class Session extends Decoratable implements \ArrayAccess
         $this->sessionName = $name;
         $cookie = new Cookie($this->sessionName);
         if (!$cookie->exists()) {
-            $cookie->set(uniqid(null, true));
+            $this->uid = uniqid(null, true);
+            $cookie->set($this->uid);
         }
 
         $this->commitDecorator = new Serialize();
@@ -40,6 +41,10 @@ class Session extends Decoratable implements \ArrayAccess
     public function getId()
     {
         $cookie = new Cookie($this->sessionName);
+
+        if ($this->uid) {
+            return $this->uid;
+        }
 
         if (!$cookie->exists()) {
             throw new \LogicException("Session isn't instantiated properly.");
