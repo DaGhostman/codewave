@@ -113,7 +113,6 @@ class Core implements \Serializable, \Iterator, \Countable
 
     public function addDecorators($controller, $decorators)
     {
-
         if ($controller instanceof Decoratable) {
             if (!empty($decorators)) {
                 $controller->chainCommitDecorators($decorators);

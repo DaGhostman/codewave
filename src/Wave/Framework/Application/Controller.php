@@ -14,7 +14,7 @@ use Wave\Framework\Application\Interfaces\ControllerInterface;
 use Wave\Framework\Decorator\Decoratable;
 use Wave\Framework\Storage\Registry;
 
-class Controller implements \Serializable, ControllerInterface
+class Controller extends Decoratable implements \Serializable, ControllerInterface
 {
     protected $action = null;
     protected $pattern;
@@ -67,20 +67,14 @@ class Controller implements \Serializable, ControllerInterface
     }
 
     /**
-     * PHP Magic method __invoke
+     * PHP Magic method invoke
      *
      * @param $data array Array with arguments to pass
      * @return mixed The result of the call
      */
     public function invoke(array $data = array())
     {
-        if (is_array($this->action)) {
-            if (is_object($this->action[0]) && !$this->action[0] instanceof \Closure) {
-                if ($this->action[0] instanceof Decoratable) {
-                    $data = $this->action[0]->invokeCommitDecorators($data);
-                }
-            }
-        }
+        $this->invokeCommitDecorators();
 
         return call_user_func($this->action, $this->arguments, new Registry(array(
             'mutable' => false,
