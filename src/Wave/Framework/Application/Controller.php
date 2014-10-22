@@ -74,12 +74,14 @@ class Controller extends Decoratable implements \Serializable, ControllerInterfa
      */
     public function invoke(array $data = array())
     {
-        $this->invokeCommitDecorators();
-
-        return call_user_func($this->action, $this->arguments, new Registry(array(
+        $context = new Registry(array(
             'mutable' => false,
             'data' => $data
-        )));
+        ));
+
+        $this->invokeCommitDecorators($context);
+
+        return call_user_func($this->action, $this->arguments, $context);
     }
 
     /**
