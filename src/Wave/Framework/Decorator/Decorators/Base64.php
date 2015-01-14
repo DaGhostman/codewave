@@ -3,21 +3,21 @@
  * Created by PhpStorm.
  * User: dagho_000
  * Date: 14/01/2015
- * Time: 02:49
+ * Time: 02:48
  */
 
 namespace Wave\Framework\Decorator\Decorators;
 
 
-class Serialize
+class Base64
 {
     public function commit($val)
     {
-        return serialize($val);
+        return base64_encode($val);
     }
 
     public function rollback($val)
     {
-        return unserialize($val);
+        return base64_decode($val);
     }
 }

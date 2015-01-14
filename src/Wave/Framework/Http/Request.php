@@ -14,6 +14,7 @@ class Request
 
     protected $request = array();
     protected $headers = array();
+    protected $vars = array();
 
     protected $source = array();
 
@@ -152,6 +153,35 @@ class Request
     public function params()
     {
         return $this->params;
+    }
+
+    /**
+     * @param $vars array Array with the URL variables.
+     */
+    public function setVariables($vars)
+    {
+        array_merge($this->vars, $vars);
+    }
+
+    /**
+     * @param $name string Returns a specific URL variables, or null
+     * @return mixed null if the key does not exist
+     */
+    public function variable($name)
+    {
+        if (array_key_exists($name, $this->vars)) {
+            return null;
+        }
+
+        return $this->vars['name'];
+    }
+
+    /**
+     * @return array All the URL variables
+     */
+    public function variables()
+    {
+        return $this->vars;
     }
 
     public function __get($key)
