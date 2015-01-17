@@ -9,62 +9,107 @@
 namespace Wave\Framework\Application;
 
 
+use Wave\Framework\Event\Emitter;
+use Zend\Log\Logger;
+use Zend\Log\Writer\FirePhp;
+use Zend\Log\Writer\FirePhp\FirePhpBridge;
+
 class Debugger
 {
+    private static $logger = null;
+
+    public static function getLogger()
+    {
+        if (!self::$logger) {
+            $writer = new FirePhp(new FirePhpBridge(\FirePHP::getInstance(true)));
+            $logger = new Logger();
+            $logger->addWriter($writer);
+
+            self::$logger = $logger;
+        }
+
+        return self::$logger;
+    }
+
     public function __construct()
     {
         ob_start();
+        $e = Emitter::getInstance();
+        /**
+         * Register the not found handler for the debugger
+         */
+        $e->on(
+            'route_notFound',
+            array($this, 'routeNotFoundHandler')
+        );
+
+        $e->on(
+            'route_badMethod',
+            array($this, 'routeMethodNotAllowedHandler')
+        );
+
+        $e->on(
+            'route_called',
+            array($this, 'routeDispatchedHandler')
+        );
     }
 
     public static function breakpoint()
     {
         try {
-            throw new \Exception('Breakpoint');
+            throw new \Exception(func_get_arg(0) ?: 'Breakpoint');
         } catch (\Exception $e) {
-            echo sprintf('<em>Breakpoint reached in <strong>%s</strong>: %s</em><br />' . PHP_EOL, __FILE__, __LINE__);
-            echo sprintf('<em>Memory used by script: <strong>%s MB</strong> </em><br />' . PHP_EOL, self::getMemory());
-            echo sprintf('<em>Memory used by PHP: <strong>%s MB</strong> </em><br />' . PHP_EOL, self::getSystemMemory());
-            echo sprintf('<pre><code>%s</code></pre>', $e->getTraceAsString());
+            self::getLogger()
+                ->notice(sprintf('Breakpoint \'%s\' in %s:%s', $e->getMessage(), __FILE__, __LINE__));
+
+
+            $trace = array();
+            foreach ($e->getTrace() as $index => $tr) {
+                array_push($trace, sprintf(
+                    '#%s. %s%s%s(%s) in %s:%s',
+                    $index,
+                    $tr['class'],
+                    $tr['type'],
+                    $tr['function'],
+                    implode(',', $tr['args']),
+                    $tr['file'] ?: 'unknown',
+                    $tr['line'] ?: 'unknown'
+                ));
+            }
+            self::getLogger()
+                ->info("", $trace);
+
             ob_end_flush();
-            exit(0);
+            exit;
         }
     }
 
-    public function routeNotFoundHandler($e)
+    public function routeNotFoundHandler($event)
     {
-        echo sprintf("No route found for URI: <strong>%s</strong>:<em>%s</em><br />" . PHP_EOL, $e['data']['method'], $e['data']['uri']);
-        echo sprintf("Request Data: <br />");
-        echo sprintf(var_export($e['data']['request'], true));
+        self::getLogger()->warn(
+            sprintf(
+                "No route found for URI: %s",
+                $event['uri']
+            )
+        );
+        self::getLogger()->info(
+            '',
+            $event['data']['request']->toArray()
+        );
     }
 
-    public function routeMethodNotAllowedHandler($e)
+    public function routeMethodNotAllowedHandler($event)
     {
-        echo sprintf("Request method <strong>%s</strong> not allowed for route: <em>%s</em><br />" . PHP_EOL, $e['data']['method'], $e['data']['uri']);
-        echo sprintf("Allowed methods: <em>%s</em><br />", implode($e['data']['methodsAllowed']));
-        echo sprintf("Request Data: <br />");
-        echo sprintf(var_export($e['data']['request'], true));
+        self::getLogger()->crit(sprintf(
+            "Method %s not allowed. Allowed: %s",
+            strtoupper($event['method']),
+            implode(',', $event['data']['methodsAllowed'])
+        ));
+        self::getLogger()->info('', $event['data']['request']->toArray());
     }
 
-    public function routeDispatched($e)
+    public function routeDispatchedHandler($event)
     {
 
-    }
-
-    public static function getMemory($bytes = false)
-    {
-        if ($bytes == false) {
-            return memory_get_usage();
-        }
-
-        return (memory_get_usage()/1024)/1024;
-    }
-
-    public static function getSystemMemory($bytes = false)
-    {
-        if ($bytes == false) {
-            return memory_get_usage(true);
-        }
-
-        return (memory_get_usage(true)/1024)/1024;
     }
 }

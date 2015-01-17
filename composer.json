@@ -5,7 +5,11 @@
     "homepage": "https://github.com/DaGhostman/codewave",
     "type": "library",
     "require": {
-        "php": ">=5.3"
+        "php": ">=5.3",
+        "zendframework/zend-config": ">=2.0",
+        "zendframework/zend-log": ">=2.0",
+        "nikic/fast-route": "v0.3.0",
+        "firephp/firephp-core": "v0.4.0"
     },
     "license": "MIT",
     "authors": [

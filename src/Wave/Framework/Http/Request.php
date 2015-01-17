@@ -160,7 +160,7 @@ class Request
      */
     public function setVariables($vars)
     {
-        array_merge($this->vars, $vars);
+        $this->vars = array_merge($this->vars, $vars);
     }
 
     /**
@@ -169,11 +169,11 @@ class Request
      */
     public function variable($name)
     {
-        if (array_key_exists($name, $this->vars)) {
+        if (!array_key_exists($name, $this->vars)) {
             return null;
         }
 
-        return $this->vars['name'];
+        return $this->vars[$name];
     }
 
     /**
@@ -191,5 +191,25 @@ class Request
         }
 
         return $this->source[strtoupper($key)];
+    }
+
+    public function toArray()
+    {
+        return array(
+            'headers' => $this->headers,
+            'request' => $this->request,
+            'params' => $this->params,
+            'vars' => $this->vars
+        );
+    }
+
+    public function __toString()
+    {
+        return implode(array(
+            'headers' => implode(PHP_EOL, $this->headers),
+            'request' => implode(PHP_EOL, $this->request),
+            'params' => $this->params,
+            'vars' => $this->vars
+        ));
     }
 }
