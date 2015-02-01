@@ -6,10 +6,8 @@
     "type": "library",
     "require": {
         "php": ">=5.4",
-        "zendframework/zend-config": ">=2.0",
         "zendframework/zend-log": ">=2.0",
-        "phroute/phroute": ">=1.0",
-        "firephp/firephp-core": "v0.4.0"
+        "phroute/phroute": ">=1.0"
     },
     "license": "MIT",
     "authors": [
