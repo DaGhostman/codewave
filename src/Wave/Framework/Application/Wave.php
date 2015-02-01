@@ -11,6 +11,10 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Wave\Framework\Event\Emitter;
 
+/**
+ * Class Wave
+ * @package Wave\Framework\Application
+ */
 class Wave implements LoggerAwareInterface
 {
     protected $config;
@@ -20,54 +24,70 @@ class Wave implements LoggerAwareInterface
     protected $notFound = null;
     protected $notAllowed = null;
 
+    protected $container = null;
+
     /**
      * Creates the main application instance
      *
-     * @param $config array Array from \Zend\Config\Reader containing the
-     *                parsed configuration
+     * @param $config array A placeholder for future use
+     * @param $container mixed Instance of Pimple
      * @throws \InvalidArgumentException
      */
-    public function __construct($config)
+    public function __construct($container, $config = [])
     {
         if (!is_array($config)) {
             throw new \InvalidArgumentException("Invalid configuration");
         }
-
-        $this->config = $config;
-
+        $this->container = $container;
         $this->router = new RouteCollector();
+
+        $router = $this->router;
+        if (!empty($container)) {
+            $container['router'] = function () use ($router) {
+                return $router;
+            };
+        }
         Emitter::getInstance();
     }
 
+    /**
+     * Provides direct access to PHRoutes::addRoute
+     *
+     * @param $method
+     * @param $pattern
+     * @param $callback
+     */
     public function route($method, $pattern, $callback)
     {
         $this->router->addRoute($method, $pattern, $callback);
     }
 
+    /**
+     * Allows access to the methods of PHRoute
+     *
+     * @param $name
+     * @param $args
+     * @return mixed
+     */
     public function __call($name, $args)
     {
-        switch (strtolower($name)) {
-            case 'get':
-            case 'post':
-            case 'put':
-            case 'delete':
-            case 'head':
-            case 'options':
-            case 'trace':
-            case 'cli':
-                $this->route(strtoupper($name), $args[0], $args[1]);
-                break;
-            case 'any':
-                $this->router->any($args[0], $args[1]);
-                break;
-        }
+        return call_user_func_array([$this->router, $name], $args);
     }
 
+    /**
+     * Starts the application routing.
+     * Second argument is passed directly to the dispatcher. See
+     *
+     * @param Wave\Framework\Http\Request $request
+     */
     public function run($request)
     {
         Emitter::getInstance()->trigger('request');
 
-        $dispatcher = new Dispatcher($this->router->getData());
+        $dispatcher = new Dispatcher(
+            $this->router->getData(),
+            new RouteResolver($this->container)
+        );
 
         try {
             $response = $dispatcher->dispatch(
