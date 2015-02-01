@@ -1,5 +1,7 @@
 /vendor/
 /build
+/demo
+/docs
 phpdoc.dist.xml
 *~
 .project
