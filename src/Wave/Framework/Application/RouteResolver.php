@@ -15,13 +15,12 @@ class RouteResolver implements HandlerResolverInterface
     private $container = null;
     public function __construct($container)
     {
-        if (!$container instanceof \ArrayAccess) {
-            throw new \InvalidArgumentException(
-                'DI Container should implement \ArrayAccess'
-            );
-        }
-
         $this->container = $container;
+    }
+
+    public function getContainer()
+    {
+        return $this->container;
     }
 
     public function resolve($handler)
