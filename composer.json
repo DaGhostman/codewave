@@ -19,7 +19,7 @@
     ],
     "minimum-stability": "stable",
     "autoload": {
-        "psr-0": { "Wave\\Framework\\": "src" }
+        "psr-0": { "Wave\\Framework\\": "src", "Stub\\": "tests" }
     },
     "suggest": {
         "pimple/pimple": "For dependency injection container",
