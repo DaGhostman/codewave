@@ -83,7 +83,7 @@ class Request
      */
     public function uri()
     {
-        return $this->request['Uri'];
+        return $this->request('Uri');
     }
 
     /**
@@ -93,7 +93,7 @@ class Request
      */
     public function method()
     {
-        return $this->request['Method'];
+        return $this->request('Method');
     }
 
     /**
@@ -103,7 +103,7 @@ class Request
      */
     public function protocol()
     {
-        return $this->request['Protocol'];
+        return $this->request('Protocol');
     }
 
     /**
@@ -154,35 +154,6 @@ class Request
         return $this->params;
     }
 
-    /**
-     * @param $vars array Array with the URL variables.
-     */
-    public function setVariables($vars)
-    {
-        $this->vars = array_merge($this->vars, $vars);
-    }
-
-    /**
-     * @param $name string Returns a specific URL variables, or null
-     * @return mixed null if the key does not exist
-     */
-    public function variable($name)
-    {
-        if (!array_key_exists($name, $this->vars)) {
-            return null;
-        }
-
-        return $this->vars[$name];
-    }
-
-    /**
-     * @return array All the URL variables
-     */
-    public function variables()
-    {
-        return $this->vars;
-    }
-
     public function __get($key)
     {
         if (!array_key_exists(strtoupper($key), $this->source)) {
@@ -197,18 +168,7 @@ class Request
         return array(
             'headers' => $this->headers,
             'request' => $this->request,
-            'params' => $this->params,
-            'vars' => $this->vars
+            'params' => $this->params
         );
-    }
-
-    public function __toString()
-    {
-        return implode(array(
-            'headers' => implode(PHP_EOL, $this->headers),
-            'request' => implode(PHP_EOL, $this->request),
-            'params' => $this->params,
-            'vars' => $this->vars
-        ));
     }
 }
