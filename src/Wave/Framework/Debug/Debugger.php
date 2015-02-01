@@ -37,17 +37,17 @@ class Debugger implements LoggerAwareInterface
         ob_start();
     }
 
-    public static function breakpoint()
+    public static function breakpoint($string, $data = [])
     {
         try {
-            throw new \Exception(func_get_arg(0) ?: 'Breakpoint');
+            throw new \Exception($string ?: 'Breakpoint');
         } catch (\Exception $e) {
             self::$logger->notice(sprintf(
                 'Breakpoint \'%s\' in %s:%s',
                 $e->getMessage(),
                 __FILE__,
                 __LINE__
-            ));
+            ), $data);
 
 
             $trace = [];
