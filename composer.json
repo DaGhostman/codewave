@@ -22,6 +22,7 @@
         "psr-0": { "Wave\\Framework\\": "src" }
     },
     "suggest": {
+        "pimple/pimple": "For dependency injection container",
         "ext-mcrypt": "Version >= 2.4 Allows usage of Decorator\\Encrypt and Decorator\\Decrypt decorators.",
         "twig/twig": "Allows usage of Twig templates",
         "smarty/smarty": "Allows usage of Smarty v3 templates",
