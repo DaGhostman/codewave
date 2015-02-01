@@ -15,34 +15,24 @@ use Zend\Log\LoggerInterface;
 class Debugger implements LoggerAwareInterface
 {
     protected $name = null;
-    private static $logger = null;
-    private static $instance = null;
+    private $logger = null;
 
-    public static function getInstance($name = 'default')
+    public function __construct($logger)
     {
-        if (null === self::$instance) {
-            self::$instance = new Debugger($name);
-        }
-
-        return self::$instance;
+        $this->setLogger($logger);
     }
 
     public function setLogger(LoggerInterface $logger)
     {
-        self::$logger = $logger;
+        $this->$logger = $logger;
     }
 
-    protected function __construct()
-    {
-        ob_start();
-    }
-
-    public static function breakpoint($string, $data = [])
+    public function breakpoint($string, $data = [])
     {
         try {
             throw new \Exception($string ?: 'Breakpoint');
         } catch (\Exception $e) {
-            self::$logger->notice(sprintf(
+            $this->logger->notice(sprintf(
                 'Breakpoint \'%s\' in %s:%s',
                 $e->getMessage(),
                 __FILE__,
@@ -63,7 +53,7 @@ class Debugger implements LoggerAwareInterface
                     $tr['line'] ?: 'unknown'
                 ));
             }
-            self::$logger->info("", $trace);
+            $this->logger->info("", $trace);
 
             ob_end_flush();
             exit;
