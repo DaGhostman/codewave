@@ -28,12 +28,14 @@ class Request
      * is that it should be the same as the one assigned to the Controller.
      *
      * @param $source array Array source of information
+     * @param $requestData array Should contain a mix of variables to pass merged $_GET
+     *                           and $_POST, $_REQUEST, etc.
      */
-    public function __construct($source)
+    public function __construct($source, $requestData = [])
     {
         $this->source = $source; // For access with __get
 
-        $this->params = array_merge($_GET, $_POST);
+        $this->params = $requestData;
         foreach ($source as $name => $value) {
             if (substr($name, 0, 5) == 'HTTP_') {
                 $this->headers[str_replace(
