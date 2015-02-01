@@ -3,13 +3,17 @@
 namespace Wave\Framework\Application;
 
 
+use Phroute\Phroute\Dispatcher;
+use Phroute\Phroute\RouteCollector;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 use Wave\Framework\Event\Emitter;
 
-class Wave
+class Wave implements LoggerAwareInterface
 {
     protected $config;
-
-    protected $routes = array();
+    protected $logger = null;
+    protected $response = null;
 
     /**
      * Creates the main application instance
@@ -26,18 +30,18 @@ class Wave
 
         $this->config = $config;
 
+        $this->router = new RouteCollector();
         Emitter::getInstance();
     }
 
     public function route($method, $pattern, $callback)
     {
-        array_push($this->routes, array($method, $pattern, $callback));
-        #$this->router->addRoute($method, $pattern, $callback);
+        $this->router->addRoute($method, $pattern, $callback);
     }
 
     public function __call($name, $args)
     {
-        switch (strtolower($name)):
+        switch (strtolower($name)) {
             case 'get':
             case 'post':
             case 'put':
@@ -46,68 +50,42 @@ class Wave
             case 'options':
             case 'trace':
             case 'cli':
-               $this->route(strtoupper($name), $args[0], $args[1]);
-               break;
-        endswitch;
+                $this->route(strtoupper($name), $args[0], $args[1]);
+                break;
+            case 'any':
+                $this->router->any($args[0], $args[1]);
+                break;
+        }
     }
 
     public function run($request)
     {
-        $routes = $this->routes;
-        $dispatcher = call_user_func(
-            $this->config['routing']['dispatcher'],
-            function (\FastRoute\RouteCollector $r) use (&$routes) {
-                foreach ($routes as $route) {
-                    $r->addRoute($route[0], $route[1], $route[2]);
-                }
-            },
-            array(
-                'cacheFile' => $this->config['folders']['cache'] . DIRECTORY_SEPARATOR . $this->config['routing']['cache'], /* required */
-                'cacheDisabled' => false
-            )
-        );
+        Emitter::getInstance()->trigger('request');
 
+        $dispatcher = new Dispatcher($this->router->getData());
 
-        $routeInfo = $dispatcher->dispatch($request->method(), $request->uri());
-        switch ($routeInfo[0]) {
-            case \FastRoute\Dispatcher::NOT_FOUND:
-                Emitter::getInstance()->trigger('route_notFound', array(
-                    'uri' => $request->uri(),
-                    'data' => array('request' => $request)
-                ));
+        try {
+            $this->response = $dispatcher->dispatch(
+                $request->method(),
+                $request->uri()
+            );
 
-                call_user_func($this->config['errorHandler']['notFound'], $request);
-                break;
-            case \FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
-                $allowedMethods = $routeInfo[1];
-
-                Emitter::getInstance()->trigger('route_badMethod', array(
-                    'method' => $request->method(),
-                    'uri' => $request->uri(),
-                    'data' => array(
-                        'request' => $request,
-                        'methodsAllowed' => $allowedMethods
-                    )
-                ));
-
-                call_user_func($this->config['errorHandler']['notAllowed'], $request, $allowedMethods);
-                break;
-            case \FastRoute\Dispatcher::FOUND:
-                $handler = $routeInfo[1];
-                $request->setVariables($routeInfo[2]);
-
-                Emitter::getInstance()->trigger('route_called', array(
-                    'method' => $request->method(),
-                    'uri' => $request->uri(),
-                    'data' => array(
-                        'handler' => $handler,
-                        'request' => $request,
-                        'vars' => $routeInfo[2]
-                    )
-                ));
-
-                call_user_func($handler, $request);
-                break;
+        } catch (Phroute\Phroute\Exception\HttpRouteNotFoundException $e) {
+            // TODO: Invoke handler
+        } catch (Phroute\Phroute\Exception\HttpMethodNotAllowedException $e) {
+            // @TODO: Invoke Handler
         }
+
+
+    }
+
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    public function __destruct()
+    {
+        Emitter::getInstance()->trigger('render');
     }
 }
