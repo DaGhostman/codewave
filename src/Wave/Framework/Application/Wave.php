@@ -4,6 +4,8 @@ namespace Wave\Framework\Application;
 
 
 use Phroute\Phroute\Dispatcher;
+use Phroute\Phroute\Exception\HttpMethodNotAllowedException;
+use Phroute\Phroute\Exception\HttpRouteNotFoundException;
 use Phroute\Phroute\RouteCollector;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -14,6 +16,9 @@ class Wave implements LoggerAwareInterface
     protected $config;
     protected $logger = null;
     protected $response = null;
+
+    protected $notFound = null;
+    protected $notAllowed = null;
 
     /**
      * Creates the main application instance
@@ -65,27 +70,31 @@ class Wave implements LoggerAwareInterface
         $dispatcher = new Dispatcher($this->router->getData());
 
         try {
-            $this->response = $dispatcher->dispatch(
+            $response = $dispatcher->dispatch(
                 $request->method(),
                 $request->uri()
             );
 
-        } catch (Phroute\Phroute\Exception\HttpRouteNotFoundException $e) {
-            // TODO: Invoke handler
-        } catch (Phroute\Phroute\Exception\HttpMethodNotAllowedException $e) {
-            // @TODO: Invoke Handler
+            echo $response;
+        } catch (HttpRouteNotFoundException $e) {
+            call_user_func($this->notFound, $e);
+        } catch (HttpMethodNotAllowedException $e) {
+            call_user_func($this->notAllowed, $e);
         }
+    }
 
+    public function setNotFoundHandler($f)
+    {
+        $this->notFound = $f;
+    }
 
+    public function setNotAllowedHandler($f)
+    {
+        $this->notAllowed = $f;
     }
 
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
-    }
-
-    public function __destruct()
-    {
-        Emitter::getInstance()->trigger('render');
     }
 }
