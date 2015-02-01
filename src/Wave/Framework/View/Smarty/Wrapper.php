@@ -8,7 +8,6 @@
 
 namespace Wave\Framework\View\Smarty;
 
-
 use Wave\Framework\View\AbstractWrapper;
 
 class Wrapper extends AbstractWrapper

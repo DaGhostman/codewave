@@ -8,7 +8,6 @@
 
 namespace Wave\Framework\Http;
 
-
 /**
  * Class Response
  * @package Wave\Framework\Http

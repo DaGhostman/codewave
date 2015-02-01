@@ -8,7 +8,6 @@
 
 namespace Wave\Framework\Event;
 
-
 class Emitter
 {
     protected $events = array();

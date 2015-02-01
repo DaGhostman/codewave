@@ -8,7 +8,6 @@
 
 namespace Wave\Framework\Decorator\Decorators;
 
-
 class Serialize
 {
     public function commit($val)

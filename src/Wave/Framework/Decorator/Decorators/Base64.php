@@ -8,7 +8,6 @@
 
 namespace Wave\Framework\Decorator\Decorators;
 
-
 class Base64
 {
     public function commit($val)

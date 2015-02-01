@@ -8,7 +8,6 @@
 
 namespace Wave\Framework\Debug;
 
-
 use Zend\Log\LoggerAwareInterface;
 use Zend\Log\LoggerInterface;
 

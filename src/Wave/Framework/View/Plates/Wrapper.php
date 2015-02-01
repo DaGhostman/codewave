@@ -8,7 +8,6 @@
 
 namespace Wave\Framework\View\Plates;
 
-
 use League\Plates\Engine;
 use Wave\Framework\View\AbstractWrapper;
 

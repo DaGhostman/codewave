@@ -2,7 +2,6 @@
 
 namespace Wave\Framework\Application;
 
-
 use Phroute\Phroute\Dispatcher;
 use Phroute\Phroute\Exception\HttpMethodNotAllowedException;
 use Phroute\Phroute\Exception\HttpRouteNotFoundException;

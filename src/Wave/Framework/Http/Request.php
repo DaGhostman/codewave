@@ -8,7 +8,6 @@
 
 namespace Wave\Framework\Http;
 
-
 class Request
 {
 

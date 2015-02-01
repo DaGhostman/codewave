@@ -8,7 +8,6 @@
 
 namespace Wave\Framework\View;
 
-
 /**
  * Class AbstractInterface
  * @package Wave\Framework\View
