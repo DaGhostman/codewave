@@ -84,7 +84,6 @@ class Wave implements LoggerAwareInterface
 
             echo $response;
         } catch (HttpRouteNotFoundException $e) {
-
             /**
              * @codeCoverageIgnore
              */
