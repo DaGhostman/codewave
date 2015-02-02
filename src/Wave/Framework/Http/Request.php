@@ -11,13 +11,13 @@ namespace Wave\Framework\Http;
 class Request
 {
 
-    protected $request = array();
-    protected $headers = array();
-    protected $vars = array();
+    protected $request = [];
+    protected $headers = [];
+    protected $vars = [];
 
-    protected $source = array();
+    protected $source = [];
 
-    protected $params = array();
+    protected $params = [];
 
     /**
      * Creates a request object and accepts an array with key => value
@@ -99,16 +99,6 @@ class Request
     }
 
     /**
-     * Alias of Request::request('Protocol');
-     *
-     * @return mixed
-     */
-    public function protocol()
-    {
-        return $this->request('Protocol');
-    }
-
-    /**
      * Gives access to 'HTTP_' from $_SERVER
      *
      * @param $name string Header name. Example 'AcceptEncoding'
@@ -167,10 +157,10 @@ class Request
 
     public function toArray()
     {
-        return array(
+        return [
             'headers' => $this->headers,
             'request' => $this->request,
             'params' => $this->params
-        );
+        ];
     }
 }

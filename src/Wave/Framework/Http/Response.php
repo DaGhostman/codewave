@@ -16,16 +16,16 @@ namespace Wave\Framework\Http;
  */
 class Response
 {
-    protected $headers = array();
+    protected $headers = [];
     protected $protocol = 'HTTP/1.1';
     private $status = null;
-    protected $requestHeaders = array();
+    protected $requestHeaders = [];
 
     const HTTP_V1_0 = 1.0;
     const HTTP_V1_1 = 1.1;
 
 
-    public function __construct($protocol = 1.1, $requestHeaders = array())
+    public function __construct($protocol = 1.1, $requestHeaders = [])
     {
         $this->protocol = $protocol;
         $this->requestHeaders = $requestHeaders;

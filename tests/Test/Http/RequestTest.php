@@ -11,6 +11,7 @@ namespace Test\Http;
 
 use Wave\Framework\Http\Request;
 
+/** @noinspection PhpUndefinedClassInspection */
 class RequestTest extends \PHPUnit_Framework_TestCase
 {
     private $request = null;
@@ -41,7 +42,6 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('GET', $this->request->method());
         $this->assertSame('GET', $this->request->REQUEST_METHOD);
 
-        $this->assertSame('HTTP/1.1', $this->request->protocol());
         $this->assertSame('HTTP/1.1', $this->request->REQUEST_PROTOCOL);
     }
 

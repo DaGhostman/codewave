@@ -12,7 +12,8 @@ namespace Test\Application;
 use Stub\Application\RouteResolverContainerStub;
 use Wave\Framework\Application\RouteResolver;
 
-class RouteResolverTest extends \PHPUnit_Framework_TestCase {
+class RouteResolverTest extends \PHPUnit_Framework_TestCase
+{
     protected $resolver = null;
 
     protected function setUp()

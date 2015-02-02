@@ -11,6 +11,7 @@ namespace Test\Decorator\Decorators;
 
 use Wave\Framework\Decorator\Decorators\Serialize;
 
+/** @noinspection PhpUndefinedClassInspection */
 class SerializeTest extends \PHPUnit_Framework_TestCase
 {
     private $decorator = null;

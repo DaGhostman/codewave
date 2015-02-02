@@ -46,7 +46,6 @@ class Wave implements LoggerAwareInterface
                 return $router;
             };
         }
-        Emitter::getInstance();
     }
 
     /**
@@ -69,8 +68,6 @@ class Wave implements LoggerAwareInterface
      */
     public function run(Request $request)
     {
-        Emitter::getInstance()->trigger('request');
-
         $dispatcher = new Dispatcher(
             $this->router->getData(),
             new RouteResolver($this->container)
