@@ -9,6 +9,7 @@ use Phroute\Phroute\RouteCollector;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Wave\Framework\Event\Emitter;
+use Wave\Framework\Http\Request;
 
 /**
  * Class Wave
@@ -17,9 +18,8 @@ use Wave\Framework\Event\Emitter;
 class Wave implements LoggerAwareInterface
 {
     protected $config;
-    protected $logger = null;
     protected $response = null;
-
+    protected $logger = null;
     protected $notFound = null;
     protected $notAllowed = null;
 
@@ -77,9 +77,9 @@ class Wave implements LoggerAwareInterface
      * Starts the application routing.
      * Second argument is passed directly to the dispatcher. See
      *
-     * @param Wave\Framework\Http\Request $request
+     * @param Request $request
      */
-    public function run($request)
+    public function run(Request $request)
     {
         Emitter::getInstance()->trigger('request');
 
@@ -96,20 +96,39 @@ class Wave implements LoggerAwareInterface
 
             echo $response;
         } catch (HttpRouteNotFoundException $e) {
-            call_user_func($this->notFound, $e);
+            if ($this->logger) {
+                $this->logger->err($e->getMessage(), $e);
+            }
+
+            $this->notFound ? call_user_func($this->notFound, $e) : null;
         } catch (HttpMethodNotAllowedException $e) {
-            call_user_func($this->notAllowed, $e);
+            if ($this->logger) {
+                $this->logger->err($e->getMessage(), $e);
+            }
+
+            $this->notAllowed ? call_user_func($this->notAllowed, $e) : null;
         }
     }
 
-    public function setNotFoundHandler($f)
+    /**
+     * Defines the callback to trigger on 404 error
+     *
+     * @param $func callable
+     */
+    public function setNotFoundHandler(callable $func)
     {
-        $this->notFound = $f;
+        $this->notFound = $func;
     }
 
-    public function setNotAllowedHandler($f)
+    /**
+     * Defines the callback to fire, when request
+     * method is not allowed.
+     *
+     * @param $func callable
+     */
+    public function setNotAllowedHandler(callable $func)
     {
-        $this->notAllowed = $f;
+        $this->notAllowed = $func;
     }
 
     public function setLogger(LoggerInterface $logger)

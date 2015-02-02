@@ -11,9 +11,16 @@ namespace Wave\Framework\Debug;
 use Zend\Log\LoggerAwareInterface;
 use Zend\Log\LoggerInterface;
 
+/**
+ * Class Debugger
+ * @package Wave\Framework\Debug
+ *
+ *
+ * @codeCoverageIgnore
+ *
+ */
 class Debugger implements LoggerAwareInterface
 {
-    protected $name = null;
     private $logger = null;
 
     public function __construct($logger)
@@ -23,7 +30,7 @@ class Debugger implements LoggerAwareInterface
 
     public function setLogger(LoggerInterface $logger)
     {
-        $this->$logger = $logger;
+        $this->logger = $logger;
     }
 
     public function breakpoint($string, $data = [])
@@ -48,14 +55,13 @@ class Debugger implements LoggerAwareInterface
                     $tr['type'],
                     $tr['function'],
                     implode(',', $tr['args']),
-                    $tr['file'] ?: 'unknown',
-                    $tr['line'] ?: 'unknown'
+                    isset($tr['file']) ? $tr['file']: 'unknown',
+                    isset($tr['line']) ? $tr['line']: 'unknown'
                 ));
             }
             $this->logger->info("", $trace);
 
-            ob_end_flush();
-            exit;
+            return ob_end_flush();
         }
     }
 }
