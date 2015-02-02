@@ -91,4 +91,11 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($stub, $this->request->toArray());
     }
+
+    public function testNotExistingVariables()
+    {
+        $this->assertNull($this->request->header('SomeDummyHeader'));
+        $this->assertNull($this->request->request('SomeDummyRequest'));
+        $this->assertNull($this->request->DUMMY_HEADER);
+    }
 }
