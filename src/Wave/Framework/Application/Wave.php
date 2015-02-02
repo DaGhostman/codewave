@@ -41,7 +41,7 @@ class Wave implements LoggerAwareInterface
         $this->router = new RouteCollector();
 
         $router = $this->router;
-        if (!empty($container)) {
+        if (!is_null($container)) {
             $container['router'] = function () use ($router) {
                 return $router;
             };
@@ -50,19 +50,7 @@ class Wave implements LoggerAwareInterface
     }
 
     /**
-     * Provides direct access to PHRoutes::addRoute
-     *
-     * @param $method
-     * @param $pattern
-     * @param $callback
-     */
-    public function route($method, $pattern, $callback)
-    {
-        $this->router->addRoute($method, $pattern, $callback);
-    }
-
-    /**
-     * Allows access to the methods of PHRoute
+     * Proxies all method calls to the PHRoute instance
      *
      * @param $name
      * @param $args
@@ -96,12 +84,19 @@ class Wave implements LoggerAwareInterface
 
             echo $response;
         } catch (HttpRouteNotFoundException $e) {
+
+            /**
+             * @codeCoverageIgnore
+             */
             if ($this->logger) {
                 $this->logger->err($e->getMessage(), $e);
             }
 
             $this->notFound ? call_user_func($this->notFound, $e) : null;
         } catch (HttpMethodNotAllowedException $e) {
+            /**
+             * @codeCoverageIgnore
+             */
             if ($this->logger) {
                 $this->logger->err($e->getMessage(), $e);
             }
