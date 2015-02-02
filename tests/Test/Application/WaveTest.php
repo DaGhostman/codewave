@@ -58,4 +58,25 @@ class WaveTest extends \PHPUnit_Framework_TestCase
         $this->app->run($request);
         echo 'OK';
     }
+
+    public function test404Handler()
+    {
+        $this->expectOutputString('404 Not Found');
+        $this->app->setNotFoundHandler(function () {
+            echo '404 Not Found';
+        });
+        $this->app->run(new RequestStub('GET', '/'));
+    }
+
+    public function testNotAllowedHandler()
+    {
+        $this->expectOutputString('Not Allowed');
+        $this->app->setNotAllowedHandler(function () {
+            echo 'Not Allowed';
+        });
+        $this->app->post('/', function () {
+            return 0;
+        });
+        $this->app->run(new RequestStub('GET', '/'));
+    }
 }
