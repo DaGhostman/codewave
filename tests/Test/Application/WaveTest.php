@@ -25,12 +25,12 @@ class WaveTest extends \PHPUnit_Framework_TestCase
 
     public function testSimpleRouting()
     {
-        $this->expectOutputString('Route / called');
+        $this->expectOutputString('Routes / called');
 
         $request = new RequestStub('GET', '/');
 
         $this->app->get('/', function () {
-            echo 'Route / called';
+            echo 'Routes / called';
         });
         $this->app->run($request);
     }
