@@ -5,6 +5,12 @@ namespace Wave\Framework\Router\Loaders;
 
 trait LoaderTrait
 {
+
+    public function getRaw()
+    {
+        return $this->raw;
+    }
+
     public function pushRoutes($router)
     {
         if (!method_exists($router, 'addRoute')) {
@@ -14,7 +20,6 @@ trait LoaderTrait
         }
 
         foreach ($this->raw as $route) {
-            var_dump($route);
             $router->addRoute($route->method, $route->uri, $route->callback);
         }
     }
