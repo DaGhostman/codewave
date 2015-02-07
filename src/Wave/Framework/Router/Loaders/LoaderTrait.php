@@ -2,7 +2,6 @@
 
 namespace Wave\Framework\Router\Loaders;
 
-
 trait LoaderTrait
 {
 

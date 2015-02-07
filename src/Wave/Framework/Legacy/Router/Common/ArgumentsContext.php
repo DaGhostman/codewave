@@ -2,7 +2,6 @@
 
 namespace Wave\Framework\Legacy\Router\Common;
 
-
 use Traversable;
 
 /**

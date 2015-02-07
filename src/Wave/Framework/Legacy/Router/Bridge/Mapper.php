@@ -8,7 +8,6 @@
 
 namespace Wave\Framework\Legacy\Router\Bridge;
 
-
 use Wave\Framework\Legacy\Router\Common\ArgumentsContext;
 
 /**
@@ -30,7 +29,12 @@ class Mapper
         $this->map = $map;
 
         foreach ($map->getRaw()->route as $route) {
-            $this->controller($route['via'], $this->rebuildUri($route['pattern']), $route['controller'], $route['method']);
+            $this->controller(
+                $route['via'],
+                $this->rebuildUri($route['pattern']),
+                $route['controller'],
+                $route['method']
+            );
         }
     }
 
