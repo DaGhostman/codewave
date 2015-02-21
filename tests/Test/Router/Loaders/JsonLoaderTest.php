@@ -1,14 +1,14 @@
 <?php
-
 namespace Test\Router;
-
 
 use Stub\Router\Router;
 use Wave\Framework\Router\Loaders\JsonLoader;
 
 class JsonLoaderTest extends \PHPUnit_Framework_TestCase
 {
+
     private $route = null;
+
     private $loader = null;
 
     protected function setUp()
@@ -20,10 +20,13 @@ class JsonLoaderTest extends \PHPUnit_Framework_TestCase
     public function testBasicRouteCreation()
     {
         $this->loader->pushRoutes($this->route);
-
-        $this->assertSame(
-            [["GET", "/", "dummyFunction"]],
-            $this->route->getArray()
-        );
+        
+        $this->assertSame([
+            [
+                "GET",
+                "/",
+                "dummyFunction"
+            ]
+        ], $this->route->getArray());
     }
 }

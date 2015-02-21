@@ -13,17 +13,23 @@ use Wave\Framework\Http\Request;
 
 class RequestStub extends Request
 {
-    public function __construct($method, $uri)
+    protected $method = null;
+    protected $uri = null;
+    protected $params = array();
+
+    public function __construct($method, $uri, $params = array())
     {
         $this->method = $method;
         $this->uri = $uri;
+        $this->params = $params;
     }
-    public function uri()
+
+    public function getUri()
     {
         return $this->uri;
     }
 
-    public function method()
+    public function getMethod()
     {
         return $this->method;
     }
