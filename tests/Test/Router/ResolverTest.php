@@ -5,21 +5,20 @@
  * Date: 01/02/15
  * Time: 14:35
  */
-
 namespace Test\Application;
 
-
 use Stub\Application\RouteResolverContainerStub;
-use Wave\Framework\Application\RouteResolver;
+use Wave\Framework\Router\Resolver;
 
 class RouteResolverTest extends \PHPUnit_Framework_TestCase
 {
+
     protected $resolver = null;
 
     protected function setUp()
     {
-        $this->resolver = new RouteResolver([
-            'TestClass' => new \stdClass
+        $this->resolver = new Resolver([
+            'TestClass' => new \stdClass()
         ]);
     }
 
@@ -35,14 +34,19 @@ class RouteResolverTest extends \PHPUnit_Framework_TestCase
 
     public function testContainerContents()
     {
-        $this->assertEquals(
-            ['TestClass' => new \stdClass()],
-            $this->resolver->getContainer()
-        );
+        $this->assertEquals([
+            'TestClass' => new \stdClass()
+        ], $this->resolver->getContainer());
     }
 
     public function testRetrievalFromContainer()
     {
-        $this->assertEquals([new \stdClass(), 'method'], $this->resolver->resolve(['TestClass', 'method']));
+        $this->assertEquals([
+            new \stdClass(),
+            'method'
+        ], $this->resolver->resolve([
+            'TestClass',
+            'method'
+        ]));
     }
 }
