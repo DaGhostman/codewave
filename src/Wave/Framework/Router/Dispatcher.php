@@ -22,8 +22,8 @@ class Dispatcher extends D
     /**
      * Create a new route dispatcher.
      *
-     * @param RouteDataInterface $data            
-     * @param HandlerResolverInterface $resolver            
+     * @param RouteDataInterface $data
+     * @param HandlerResolverInterface $resolver
      */
     public function __construct(RouteDataInterface $data, HandlerResolverInterface $resolver = null)
     {
@@ -79,7 +79,7 @@ class Dispatcher extends D
      *
      * @param
      *            $filters
-     * @param null $response            
+     * @param null $response
      * @return mixed|null
      */
     protected function dispatchFilters($filters, $response = null)
@@ -210,7 +210,8 @@ class Dispatcher extends D
             
             $count = count($matches);
             
-            while (! isset($data['routeMap'][$count ++]));
+            while (! isset($data['routeMap'][$count ++])) {
+            }
             
             $routes = $data['routeMap'][$count - 1];
             

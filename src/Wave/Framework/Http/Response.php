@@ -9,9 +9,9 @@ namespace Wave\Framework\Http;
 
 /**
  * Class Response
- * 
+ *
  * @package Wave\Framework\Http
- *         
+ *
  *          @codeCoverageIgnore
  */
 class Response
@@ -112,7 +112,7 @@ class Response
 
     /**
      *
-     * @param bool $enabled            
+     * @param bool $enabled
      * @param int $ttl
      *            Seconds to cache for, ignored, if $enabled is false
      */

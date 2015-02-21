@@ -13,7 +13,7 @@ use Wave\Framework\Http\Response;
 
 /**
  * Class Wave
- * 
+ *
  * @package Wave\Framework\Application
  */
 class Wave implements LoggerAwareInterface
@@ -47,11 +47,10 @@ class Wave implements LoggerAwareInterface
         }
         $this->container = $container;
         $this->router = new RouteCollector();
-        
+
         $router = $this->router;
         if (! is_null($container)) {
-            $container['router'] = function () use($router)
-            {
+            $container['router'] = function () use ($router) {
                 return $router;
             };
         }
@@ -78,15 +77,15 @@ class Wave implements LoggerAwareInterface
      * Starts the application routing.
      * Second argument is passed directly to the dispatcher. See
      *
-     * @param Request $request            
+     * @param Request $request
      */
     public function run(Request $request, $response = null)
     {
         $dispatcher = new Dispatcher($this->router->getData(), new Resolver($this->container));
-        
+
         try {
             $response = $dispatcher->dispatch($request, $response ?  : new Response());
-            
+
             $response->send();
         } catch (HttpRouteNotFoundException $e) {
             /**
@@ -95,7 +94,7 @@ class Wave implements LoggerAwareInterface
             if ($this->logger) {
                 $this->logger->err($e->getMessage(), $e);
             }
-            
+
             $this->notFound ? call_user_func($this->notFound, $e) : null;
         } catch (HttpMethodNotAllowedException $e) {
             /**
@@ -104,7 +103,7 @@ class Wave implements LoggerAwareInterface
             if ($this->logger) {
                 $this->logger->err($e->getMessage(), $e);
             }
-            
+
             $this->notAllowed ? call_user_func($this->notAllowed, $e) : null;
         }
     }
@@ -112,7 +111,7 @@ class Wave implements LoggerAwareInterface
     /**
      * Defines the callback to trigger on 404 error
      *
-     * @param $func callable            
+     * @param $func callable
      */
     public function setNotFoundHandler(callable $func)
     {
@@ -123,7 +122,7 @@ class Wave implements LoggerAwareInterface
      * Defines the callback to fire, when request
      * method is not allowed.
      *
-     * @param $func callable            
+     * @param $func callable
      */
     public function setNotAllowedHandler(callable $func)
     {

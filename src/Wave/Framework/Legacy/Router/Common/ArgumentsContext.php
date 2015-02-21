@@ -5,9 +5,9 @@ use Traversable;
 
 /**
  * Class ArgumentsContext
- * 
+ *
  * @package Wave\Framework\Application\Contexts
- *         
+ *
  * @deprecated This backward compatibility set will
  *             be removed in version 3.5. Please
  *             ensure that you migrate to the new
@@ -39,12 +39,13 @@ class ArgumentsContext implements \IteratorAggregate
      * @param $val mixed
      *            Resolves the type of the variable if string,
      *            returns the argument otherwise
-     *            
+     *
      * @return array|bool|float|int
      */
     public function resolveType($val)
     {
-        if ((substr($val, 0, 1) == '"' && substr($val, - 1) == '"') || (substr($val, 0, 1) == '\'' && substr($val, - 1) == '\'')) {
+        if ((substr($val, 0, 1) == '"' && substr($val, - 1) == '"') ||
+                (substr($val, 0, 1) == '\'' && substr($val, - 1) == '\'')) {
             return $this->resolveType(substr($val, 1, - 1));
         } elseif (strtolower($val) == 'true') {
             return true;
@@ -84,7 +85,7 @@ class ArgumentsContext implements \IteratorAggregate
      *            Key of the entity
      * @param $value mixed
      *            Value of the entity
-     *            
+     *
      * @return $this
      */
     public function push($key, $value)
@@ -98,7 +99,7 @@ class ArgumentsContext implements \IteratorAggregate
      *
      * @param $key string
      *            Alias for fetch
-     *            
+     *
      * @return array|bool|float|int|null
      */
     public function get($key)
@@ -114,7 +115,7 @@ class ArgumentsContext implements \IteratorAggregate
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Retrieve an external iterator
-     * 
+     *
      * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
      * @return Traversable An instance of an object implementing <b>Iterator</b> or
      *         <b>Traversable</b>

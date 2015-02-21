@@ -40,13 +40,17 @@ class Request
     public function __construct($source, $requestData = [])
     {
         $this->source = $source; // For access with __get
-        
+
         $this->params = $requestData;
         foreach ($source as $name => $value) {
             if (substr($name, 0, 5) == 'HTTP_') {
-                $this->headers[str_replace(' ', '', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+                $this->headers[str_replace(' ', '', ucwords(strtolower(
+                    str_replace('_', ' ', substr($name, 5))
+                )))] = $value;
             } elseif (substr($name, 0, 8) == 'REQUEST_') {
-                $this->request[str_replace(' ', '', ucwords(strtolower(str_replace('_', ' ', substr($name, 8)))))] = $value;
+                $this->request[str_replace(' ', '', ucwords(
+                    strtolower(str_replace('_', ' ', substr($name, 8)))
+                ))] = $value;
             }
         }
     }
@@ -56,7 +60,7 @@ class Request
      *
      * @param $name string
      *            The string to search for. Example 'UserAgent' for 'REQUEST_USER_AGENT'
-     *            
+     *
      * @return mixed The value or null if the key is not found
      */
     public function request($name)
@@ -64,7 +68,7 @@ class Request
         if (! array_key_exists($name, $this->request)) {
             return null;
         }
-        
+
         return $this->request[$name];
     }
 
@@ -108,7 +112,7 @@ class Request
      *
      * @param $name string
      *            Header name. Example 'AcceptEncoding'
-     *            
+     *
      * @return null
      */
     public function header($name)
@@ -116,7 +120,7 @@ class Request
         if (! array_key_exists($name, $this->headers)) {
             return null;
         }
-        
+
         return $this->headers[$name];
     }
 
@@ -130,7 +134,7 @@ class Request
      * Looks up in $_GET and $_POST. Note:
      * if there is a duplicate key an array is returned array(0 => GET, 1 => POST)
      *
-     * @param $name string            
+     * @param $name string
      *
      * @return mixed
      */
@@ -139,7 +143,7 @@ class Request
         if (! array_key_exists($name, $this->params)) {
             return null;
         }
-        
+
         return $this->params[$name];
     }
 
@@ -158,7 +162,7 @@ class Request
         if (! array_key_exists(strtoupper($key), $this->source)) {
             return null;
         }
-        
+
         return $this->source[strtoupper($key)];
     }
 
@@ -172,5 +176,7 @@ class Request
     }
 
     public function getRequestTarget()
-    {}
+    {
+
+    }
 }
