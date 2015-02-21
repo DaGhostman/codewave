@@ -15,6 +15,7 @@ script:
   - mkdir -p build/reports
   - mkdir -p build/coverage/html
   - phpunit --coverage-text
+  - ./vendor/bin/phpcbf src/Wave --standard=psr2
   - ./vendor/bin/phpcs src/Wave --standard=psr2
 
 after_script:
