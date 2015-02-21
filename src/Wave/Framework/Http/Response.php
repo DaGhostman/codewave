@@ -5,25 +5,31 @@
  * Date: 24/08/14
  * Time: 00:17
  */
-
 namespace Wave\Framework\Http;
 
 /**
  * Class Response
+ * 
  * @package Wave\Framework\Http
- *
- * @codeCoverageIgnore
+ *         
+ *          @codeCoverageIgnore
  */
 class Response
 {
+
     protected $headers = [];
+
     protected $protocol = 'HTTP/1.1';
+
     private $status = null;
+
     protected $requestHeaders = [];
 
     const HTTP_V1_0 = 1.0;
+
     const HTTP_V1_1 = 1.1;
 
+    protected $content = '';
 
     public function __construct($protocol = 1.1, $requestHeaders = [])
     {
@@ -34,7 +40,7 @@ class Response
     public function header($header)
     {
         array_push($this->headers, $header);
-
+        
         return $this;
     }
 
@@ -80,6 +86,23 @@ class Response
         return $this;
     }
 
+    public function getBody()
+    {
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->content;
+    }
+
+    public function write($c)
+    {
+        $this->content .= $c;
+        // $this->OK();
+        return $this;
+    }
+
     public function serviceUnavailable()
     {
         $this->header(sprintf('HTTP/%01.1f 503 Service Unavailable', $this->protocol));
@@ -88,8 +111,10 @@ class Response
     }
 
     /**
-     * @param bool $enabled
-     * @param int  $ttl Seconds to cache for, ignored, if $enabled is false
+     *
+     * @param bool $enabled            
+     * @param int $ttl
+     *            Seconds to cache for, ignored, if $enabled is false
      */
     public function cache($enabled = true, $ttl = 360)
     {
@@ -109,17 +134,17 @@ class Response
 
     public function send()
     {
-        if (!empty($this->headers)) {
+        if (! empty($this->headers)) {
             foreach ($this->headers as $header) {
                 if (preg_match('/^HTTP\/1\.[0-1]\s[100-900]{3}/i', $header)) {
                     header($header, true, $this->status);
                     continue;
                 }
-
+                
                 header($header, true);
             }
         }
-
-        echo ob_get_clean();
+        
+        echo $this;
     }
 }
