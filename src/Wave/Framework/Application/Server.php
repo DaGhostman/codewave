@@ -28,7 +28,7 @@ class Server
         $this->server = $server;
 
         if (is_null($server)) {
-            $this->server = filter_input_array(INPUT_SERVER);
+            $this->server = filter_input_array(INPUT_SERVER, FILTER_FLAG_NONE);
         }
     }
 
