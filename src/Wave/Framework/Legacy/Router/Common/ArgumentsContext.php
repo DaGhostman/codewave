@@ -44,10 +44,7 @@ class ArgumentsContext implements \IteratorAggregate
      */
     public function resolveType($val)
     {
-        if ((substr($val, 0, 1) == '"' && substr($val, - 1) == '"') ||
-                (substr($val, 0, 1) == '\'' && substr($val, - 1) == '\'')) {
-            return $this->resolveType(substr($val, 1, - 1));
-        } elseif (strtolower($val) == 'true') {
+        if (strtolower($val) == 'true') {
             return true;
         } elseif (strtolower($val) == 'false') {
             return false;
@@ -55,14 +52,12 @@ class ArgumentsContext implements \IteratorAggregate
             // Numeric value, determine if int or float and then cast
             if ((float) $val == (int) $val) {
                 return (int) $val;
-            } else {
-                return (float) $val;
             }
+
+            return (float) $val;
         }
-        if (count(explode('/', $val)) > 1) {
-            return explode('/', $val);
-        }
-        return $val;
+
+        return (count(explode('/', $val)) > 1) ? explode('/', $val) : $val;
     }
 
     public function fetch($key)

@@ -7,7 +7,7 @@
  */
 namespace Test\Http;
 
-use Wave\Framework\Http\Request;
+use Wave\Framework\Http\Server\Request;
 
 /**
  * @noinspection PhpUndefinedClassInspection
@@ -23,7 +23,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             'param1' => 1,
             'param2' => 'dummy_string'
         ];
-        
+
         $serverDummy = [
             'REQUEST_METHOD' => 'GET',
             'REQUEST_URI' => '/',
@@ -32,74 +32,53 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             'HTTP_X_CUSTOM_H' => 'Dummy-Test-Data-2.0',
             'HTTP_ACCEPT_ENCODING' => 'application/json'
         ];
-        
-        $this->request = new Request($serverDummy, $requestData);
+
+        $this->request = (new Request('/', 'GET', 'php://memory', [
+            'User-Agent' => 'Mozilla 5.0',
+            'X-Custom-H' => 'Dummy-Test-Data-2.0',
+            'Accept-Encoding' => 'application/json'
+        ]))->withParams($requestData);
     }
 
     public function testRequestGetter()
     {
-        $this->assertSame('/', $this->request->uri());
-        $this->assertSame('/', $this->request->REQUEST_URI);
-        
-        $this->assertSame('GET', $this->request->method());
-        $this->assertSame('GET', $this->request->REQUEST_METHOD);
-        
-        $this->assertSame('HTTP/1.1', $this->request->REQUEST_PROTOCOL);
+        $this->assertSame('/', $this->request->getUri()->getPath());
+
+        $this->assertSame('GET', $this->request->getMethod());
+
+        $this->assertSame('1.1', $this->request->getProtocolVersion());
     }
 
     public function testHeaderGetters()
     {
-        $this->assertSame('Mozilla 5.0', $this->request->header('UserAgent'));
-        $this->assertSame('Dummy-Test-Data-2.0', $this->request->header('XCustomH'));
-        $this->assertSame('application/json', $this->request->header('AcceptEncoding'));
+        $this->assertSame('Mozilla 5.0', $this->request->getHeader('User-Agent'));
+        $this->assertSame('Dummy-Test-Data-2.0', $this->request->getHeader('X-Custom-H'));
+        $this->assertSame('application/json', $this->request->getHeader('Accept-Encoding'));
     }
 
     public function testRawHeaders()
     {
         $this->assertSame([
-            'UserAgent' => 'Mozilla 5.0',
-            'XCustomH' => 'Dummy-Test-Data-2.0',
-            'AcceptEncoding' => 'application/json'
-        ], $this->request->headers());
+            'user-agent' => ['Mozilla 5.0'],
+            'x-custom-h' => ['Dummy-Test-Data-2.0'],
+            'accept-encoding' => ['application/json']
+        ], $this->request->getHeaders());
     }
 
     public function testParamGetters()
     {
-        $this->assertSame(1, $this->request->param('param1'));
-        $this->assertSame('dummy_string', $this->request->param('param2'));
-        
+        $this->assertSame(1, $this->request->param1);
+        $this->assertSame('dummy_string', $this->request->param2);
+
         $this->assertSame([
             'param1' => 1,
             'param2' => 'dummy_string'
-        ], $this->request->params());
-    }
-
-    public function testToArray()
-    {
-        $stub = [
-            "headers" => [
-                "UserAgent" => 'Mozilla 5.0',
-                "XCustomH" => 'Dummy-Test-Data-2.0',
-                "AcceptEncoding" => 'application/json'
-            ],
-            "request" => [
-                "Method" => 'GET',
-                "Uri" => '/',
-                "Protocol" => 'HTTP/1.1'
-            ],
-            "params" => [
-                'param1' => 1,
-                'param2' => 'dummy_string'
-            ]
-        ];
-        
-        $this->assertSame($stub, $this->request->toArray());
+        ], $this->request->getParams());
     }
 
     public function testNotExistingVariables()
     {
-        $this->assertNull($this->request->header('SomeDummyHeader'));
-        $this->assertNull($this->request->request('SomeDummyRequest'));
+        $this->assertEmpty($this->request->getHeader('SomeDummyHeader'));
         $this->assertNull($this->request->DUMMY_HEADER);
     }
 }

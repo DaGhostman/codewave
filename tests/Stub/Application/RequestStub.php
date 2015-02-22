@@ -9,18 +9,19 @@
 namespace Stub\Application;
 
 
-use Wave\Framework\Http\Request;
+use Wave\Framework\Http\Server\Request;
+use Wave\Framework\Http\Uri;
+use Wave\Framework\Http\Params;
 
 class RequestStub extends Request
 {
     protected $method = null;
     protected $uri = null;
-    protected $params = array();
 
     public function __construct($method, $uri, $params = array())
     {
         $this->method = $method;
-        $this->uri = $uri;
+        $this->uri = new Uri($uri);
         $this->params = $params;
     }
 
@@ -32,5 +33,10 @@ class RequestStub extends Request
     public function getMethod()
     {
         return $this->method;
+    }
+
+    public function param($param)
+    {
+        return $this->$param;
     }
 }

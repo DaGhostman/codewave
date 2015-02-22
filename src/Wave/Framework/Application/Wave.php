@@ -7,9 +7,11 @@ use Phroute\Phroute\Exception\HttpRouteNotFoundException;
 use Phroute\Phroute\RouteCollector;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
-use Wave\Framework\Http\Request;
+use Wave\Framework\Http\Server\Request;
 use Wave\Framework\Router\Resolver;
-use Wave\Framework\Http\Response;
+use Wave\Framework\Http\Server\Response;
+use Psr\Http\Message\ResponseInterface;
+use Wave\Framework\Application\Server;
 
 /**
  * Class Wave
@@ -30,6 +32,10 @@ class Wave implements LoggerAwareInterface
     protected $notAllowed = null;
 
     protected $container = null;
+
+    protected $dispatcher = null;
+
+    protected $router = null;
 
     /**
      * Creates the main application instance
@@ -54,6 +60,18 @@ class Wave implements LoggerAwareInterface
                 return $router;
             };
         }
+
+        $this->dispatcher = function($router, $container) {
+            new Dispatcher(
+                $this->router->getData(),
+                new Resolver($this->container)
+            );
+        };
+    }
+
+    public function getRouter()
+    {
+        return $this->router;
     }
 
     /**
@@ -73,37 +91,44 @@ class Wave implements LoggerAwareInterface
         ], $args);
     }
 
+    public function setDispatcher($dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
+
+        return $this;
+    }
+
     /**
      * Starts the application routing.
      * Second argument is passed directly to the dispatcher. See
      *
      * @param Request $request
      */
-    public function run(Request $request, $response = null)
+    public function run(Request $request, $response = null, $server = null)
     {
-        $dispatcher = new Dispatcher($this->router->getData(), new Resolver($this->container));
+
+        if (!is_null($response) && !$response instanceof ResponseInterface) {
+            throw new \InvalidArgumentException(
+                'Invalid response object provided'
+            );
+        }
+
+        $response = $response ?: new Response();
+
+
+        $dispatcher = call_user_func($this->dispatcher, $this->router, $this->container);
 
         try {
-            $response = $dispatcher->dispatch($request, $response ?  : new Response());
-
-            $response->send();
+            $server = new Server($request, $response, $server);
+            $server->dispatch(function($request, $response) use ($dispatcher) {
+                return $dispatcher->dispatch($request, $response);
+            });
+            $server->send();
         } catch (HttpRouteNotFoundException $e) {
-            /**
-             * @codeCoverageIgnore
-             */
-            if ($this->logger) {
-                $this->logger->err($e->getMessage(), $e);
-            }
-
+            $this->log('err', $e->getMessage(), $e);
             $this->notFound ? call_user_func($this->notFound, $e) : null;
         } catch (HttpMethodNotAllowedException $e) {
-            /**
-             * @codeCoverageIgnore
-             */
-            if ($this->logger) {
-                $this->logger->err($e->getMessage(), $e);
-            }
-
+            $this->log('err', $e->getMessage(), $e);
             $this->notAllowed ? call_user_func($this->notAllowed, $e) : null;
         }
     }
@@ -132,5 +157,12 @@ class Wave implements LoggerAwareInterface
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
+    }
+
+    public function log($type, $message, $extra)
+    {
+        if (!is_null($this->logger)) {
+            $this->logger->$type($message, $extra);
+        }
     }
 }

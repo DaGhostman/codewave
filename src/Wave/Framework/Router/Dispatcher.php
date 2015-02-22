@@ -30,10 +30,11 @@ class Dispatcher extends D
         $this->staticRouteMap = $data->getStaticRoutes();
         $this->variableRouteData = $data->getVariableRoutes();
         $this->filters = $data->getFilters();
+
+        $this->handlerResolver = $resolver;
+
         if ($resolver === null) {
             $this->handlerResolver = new HandlerResolver();
-        } else {
-            $this->handlerResolver = $resolver;
         }
     }
 
@@ -48,29 +49,41 @@ class Dispatcher extends D
      */
     public function dispatch($request, $response)
     {
-        list ($handler, $filters, $vars) = $this->dispatchRoute($request->getMethod(), trim($request->getUri(), '/'));
-        
+        list ($handler, $filters, $vars) = $this->dispatchRoute(
+            $request->getMethod(),
+            trim($request->getUri()->getPath(), '/')
+        );
+
         list ($beforeFilter, $afterFilter) = $this->parseFilters($filters);
-        
+
         if (($output = $this->dispatchFilters($beforeFilter)) !== null) {
             $response->getBody()
                 ->write($output)
                 ->send();
             return $response;
         }
-        
+
         $resolvedHandler = $this->handlerResolver->resolve($handler);
-        
-        foreach ($vars as $k => $v) {
-            $request->$k = $v;
-        }
-        
-        $output = call_user_func_array($resolvedHandler, [
+
+        $request = $request->withParams($vars);
+
+        $response = call_user_func_array($resolvedHandler, [
             $request,
             $response
         ]);
-        
-        $response->getBody()->write($output);
+
+        $parts = explode('/', $request->getUri()->getPath());
+        foreach ($parts as $index => $part) {
+            foreach (array_keys($vars) as $i => $key) {
+                if (strpos($part, '{' . $key) !== false) {
+                    $parts[$index] = array_values($vars)[$i];
+                }
+            }
+        }
+
+
+        $request->getUri()->withPath(implode('/', $parts) ?: '/');
+
         return $this->dispatchFilters($afterFilter, $response);
     }
 
@@ -86,12 +99,12 @@ class Dispatcher extends D
     {
         while ($filter = array_shift($filters)) {
             $handler = $this->handlerResolver->resolve($filter);
-            
+
             if (($filteredResponse = call_user_func($handler, $response)) !== null) {
                 return $filteredResponse;
             }
         }
-        
+
         return $response;
     }
 
@@ -106,15 +119,15 @@ class Dispatcher extends D
     {
         $beforeFilter = array();
         $afterFilter = array();
-        
+
         if (isset($filters[Route::BEFORE])) {
             $beforeFilter = array_intersect_key($this->filters, array_flip((array) $filters[Route::BEFORE]));
         }
-        
+
         if (isset($filters[Route::AFTER])) {
             $afterFilter = array_intersect_key($this->filters, array_flip((array) $filters[Route::AFTER]));
         }
-        
+
         return array(
             $beforeFilter,
             $afterFilter
@@ -136,7 +149,7 @@ class Dispatcher extends D
         if (isset($this->staticRouteMap[$uri])) {
             return $this->dispatchStaticRoute($httpMethod, $uri);
         }
-        
+
         return $this->dispatchVariableRoute($httpMethod, $uri);
     }
 
@@ -153,11 +166,11 @@ class Dispatcher extends D
     protected function dispatchStaticRoute($httpMethod, $uri)
     {
         $routes = $this->staticRouteMap[$uri];
-        
+
         if (! isset($routes[$httpMethod])) {
             $httpMethod = $this->checkFallbacks($routes, $httpMethod);
         }
-        
+
         return $routes[$httpMethod];
     }
 
@@ -175,19 +188,19 @@ class Dispatcher extends D
         $additional = array(
             Route::ANY
         );
-        
+
         if ($httpMethod === Route::HEAD) {
             $additional[] = Route::GET;
         }
-        
+
         foreach ($additional as $method) {
             if (isset($routes[$method])) {
                 return $method;
             }
         }
-        
+
         $this->matchedRoute = $routes;
-        
+
         throw new HttpMethodNotAllowedException('Allow: ' . implode(', ', array_keys($routes)));
     }
 
@@ -207,29 +220,30 @@ class Dispatcher extends D
             if (! preg_match($data['regex'], $uri, $matches)) {
                 continue;
             }
-            
+
             $count = count($matches);
-            
+
             while (! isset($data['routeMap'][$count ++])) {
             }
-            
+
             $routes = $data['routeMap'][$count - 1];
-            
+
             if (! isset($routes[$httpMethod])) {
                 $httpMethod = $this->checkFallbacks($routes, $httpMethod);
             }
-            
+
             foreach (array_values($routes[$httpMethod][2]) as $i => $varName) {
                 if (! isset($matches[$i + 1]) || $matches[$i + 1] === '') {
                     unset($routes[$httpMethod][2][$varName]);
-                } else {
-                    $routes[$httpMethod][2][$varName] = $matches[$i + 1];
+                    continue;
                 }
+
+                $routes[$httpMethod][2][$varName] = $matches[$i + 1];
             }
-            
+
             return $routes[$httpMethod];
         }
-        
+
         throw new HttpRouteNotFoundException('Route ' . $uri . ' does not exist');
     }
 }
