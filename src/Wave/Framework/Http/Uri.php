@@ -204,7 +204,7 @@ class Uri implements UriInterface
             $uri .= sprintf('%s://', $this->getScheme());
         }
 
-        if (! empty($this->getAuthority())) {
+        if ($this->getAuthority() != '' && $this->getAuthority() != null) {
             $uri .= $this->getAuthority();
         }
 
