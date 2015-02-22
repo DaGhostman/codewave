@@ -62,7 +62,7 @@ class Wave implements LoggerAwareInterface
         }
 
         $this->dispatcher = function($router, $container) {
-            new Dispatcher(
+            return new Dispatcher(
                 $this->router->getData(),
                 new Resolver($this->container)
             );
