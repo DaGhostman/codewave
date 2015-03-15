@@ -35,7 +35,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
     public function testFunctionReturningStringWithoutResponse()
     {
         $this->setExpectedException('\RuntimeException', 'No response object defined');
-        $r = $this->srv->dispatch(function($req, $resp) {
+        $r = $this->srv->dispatch(function() {
             return 'Hello, World';
         });
 

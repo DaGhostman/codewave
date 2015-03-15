@@ -1,15 +1,12 @@
 <?php
 namespace Wave\Framework\Application;
 
+use Psr\Http\Message\RequestInterface;
 use Wave\Framework\Router\Dispatcher;
 use Phroute\Phroute\Exception\HttpMethodNotAllowedException;
 use Phroute\Phroute\Exception\HttpRouteNotFoundException;
 use Phroute\Phroute\RouteCollector;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
-use Wave\Framework\Http\Server\Request;
 use Wave\Framework\Router\Resolver;
-use Wave\Framework\Http\Server\Response;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -17,13 +14,8 @@ use Psr\Http\Message\ResponseInterface;
  *
  * @package Wave\Framework\Application
  */
-class Wave implements LoggerAwareInterface
+class Wave
 {
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger = null;
 
     /**
      * @var callable Function to use for 404
@@ -119,11 +111,11 @@ class Wave implements LoggerAwareInterface
      * Starts the application routing.
      * Second argument is passed directly to the dispatcher. See
      *
-     * @param Request $request
-     * @param Response $response
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @param array $server Array equiv to $_SERVER variable
      */
-    public function run(Request $request, $response = null, $server = null)
+    public function run(RequestInterface $request, ResponseInterface $response, $server = null)
     {
 
         if (!is_null($response) && !$response instanceof ResponseInterface) {
@@ -131,9 +123,6 @@ class Wave implements LoggerAwareInterface
                 'Invalid response object provided'
             );
         }
-
-        $response = $response ?: new Response();
-
 
         $dispatcher = call_user_func($this->dispatcher, $this->router, $this->container);
 
@@ -148,10 +137,8 @@ class Wave implements LoggerAwareInterface
             });
             $server->send();
         } catch (HttpRouteNotFoundException $e) {
-            $this->log('err', $e->getMessage(), $e);
             $this->notFound ? call_user_func($this->notFound, $e) : null;
         } catch (HttpMethodNotAllowedException $e) {
-            $this->log('err', $e->getMessage(), $e);
             $this->notAllowed ? call_user_func($this->notAllowed, $e) : null;
         }
     }
@@ -175,31 +162,5 @@ class Wave implements LoggerAwareInterface
     public function setNotAllowedHandler(callable $func)
     {
         $this->notAllowed = $func;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     * @param LoggerInterface $logger
-     * @return null
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     *
-     * Wrapper around the logger log
-     *
-     * @param $type
-     * @param $message
-     * @param $extra
-     */
-    public function log($type, $message, $extra)
-    {
-        if (!is_null($this->logger)) {
-            $this->logger->$type($message, $extra);
-        }
     }
 }

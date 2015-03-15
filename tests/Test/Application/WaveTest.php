@@ -9,6 +9,7 @@ namespace Test\Application;
 
 use Stub\Application\RequestStub;
 use Wave\Framework\Application\Wave;
+use Wave\Framework\Http\Server\Response;
 
 class WaveTest extends \PHPUnit_Framework_TestCase
 {
@@ -18,10 +19,12 @@ class WaveTest extends \PHPUnit_Framework_TestCase
      * @var Wave
      */
     private $app = null;
+    private $response = null;
 
     protected function setUp()
     {
         $this->app = new Wave([]);
+        $this->response = new Response();
     }
 
     public function testSimpleRouting()
@@ -34,7 +37,7 @@ class WaveTest extends \PHPUnit_Framework_TestCase
         {
             return 'Routes / called';
         });
-        $this->app->run($request);
+        $this->app->run($request, $this->response);
     }
 
     public function testUriWithParameters()
@@ -45,7 +48,7 @@ class WaveTest extends \PHPUnit_Framework_TestCase
         {
             return sprintf('Hello, %s', $request->name);
         });
-        $this->app->run($request);
+        $this->app->run($request, $this->response);
     }
 
     public function testUriWithParametersWithPattern()
@@ -58,7 +61,7 @@ class WaveTest extends \PHPUnit_Framework_TestCase
             echo 'Should not invoke';
         });
         
-        $this->app->run($request);
+        $this->app->run($request, $this->response);
         echo 'OK';
     }
 
@@ -69,7 +72,7 @@ class WaveTest extends \PHPUnit_Framework_TestCase
         {
             echo '404 Not Found';
         });
-        $this->app->run(new RequestStub('GET', '/'));
+        $this->app->run(new RequestStub('GET', '/'), $this->response);
     }
 
     public function testNotAllowedHandler()
@@ -83,13 +86,7 @@ class WaveTest extends \PHPUnit_Framework_TestCase
         {
             return 0;
         });
-        $this->app->run(new RequestStub('GET', '/'));
-    }
-
-    public function testBadRunResponseArgument()
-    {
-        $this->setExpectedException('\InvalidArgumentException', 'Invalid response object');
-        $this->app->run(new RequestStub('GET', '/'), new \stdClass());
+        $this->app->run(new RequestStub('GET', '/'), $this->response);
     }
 
     public function testGetRoute()
