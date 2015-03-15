@@ -1,18 +1,52 @@
 <?php
 namespace Wave\Framework\Application;
 
-use Wave\Framework\Http\Uri;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Wave\Framework\Http\Server\Response;
 
+/**
+ * Class Server
+ *
+ * Class responsible to glue the Request and Response to
+ * the route dispatching. It takes care to build the params
+ *
+ * @package Wave\Framework\Application
+ */
 class Server
 {
+    /**
+     * @var array
+     */
     protected $server;
-    protected $uri;
+
+    /**
+     * @var RequestInterface
+     */
     protected $request  = null;
+
+    /**
+     * @var ResponseInterface
+     */
     protected $response = null;
 
+    /**
+     * @var \ArrayObject
+     */
+    protected $params = null;
+
+    /**
+     * Constructs a for the object.
+     * Responsible to define the Request and Response
+     * for the request, as well as to allow mocking
+     * of the environment using the 3rd parameter,
+     * which responds to $_SERVER, or alternatively
+     * an array with the mocking values
+     *
+     * @param $request RequestInterface
+     * @param $response ResponseInterface
+     * @param array $server
+     */
     public function __construct($request, $response, $server = null)
     {
         if (!$request instanceof RequestInterface) {
@@ -21,6 +55,7 @@ class Server
             );
         }
 
+
         $this->response = $response;
 
         $this->request = $request;
@@ -28,21 +63,41 @@ class Server
         $this->server = $server;
 
         if (is_null($server)) {
+            /*
+             * Second argument is fix for HHVM
+             */
             $this->server = filter_input_array(INPUT_SERVER, FILTER_FLAG_NONE);
         }
     }
 
+    /**
+     * Invokes the wraps the dispatcher,
+     * if the result is a string adds it as output to the
+     * response object as per PSR-5 or if it is a instance
+     * of Response replaces the current response object.
+     *
+     * @param callable $callback Callback wrapping the
+     * dispatcher.
+     * @return ResponseInterface A response object populated with
+     * the output of the call
+     */
     public function dispatch(callable $callback)
     {
         $result = call_user_func($callback, $this->request, $this->response);
 
-        if (!is_string($result) && !$result instanceof Response) {
+        if (!is_string($result) && !is_null($result) && !$result instanceof Response) {
             throw new \RuntimeException(
-                'Expected string or intanse of Response as function return type.'
+                'Expected string or instance of Response as function return type.'
             );
         }
 
         if (is_string($result)) {
+            if (!$this->response instanceof Response) {
+                throw new \RuntimeException(
+                    'No response object defined'
+                );
+            }
+
             $this->response->getBody()->write($result);
         } elseif ($result instanceof Response) {
             $this->response = $result;
@@ -51,6 +106,13 @@ class Server
         return $this->response;
     }
 
+    /**
+     * Handles the sending of the response headers
+     *
+     * @param ResponseInterface $response
+     *
+     * @codeCoverageIgnore
+     */
     private function sendHeaders(ResponseInterface $response)
     {
         if ($response->getReasonPhrase()) {
@@ -81,6 +143,15 @@ class Server
         }
     }
 
+    /**
+     * Simple filtering of the headers, used by
+     * Server::sendHeaders()
+     *
+     * @param $header
+     * @return mixed
+     *
+     * @codeCoverageIgnore
+     */
     private function filterHeader($header)
     {
         $filtered = str_replace('-', ' ', $header);
@@ -88,12 +159,25 @@ class Server
         return str_replace(' ', '-', $filtered);
     }
 
+    /**
+     * Sends the response to the client.
+     * If there are some headers already sent, skips the
+     * sending of the headers and sends the output.
+     *
+     *
+     * @return null This should always be the last step of the request
+     * and therefore should not need to return anything.
+     */
     public function send()
     {
         if (!headers_sent()) {
             $this->sendHeaders($this->response);
         }
 
-        echo $this->response->getBody();
+        if ($this->response instanceof Response) {
+            echo $this->response->getBody();
+        }
+
+        return null;
     }
 }
