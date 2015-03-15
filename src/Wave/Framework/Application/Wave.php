@@ -77,6 +77,11 @@ class Wave implements LoggerAwareInterface
             };
         }
 
+        /**
+         * @param $router RouteCollector
+         * @param $container
+         * @return Dispatcher
+         */
         $this->dispatcher = function($router, $container) {
             return new Dispatcher(
                 $router->getData(),
@@ -138,6 +143,8 @@ class Wave implements LoggerAwareInterface
                 if ($dispatcher instanceof Dispatcher) {
                     return $dispatcher->dispatch($request, $response);
                 }
+
+                return 0;
             });
             $server->send();
         } catch (HttpRouteNotFoundException $e) {
