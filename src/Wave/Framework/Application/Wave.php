@@ -11,7 +11,6 @@ use Wave\Framework\Http\Server\Request;
 use Wave\Framework\Router\Resolver;
 use Wave\Framework\Http\Server\Response;
 use Psr\Http\Message\ResponseInterface;
-use Wave\Framework\Application\Server;
 
 /**
  * Class Wave
@@ -21,41 +20,58 @@ use Wave\Framework\Application\Server;
 class Wave implements LoggerAwareInterface
 {
 
-    protected $config;
-
-    protected $response = null;
-
+    /**
+     * @var LoggerInterface
+     */
     protected $logger = null;
 
+    /**
+     * @var callable Function to use for 404
+     */
     protected $notFound = null;
 
+    /**
+     * @var callable Function to use for 405
+     */
     protected $notAllowed = null;
 
+    /**
+     * @var array|\ArrayAccess
+     */
     protected $container = null;
 
+    /**
+     * @var callable the dispatcher ot use with the request
+     */
     protected $dispatcher = null;
 
+    /**
+     * @var RouteCollector
+     */
     protected $router = null;
 
     /**
-     * Creates the main application instance
+     * Creates the main application instance with the
+     * DI container as 1st argument, this container is
+     * later passed on to the Router\Resolver for route
+     * resolution.
      *
-     * @param $config array
-     *            A placeholder for future use
-     * @param $container mixed
+     * @param $container array|\ArrayAccess
      *            Instance of Pimple
      * @throws \InvalidArgumentException
      */
-    public function __construct($container, $config = [])
+    public function __construct($container)
     {
-        if (! is_array($config)) {
-            throw new \InvalidArgumentException("Invalid configuration");
-        }
         $this->container = $container;
         $this->router = new RouteCollector();
 
         $router = $this->router;
         if (! is_null($container)) {
+            /**
+             * @return mixed
+             *
+             * @codeCoverageIgnore
+             */
             $container['router'] = function () use ($router) {
                 return $router;
             };
@@ -63,12 +79,17 @@ class Wave implements LoggerAwareInterface
 
         $this->dispatcher = function($router, $container) {
             return new Dispatcher(
-                $this->router->getData(),
-                new Resolver($this->container)
+                $router->getData(),
+                new Resolver($container)
             );
         };
     }
 
+    /**
+     * Returns the RouteCollector in use
+     *
+     * @return RouteCollector
+     */
     public function getRouter()
     {
         return $this->router;
@@ -77,10 +98,8 @@ class Wave implements LoggerAwareInterface
     /**
      * Proxies all method calls to the PHRoute instance
      *
-     * @param
-     *            $name
-     * @param
-     *            $args
+     * @param string $name
+     * @param array $args
      * @return mixed
      */
     public function __call($name, $args)
@@ -91,18 +110,13 @@ class Wave implements LoggerAwareInterface
         ], $args);
     }
 
-    public function setDispatcher($dispatcher)
-    {
-        $this->dispatcher = $dispatcher;
-
-        return $this;
-    }
-
     /**
      * Starts the application routing.
      * Second argument is passed directly to the dispatcher. See
      *
      * @param Request $request
+     * @param Response $response
+     * @param array $server Array equiv to $_SERVER variable
      */
     public function run(Request $request, $response = null, $server = null)
     {
@@ -121,7 +135,9 @@ class Wave implements LoggerAwareInterface
         try {
             $server = new Server($request, $response, $server);
             $server->dispatch(function($request, $response) use ($dispatcher) {
-                return $dispatcher->dispatch($request, $response);
+                if ($dispatcher instanceof Dispatcher) {
+                    return $dispatcher->dispatch($request, $response);
+                }
             });
             $server->send();
         } catch (HttpRouteNotFoundException $e) {
@@ -154,11 +170,25 @@ class Wave implements LoggerAwareInterface
         $this->notAllowed = $func;
     }
 
+    /**
+     * @codeCoverageIgnore
+     * @param LoggerInterface $logger
+     * @return null
+     */
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
 
+    /**
+     * @codeCoverageIgnore
+     *
+     * Wrapper around the logger log
+     *
+     * @param $type
+     * @param $message
+     * @param $extra
+     */
     public function log($type, $message, $extra)
     {
         if (!is_null($this->logger)) {
