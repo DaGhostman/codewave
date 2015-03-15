@@ -20,6 +20,12 @@ class Uri implements UriInterface
 
     protected $fragment = '';
 
+    /**
+     * Uses the passed argument to get all of the
+     * URL elements
+     *
+     * @param null|string|object $uri
+     */
     public function __construct($uri = '/')
     {
         if (! is_string($uri)) {
@@ -41,11 +47,19 @@ class Uri implements UriInterface
         }
     }
 
+    /**
+     * @see UriInterface::getScheme()
+     * @return string
+     */
     public function getScheme()
     {
         return $this->scheme;
     }
 
+    /**
+     * @see UriInterface::getAuthority()
+     * @return string
+     */
     public function getAuthority()
     {
         if (empty($this->host)) {
@@ -61,38 +75,69 @@ class Uri implements UriInterface
         if (80 !== (int) $this->port || 443 !== (int) $this->port) {
             $authority .= ':' . $this->port;
         }
+
+        return $authority;
     }
 
+    /**
+     * @see UriInterface::getUserInfo()
+     * @return string
+     */
     public function getUserInfo()
     {
         return $this->user;
     }
 
+    /**
+     * @see UriInterface::getHost()
+     * @return string
+     */
     public function getHost()
     {
         return $this->host;
     }
 
+    /**
+     * @see UriInterface::getPort()
+     * @return int
+     */
     public function getPort()
     {
         return (int) $this->port;
     }
 
+    /**
+     * @see UriInterface::getPath()
+     * @return string
+     */
     public function getPath()
     {
         return ($this->path ?  : '/');
     }
 
+    /**
+     * @see UriInterface::getQuery()
+     * @return string
+     */
     public function getQuery()
     {
         return $this->query;
     }
 
+    /**
+     * @see UriInterface::getFragment()
+     * @return string
+     */
     public function getFragment()
     {
         return $this->fragment;
     }
 
+    /**
+     * @see UriInterface::withScheme()
+     * @param string $scheme Scheme of the current URI
+     * @return UriInterface
+     */
     public function withScheme($scheme)
     {
         $scheme = strtolower($scheme);
@@ -114,6 +159,13 @@ class Uri implements UriInterface
         return $new;
     }
 
+    /**
+     * @see UriInterface::withUserInfo()
+     *
+     * @param string $user
+     * @param string|null $password
+     * @return UriInterface
+     */
     public function withUserInfo($user, $password = null)
     {
         $user = $user . ($password ? ':' . $password : '');
@@ -124,6 +176,12 @@ class Uri implements UriInterface
         return $new;
     }
 
+    /**
+     * @see UriInterface::withHost()
+     *
+     * @param string $host
+     * @return UriInterface
+     */
     public function withHost($host)
     {
         $new = clone $this;
@@ -132,6 +190,12 @@ class Uri implements UriInterface
         return $new;
     }
 
+    /**
+     * @see UriInterface::withPort()
+     *
+     * @param string|int $port
+     * @return UriInterface
+     */
     public function withPort($port)
     {
         // is_float is not the best opinion, but just in case :P
@@ -149,6 +213,12 @@ class Uri implements UriInterface
         return $new;
     }
 
+    /**
+     * @see UriInterface::withPath()
+     *
+     * @param string $path
+     * @return UriInterface
+     */
     public function withPath($path)
     {
         if (! is_string($path)) {
@@ -165,6 +235,12 @@ class Uri implements UriInterface
         return $new;
     }
 
+    /**
+     * @see UriInterface::withQuery()
+     *
+     * @param string $query
+     * @return UriInterface
+     */
     public function withQuery($query)
     {
         if (! is_string($query)) {
@@ -185,6 +261,12 @@ class Uri implements UriInterface
         return $new;
     }
 
+    /**
+     * @see UriInterface::withFragment()
+     *
+     * @param string $fragment
+     * @return UriInterface
+     */
     public function withFragment($fragment)
     {
         if (strpos($fragment, '#') === 0) {
@@ -197,6 +279,9 @@ class Uri implements UriInterface
         return $new;
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         $uri = '';
