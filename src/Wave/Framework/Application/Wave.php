@@ -74,7 +74,7 @@ class Wave
          * @param $container
          * @return Dispatcher
          */
-        $this->dispatcher = function($router, $container) {
+        $this->dispatcher = function ($router, $container) {
             return new Dispatcher(
                 $router->getData(),
                 new Resolver($container)
@@ -128,7 +128,7 @@ class Wave
 
         try {
             $server = new Server($request, $response, $server);
-            $server->dispatch(function($request, $response) use ($dispatcher) {
+            $server->dispatch(function ($request, $response) use ($dispatcher) {
                 if ($dispatcher instanceof Dispatcher) {
                     return $dispatcher->dispatch($request, $response);
                 }
