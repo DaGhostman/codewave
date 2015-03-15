@@ -97,10 +97,4 @@ class WaveTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\Phroute\Phroute\RouteCollector', $this->app->getRouter());
     }
 
-    public function testBadConfigArgument()
-    {
-        $this->setExpectedException('\InvalidArgumentException', 'Invalid configuration');
-        new Wave([], 'you-expected-array');
-    }
-
 }
