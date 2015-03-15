@@ -6,6 +6,7 @@ use \Phroute\Phroute\Exception\HttpMethodNotAllowedException;
 use \Phroute\Phroute\Exception\HttpRouteNotFoundException;
 use \Phroute\Phroute\RouteDataInterface;
 use \Phroute\Phroute\HandlerResolverInterface;
+use \Phroute\Phroute\HandlerResolver;
 use \Phroute\Phroute\Route;
 
 class Dispatcher extends D
@@ -15,9 +16,13 @@ class Dispatcher extends D
 
     private $variableRouteData;
 
+    /**
+     * @var \Phroute\Phroute\HandlerResolver
+     */
     private $handlerResolver;
 
     public $matchedRoute;
+    protected $filters;
 
     /**
      * Create a new route dispatcher.
@@ -41,10 +46,8 @@ class Dispatcher extends D
     /**
      * Dispatch a route for the given HTTP Method / URI.
      *
-     * @param
-     *            $request
-     * @param
-     *            $response
+     * @param \Wave\Framework\Http\Server\Request $request
+     * @param \Wave\Framework\Http\Server\Response $response
      * @return mixed|null
      */
     public function dispatch($request, $response)
@@ -58,31 +61,19 @@ class Dispatcher extends D
 
         if (($output = $this->dispatchFilters($beforeFilter)) !== null) {
             $response->getBody()
-                ->write($output)
-                ->send();
+                ->write($output);
             return $response;
         }
 
         $resolvedHandler = $this->handlerResolver->resolve($handler);
 
-        $request = $request->withParams($vars);
+        $params = new \ArrayObject($vars, \ArrayObject::ARRAY_AS_PROPS);
 
         $response = call_user_func_array($resolvedHandler, [
+            $params,
             $request,
             $response
         ]);
-
-        $parts = explode('/', $request->getUri()->getPath());
-        foreach ($parts as $index => $part) {
-            foreach (array_keys($vars) as $i => $key) {
-                if (strpos($part, '{' . $key) !== false) {
-                    $parts[$index] = array_values($vars)[$i];
-                }
-            }
-        }
-
-
-        $request->getUri()->withPath(implode('/', $parts) ?: '/');
 
         return $this->dispatchFilters($afterFilter, $response);
     }
@@ -138,11 +129,11 @@ class Dispatcher extends D
      * Perform the route dispatching.
      * Check static routes first followed by variable routes.
      *
-     * @param
-     *            $httpMethod
-     * @param
-     *            $uri
-     * @throws Exception\HttpRouteNotFoundException
+     * @param string $httpMethod
+     * @param string $uri
+     *
+     * @throws HttpRouteNotFoundException
+     * @return mixed
      */
     protected function dispatchRoute($httpMethod, $uri)
     {
@@ -161,7 +152,7 @@ class Dispatcher extends D
      * @param
      *            $uri
      * @return mixed
-     * @throws Exception\HttpMethodNotAllowedException
+     * @throws \Phroute\Phroute\Exception\HttpMethodNotAllowedException
      */
     protected function dispatchStaticRoute($httpMethod, $uri)
     {
@@ -177,11 +168,9 @@ class Dispatcher extends D
     /**
      * Check fallback routes: HEAD for GET requests followed by the ANY attachment.
      *
-     * @param
-     *            $routes
-     * @param
-     *            $httpMethod
-     * @throws Exception\HttpMethodNotAllowedException
+     * @param mixed $routes
+     * @param mixed $httpMethod
+     * @throws \Phroute\Phroute\Exception\HttpMethodNotAllowedException
      */
     protected function checkFallbacks($routes, $httpMethod)
     {
@@ -207,12 +196,12 @@ class Dispatcher extends D
     /**
      * Handle the dispatching of variable routes.
      *
-     * @param
-     *            $httpMethod
-     * @param
-     *            $uri
-     * @throws Exception\HttpMethodNotAllowedException
-     * @throws Exception\HttpRouteNotFoundException
+     * @param string $httpMethod
+     * @param string $uri
+     *
+     * @throws \Phroute\Phroute\Exception\HttpMethodNotAllowedException
+     * @throws \Phroute\Phroute\Exception\HttpRouteNotFoundException
+     * @throws
      */
     protected function dispatchVariableRoute($httpMethod, $uri)
     {
