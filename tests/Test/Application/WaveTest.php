@@ -7,61 +7,51 @@
  */
 namespace Test\Application;
 
-use Stub\Application\RequestStub;
 use Wave\Framework\Application\Wave;
-use Wave\Framework\Http\Server\Response;
 
 class WaveTest extends \PHPUnit_Framework_TestCase
 {
-
-    /**
-     *
-     * @var Wave
-     */
     private $app = null;
-    private $response = null;
 
     protected function setUp()
     {
         $this->app = new Wave([]);
-        $this->response = new Response();
     }
 
     public function testSimpleRouting()
     {
         $this->expectOutputString('Routes / called');
         
-        $request = new RequestStub('GET', '/');
-        
         $this->app->get('/', function ()
         {
             return 'Routes / called';
         });
-        $this->app->run($request, $this->response);
+        $this->app->run(['REQUEST_URI' => '/', 'REQUEST_METHOD' => 'GET']);
     }
 
     public function testUriWithParameters()
     {
-        $request = new RequestStub('GET', '/greet/ghost');
         $this->expectOutputString('Hello, ghost');
         $this->app->get('/greet/{name}', function ($request)
         {
             return sprintf('Hello, %s', $request->name);
         });
-        $this->app->run($request, $this->response);
+        $this->app->run(['REQUEST_URI' => '/greet/ghost', 'REQUEST_METHOD' => 'GET']);
     }
 
     public function testUriWithParametersWithPattern()
     {
         $this->expectOutputString('OK');
-        
-        $request = new RequestStub('GET', '/greet/ghost-');
+
         $this->app->get('/greet/{name:a}', function ()
         {
             echo 'Should not invoke';
         });
         
-        $this->app->run($request, $this->response);
+        $this->app->run([
+            'REQUEST_URI' => '/greet/ghost-',
+            'REQUEST_METHOD' => 'GET'
+        ]);
         echo 'OK';
     }
 
@@ -72,7 +62,7 @@ class WaveTest extends \PHPUnit_Framework_TestCase
         {
             echo '404 Not Found';
         });
-        $this->app->run(new RequestStub('GET', '/'), $this->response);
+        $this->app->run(['REQUEST_URI' => '/', 'REQUEST_METHOD' => 'GET']);
     }
 
     public function testNotAllowedHandler()
@@ -86,7 +76,7 @@ class WaveTest extends \PHPUnit_Framework_TestCase
         {
             return 0;
         });
-        $this->app->run(new RequestStub('GET', '/'), $this->response);
+        $this->app->run(['REQUEST_URI' => '/', 'REQUEST_METHOD' => 'GET']);
     }
 
     public function testGetRoute()
