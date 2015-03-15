@@ -2,12 +2,10 @@
 namespace Wave\Framework\Http\Server;
 
 use \InvalidArgumentException;
-use \RuntimeException;
 use \Psr\Http\Message\RequestInterface;
 use \Psr\Http\Message\StreamableInterface;
 use \Psr\Http\Message\UriInterface;
 use \Wave\Framework\Http\Message;
-use \Wave\Framework\Http\Params;
 use \Wave\Framework\Http\Stream;
 use \Wave\Framework\Http\Uri;
 
@@ -21,7 +19,7 @@ use \Wave\Framework\Http\Uri;
 class Request implements RequestInterface
 {
     use Message;
-    use Params;
+
     /**
      * @var string
      */
@@ -33,7 +31,7 @@ class Request implements RequestInterface
      */
     private $requestTarget;
     /**
-     * @var null|UriInterface
+     * @var UriInterface
      */
     private $uri;
     /**
@@ -205,8 +203,9 @@ class Request implements RequestInterface
     /**
      * Validate the HTTP method
      *
-     * @param null|string $method
+     * @param null|string|object $method
      * @throws InvalidArgumentException on invalid HTTP method.
+     * @return bool
      */
     private function validateMethod($method)
     {
@@ -226,5 +225,7 @@ class Request implements RequestInterface
                 $method
             ));
         }
+
+        return in_array(strtoupper($method), $this->validMethods);
     }
 }
