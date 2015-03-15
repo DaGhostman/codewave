@@ -19,10 +19,6 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $requestData = [
-            'param1' => 1,
-            'param2' => 'dummy_string'
-        ];
 
         $serverDummy = [
             'REQUEST_METHOD' => 'GET',
@@ -33,11 +29,11 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             'HTTP_ACCEPT_ENCODING' => 'application/json'
         ];
 
-        $this->request = (new Request('/', 'GET', 'php://memory', [
+        $this->request = new Request('/', 'GET', 'php://memory', [
             'User-Agent' => 'Mozilla 5.0',
             'X-Custom-H' => 'Dummy-Test-Data-2.0',
             'Accept-Encoding' => 'application/json'
-        ]))->withParams($requestData);
+        ]);
     }
 
     public function testRequestGetter()
@@ -65,20 +61,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         ], $this->request->getHeaders());
     }
 
-    public function testParamGetters()
-    {
-        $this->assertSame(1, $this->request->param1);
-        $this->assertSame('dummy_string', $this->request->param2);
-
-        $this->assertSame([
-            'param1' => 1,
-            'param2' => 'dummy_string'
-        ], $this->request->getParams());
-    }
-
     public function testNotExistingVariables()
     {
         $this->assertEmpty($this->request->getHeader('SomeDummyHeader'));
-        $this->assertNull($this->request->DUMMY_HEADER);
     }
 }

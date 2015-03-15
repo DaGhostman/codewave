@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daghostman
- * Date: 02/02/15
- * Time: 00:35
- */
 
 namespace Stub\Application;
 
 
 use Wave\Framework\Http\Server\Request;
 use Wave\Framework\Http\Uri;
-use Wave\Framework\Http\Params;
 
 class RequestStub extends Request
 {

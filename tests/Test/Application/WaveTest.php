@@ -43,7 +43,7 @@ class WaveTest extends \PHPUnit_Framework_TestCase
         $this->expectOutputString('Hello, ghost');
         $this->app->get('/greet/{name}', function ($request)
         {
-            return sprintf('Hello, %s', $request->param('name'));
+            return sprintf('Hello, %s', $request->name);
         });
         $this->app->run($request);
     }
@@ -85,4 +85,22 @@ class WaveTest extends \PHPUnit_Framework_TestCase
         });
         $this->app->run(new RequestStub('GET', '/'));
     }
+
+    public function testBadRunResponseArgument()
+    {
+        $this->setExpectedException('\InvalidArgumentException', 'Invalid response object');
+        $this->app->run(new RequestStub('GET', '/'), new \stdClass());
+    }
+
+    public function testGetRoute()
+    {
+        $this->assertInstanceOf('\Phroute\Phroute\RouteCollector', $this->app->getRouter());
+    }
+
+    public function testBadConfigArgument()
+    {
+        $this->setExpectedException('\InvalidArgumentException', 'Invalid configuration');
+        new Wave([], 'you-expected-array');
+    }
+
 }
