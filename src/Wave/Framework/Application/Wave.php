@@ -1,13 +1,13 @@
 <?php
 namespace Wave\Framework\Application;
 
-use Psr\Http\Message\RequestInterface;
+use Wave\Framework\Http\Server\Request;
+use Wave\Framework\Http\Server\Response;
 use Wave\Framework\Router\Dispatcher;
 use Phroute\Phroute\Exception\HttpMethodNotAllowedException;
 use Phroute\Phroute\Exception\HttpRouteNotFoundException;
 use Phroute\Phroute\RouteCollector;
 use Wave\Framework\Router\Resolver;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Wave
@@ -41,6 +41,14 @@ class Wave
      * @var RouteCollector
      */
     protected $router = null;
+
+    /**
+     * @var array Containing the streams to use for 'in' and 'out'
+     */
+    protected $streams = [
+        'in' => 'php://memory',
+        'out' => 'php://memory'
+    ];
 
     /**
      * Creates the main application instance with the
@@ -111,18 +119,22 @@ class Wave
      * Starts the application routing.
      * Second argument is passed directly to the dispatcher. See
      *
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
      * @param array $server Array equiv to $_SERVER variable
+     * @param array $streams Array with the following keys: 'in' - for request
+     * stream and 'out' for response stream
      */
-    public function run(RequestInterface $request, ResponseInterface $response, $server = null)
+    public function run($server = null, $streams = [])
     {
-
-        if (!is_null($response) && !$response instanceof ResponseInterface) {
-            throw new \InvalidArgumentException(
-                'Invalid response object provided'
-            );
+        if (!$server) {
+            $server = filter_input_array(INPUT_SERVER, FILTER_FLAG_NONE);
         }
+
+        if (!empty($streams)) {
+            $this->streams = array_merge($this->streams, $streams);
+        }
+
+        $request = new Request($server['REQUEST_URI'], $server['REQUEST_METHOD'], $this->streams['in']);
+        $response = new Response($this->streams['out']);
 
         $dispatcher = call_user_func($this->dispatcher, $this->router, $this->container);
 
