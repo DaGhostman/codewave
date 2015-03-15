@@ -45,29 +45,25 @@ class Server
      *
      * @param $request RequestInterface
      * @param $response ResponseInterface
-     * @param array $server
      */
-    public function __construct($request, $response, $server = null)
+    public function __construct($request, $response)
     {
         if (!$request instanceof RequestInterface) {
             throw new \InvalidArgumentException(
-                'Invalid request object specified'
+                'Invalid request object'
             );
         }
 
+        $this->request = $request;
+
+        if (!$response instanceof Response) {
+            throw new \InvalidArgumentException(
+                'Invalid response object'
+            );
+        }
 
         $this->response = $response;
 
-        $this->request = $request;
-
-        $this->server = $server;
-
-        if (is_null($server)) {
-            /*
-             * Second argument is fix for HHVM
-             */
-            $this->server = filter_input_array(INPUT_SERVER, FILTER_FLAG_NONE);
-        }
     }
 
     /**
@@ -92,12 +88,6 @@ class Server
         }
 
         if (is_string($result)) {
-            if (!$this->response instanceof Response) {
-                throw new \RuntimeException(
-                    'No response object defined'
-                );
-            }
-
             $this->response->getBody()->write($result);
         } elseif ($result instanceof Response) {
             $this->response = $result;
