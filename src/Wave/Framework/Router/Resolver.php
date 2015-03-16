@@ -20,8 +20,10 @@ class Resolver implements HandlerResolverInterface
 
     public function resolve($handler)
     {
-        if (is_array($handler) and is_string($handler[0])) {
-            $handler[0] = $this->container[$handler[0]];
+        if (is_array($handler) &&
+            is_string($handler[0]) &&
+            isset($this->container[$handler[0]])) {
+                $handler[0] = $this->container[$handler[0]];
         }
         
         return $handler;
