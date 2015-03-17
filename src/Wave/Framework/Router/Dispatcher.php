@@ -69,11 +69,24 @@ class Dispatcher extends D
 
         $params = new \ArrayObject($vars, \ArrayObject::ARRAY_AS_PROPS);
 
-        $response = call_user_func_array($resolvedHandler, [
-            $params,
-            $request,
-            $response
-        ]);
+        if (!is_array($resolvedHandler) && !$resolvedHandler instanceof \Closure) {
+            throw new \LogicException(sprintf(
+                    'Route handler expected to be either array or string, %s given', gettype($resolvedHandler)
+                )
+            );
+        }
+
+        if (is_array($resolvedHandler)) {
+            $response = call_user_func_array($resolvedHandler, $vars);
+        }
+
+        if ($resolvedHandler instanceof \Closure) {
+            $response = call_user_func_array($resolvedHandler, [
+                $params,
+                $request,
+                $response
+            ]);
+        }
 
         return $this->dispatchFilters($afterFilter, $response);
     }
