@@ -50,6 +50,11 @@ class Wave
         'out' => 'php://memory'
     ];
 
+    protected $request = null;
+    protected $response = null;
+
+    protected static $instance = null;
+
     /**
      * Creates the main application instance with the
      * DI container as 1st argument, this container is
@@ -88,8 +93,14 @@ class Wave
                 new Resolver($container)
             );
         };
+
+        self::setInstance($this);
     }
 
+    private static function setInstance($instance)
+    {
+        self::$instance = $instance;
+    }
     /**
      * Returns the RouteCollector in use
      *
@@ -115,6 +126,20 @@ class Wave
         ], $args);
     }
 
+    public static function __callStatic($name, $args = [])
+    {
+        switch ($name) {
+            case 'getRequest':
+            case 'request':
+                return self::$instance->request;
+                break;
+            case 'getResponse':
+            case 'response':
+                return self::$instance->response;
+                break;
+        }
+    }
+
     /**
      * Starts the application routing.
      * Second argument is passed directly to the dispatcher. See
@@ -133,8 +158,13 @@ class Wave
             $this->streams = array_merge($this->streams, $streams);
         }
 
-        $request = new Request($server['REQUEST_URI'], $server['REQUEST_METHOD'], $this->streams['in']);
-        $response = new Response($this->streams['out']);
+        $request = $this->request = new Request(
+            $server['REQUEST_URI'],
+            $server['REQUEST_METHOD'],
+            $this->streams['in']
+        );
+
+        $response = $this->response = new Response($this->streams['out']);
 
         $dispatcher = call_user_func($this->dispatcher, $this->router, $this->container);
 
