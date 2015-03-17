@@ -71,9 +71,9 @@ class Dispatcher extends D
 
         if (!is_array($resolvedHandler) && !$resolvedHandler instanceof \Closure) {
             throw new \LogicException(sprintf(
-                    'Route handler expected to be either array or string, %s given', gettype($resolvedHandler)
-                )
-            );
+                'Route handler expected to be either array or string, %s given',
+                gettype($resolvedHandler)
+            ));
         }
 
         if (is_array($resolvedHandler)) {
