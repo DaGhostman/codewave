@@ -45,13 +45,23 @@ class Server
      *
      * @param $request RequestInterface
      * @param $response ResponseInterface
+     * @param $variables array
      */
-    public function __construct($request, $response)
+    public function __construct($request, $response, $variables = [])
     {
         if (!$request instanceof RequestInterface) {
             throw new \InvalidArgumentException(
                 'Invalid request object'
             );
+        }
+
+        // Might not be as per PSR-7 @TODO
+        foreach($variables as $key => $value) {
+            if (substr($key, 0, 5) <> 'HTTP_') {
+                continue;
+            }
+            $header = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
+            $request->withHeader($header, $value);
         }
 
         $this->request = $request;
