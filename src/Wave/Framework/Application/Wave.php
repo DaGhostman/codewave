@@ -150,18 +150,18 @@ class Wave
      */
     public function run($factory, $input = null, $output = null)
     {
-        $this->request = new Request();
+        $request = new Request();
         if ($input) {
-            $this->request = $this->request->withBody($input);
+            $request = $request->withBody($input);
         }
 
-        $this->response = new Response();
+        $response = new Response();
         if ($output) {
-            $this->response = $this->response->withBody($output);
+            $response = $response->withBody($output);
         }
 
-        $factory->withRequest($this->request)
-            ->withResponse($this->response);
+        $this->request = $factory->withRequest($request);
+        $this->response = $factory->withResponse($response);
 
         $dispatcher = call_user_func($this->dispatcher, $this->router, $this->container);
 
