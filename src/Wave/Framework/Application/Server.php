@@ -56,7 +56,7 @@ class Server
         }
 
         // Might not be as per PSR-7 @TODO
-        foreach($variables as $key => $value) {
+        foreach ($variables as $key => $value) {
             if (substr($key, 0, 5) <> 'HTTP_') {
                 continue;
             }
