@@ -3,7 +3,6 @@ namespace Wave\Framework\Application;
 
 use Wave\Framework\Http\Server\Request;
 use Wave\Framework\Http\Server\Response;
-use Wave\Framework\Http\Uri;
 use Wave\Framework\Router\Dispatcher;
 use Phroute\Phroute\Exception\HttpMethodNotAllowedException;
 use Phroute\Phroute\Exception\HttpRouteNotFoundException;
@@ -145,57 +144,33 @@ class Wave
      * Starts the application routing.
      * Second argument is passed directly to the dispatcher. See
      *
-     * @param array $server Array equiv to $_SERVER variable
-     * @param array $streams Array with the following keys: 'in' - for request
-     * stream and 'out' for response stream
+     * @param object $factory Factory object to construct the server instance to use
+     * @param \Psr\Http\Message\StreamableInterface $input
+     * @param \Psr\Http\Message\StreamableInterface $output
      */
-    public function run($server = null, $streams = [])
+    public function run($factory, $input = null, $output = null)
     {
-        if (!$server) {
-            $server = filter_input_array(INPUT_SERVER, FILTER_FLAG_NONE);
-        }
+        $this->request = new Request();
+        if ($input) {$this->request = $this->request->withBody($input);}
 
-        if (!empty($streams)) {
-            $this->streams = array_merge($this->streams, $streams);
-        }
+        $this->response = new Response();
+        if ($output) { $this->response = $this->response->withBody($output); }
 
-        // Might not be as per PSR-7 @TODO
-        $headers = [];
-        foreach ($server as $key => $value) {
-            if (substr($key, 0, 5) <> 'HTTP_') {
-                continue;
-            }
-            $header = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
-            $headers[$header] = $value;
-        }
-
-        $url = (
-            (isset($server['HTTPS'])  && $server['HTTPS'] != '') ?
-                'https://' :
-                'http://'
-            ) . $headers['Host'] . $server['REQUEST_URI'];
-
-        $request = $this->request = new Request(
-            $url,
-            $server['REQUEST_METHOD'],
-            $this->streams['in'],
-            $headers
-        );
-
-        $response = $this->response = new Response($this->streams['out']);
+        $factory->withRequest($this->request)
+            ->withResponse($this->response);
 
         $dispatcher = call_user_func($this->dispatcher, $this->router, $this->container);
 
         try {
-            $server = new Server($request, $response, $server);
-            $server->dispatch(function ($request, $response) use ($dispatcher) {
+            $srv = $factory->build();
+            $srv->dispatch(function ($request, $response) use ($dispatcher) {
                 if ($dispatcher instanceof Dispatcher) {
                     return $dispatcher->dispatch($request, $response);
                 }
 
                 return 0;
             });
-            $server->send();
+            $srv->send();
         } catch (HttpRouteNotFoundException $e) {
             $this->notFound ? call_user_func($this->notFound, $e) : null;
         } catch (HttpMethodNotAllowedException $e) {
