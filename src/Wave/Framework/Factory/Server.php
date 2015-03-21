@@ -20,7 +20,7 @@ class Server
     public function __construct($serverVars = null)
     {
         if (!$serverVars) {
-            $serverVars = filter_input_array(INPUT_SERVER, FILTER_FLAG_NONE);
+            $serverVars = filter_input_array(INPUT_SERVER);
         }
 
         $this->vars = $serverVars;
