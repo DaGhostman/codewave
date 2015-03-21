@@ -151,10 +151,14 @@ class Wave
     public function run($factory, $input = null, $output = null)
     {
         $this->request = new Request();
-        if ($input) {$this->request = $this->request->withBody($input);}
+        if ($input) {
+            $this->request = $this->request->withBody($input);
+        }
 
         $this->response = new Response();
-        if ($output) { $this->response = $this->response->withBody($output); }
+        if ($output) {
+            $this->response = $this->response->withBody($output);
+        }
 
         $factory->withRequest($this->request)
             ->withResponse($this->response);

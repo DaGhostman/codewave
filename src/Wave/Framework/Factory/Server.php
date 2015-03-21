@@ -8,7 +8,6 @@
 
 namespace Wave\Framework\Factory;
 
-
 use Wave\Framework\Http\Uri;
 
 class Server
@@ -32,7 +31,9 @@ class Server
         $serverVars = $this->vars;
 
         foreach ($serverVars as $key => $value) {
-            if (substr($key, 0, 5) <> 'HTTP_') {continue;}
+            if (substr($key, 0, 5) <> 'HTTP_') {
+                continue;
+            }
 
             $header = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
             $request = $request->withAddedHeader($header, $value);
