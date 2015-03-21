@@ -21,7 +21,6 @@ script:
   - mkdir -p build/coverage/html
   - phpunit --coverage-text
   - ./vendor/bin/phpcs src/Wave --standard=psr2
-  - ./vendor/bin/phpmd src/Wave text cleancode,codesize,controversial,design,naming,unusedcode
 
 after_script:
   - ./vendor/bin/coveralls -v
