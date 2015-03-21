@@ -49,14 +49,14 @@ class Server
         $this->request = $request->withUri(new Uri($url))
             ->withMethod($serverVars['REQUEST_METHOD']);
 
-        return $this;
+        return $this->request;
     }
 
     public function withResponse($response)
     {
         $this->response = $response;
 
-        return $this;
+        return $this->response;
     }
 
     public function build($class = '\\Wave\\Framework\\Application\\Server')
