@@ -26,7 +26,7 @@ class WaveTest extends \PHPUnit_Framework_TestCase
         {
             return 'Routes / called';
         });
-        $this->app->run(['REQUEST_URI' => '/', 'REQUEST_METHOD' => 'GET']);
+        $this->app->run(['REQUEST_URI' => '/', 'REQUEST_METHOD' => 'GET', 'HTTP_HOST' => 'localhost']);
     }
 
     public function testUriWithParameters()
@@ -36,7 +36,7 @@ class WaveTest extends \PHPUnit_Framework_TestCase
         {
             return sprintf('Hello, %s', $request->name);
         });
-        $this->app->run(['REQUEST_URI' => '/greet/ghost', 'REQUEST_METHOD' => 'GET']);
+        $this->app->run(['REQUEST_URI' => '/greet/ghost', 'REQUEST_METHOD' => 'GET', 'HTTP_HOST' => 'localhost']);
     }
 
     public function testUriWithParametersWithPattern()
@@ -50,7 +50,8 @@ class WaveTest extends \PHPUnit_Framework_TestCase
         
         $this->app->run([
             'REQUEST_URI' => '/greet/ghost-',
-            'REQUEST_METHOD' => 'GET'
+            'REQUEST_METHOD' => 'GET',
+            'HTTP_HOST' => 'localhost'
         ]);
         echo 'OK';
     }
@@ -62,7 +63,7 @@ class WaveTest extends \PHPUnit_Framework_TestCase
         {
             echo '404 Not Found';
         });
-        $this->app->run(['REQUEST_URI' => '/', 'REQUEST_METHOD' => 'GET']);
+        $this->app->run(['REQUEST_URI' => '/', 'REQUEST_METHOD' => 'GET', 'HTTP_HOST' => 'localhost']);
     }
 
     public function testNotAllowedHandler()
@@ -76,7 +77,7 @@ class WaveTest extends \PHPUnit_Framework_TestCase
         {
             return 0;
         });
-        $this->app->run(['REQUEST_URI' => '/', 'REQUEST_METHOD' => 'GET']);
+        $this->app->run(['REQUEST_URI' => '/', 'REQUEST_METHOD' => 'GET', 'HTTP_HOST' => 'localhost']);
     }
 
     public function testGetRoute()
