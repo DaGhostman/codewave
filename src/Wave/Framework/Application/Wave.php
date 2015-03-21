@@ -3,6 +3,7 @@ namespace Wave\Framework\Application;
 
 use Wave\Framework\Http\Server\Request;
 use Wave\Framework\Http\Server\Response;
+use Wave\Framework\Http\Uri;
 use Wave\Framework\Router\Dispatcher;
 use Phroute\Phroute\Exception\HttpMethodNotAllowedException;
 use Phroute\Phroute\Exception\HttpRouteNotFoundException;
@@ -158,10 +159,27 @@ class Wave
             $this->streams = array_merge($this->streams, $streams);
         }
 
+        // Might not be as per PSR-7 @TODO
+        $headers = [];
+        foreach ($server as $key => $value) {
+            if (substr($key, 0, 5) <> 'HTTP_') {
+                continue;
+            }
+            $header = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
+            $headers[$header] = $value;
+        }
+
+        $url = (
+            (isset($server['HTTPS'])  && $server['HTTPS'] != '') ?
+                'https://' :
+                'http://'
+            ) . $headers['Host'] . $server['REQUEST_URI'];
+
         $request = $this->request = new Request(
-            $server['REQUEST_URI'],
+            $url,
             $server['REQUEST_METHOD'],
-            $this->streams['in']
+            $this->streams['in'],
+            $headers
         );
 
         $response = $this->response = new Response($this->streams['out']);
