@@ -61,7 +61,7 @@ class Server
                 continue;
             }
             $header = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
-            $request->withHeader($header, $value);
+            $request = $request->withAddedHeader($header, $value);
         }
 
         $this->request = $request;
