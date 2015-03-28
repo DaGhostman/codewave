@@ -62,10 +62,9 @@ class Wave
      * resolution.
      *
      * @param $container array|\ArrayAccess
-     *            Instance of Pimple
      * @throws \InvalidArgumentException
      */
-    public function __construct($container)
+    public function __construct($container = [])
     {
         $this->container = $container;
         $this->router = new RouteCollector();
