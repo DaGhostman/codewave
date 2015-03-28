@@ -21,9 +21,6 @@
     "autoload": {
         "psr-0": { "Wave\\Framework\\": "src", "Stub\\": "tests" }
     },
-    "suggest": {
-        "pimple/pimple": "For dependency injection container"
-    },
     "require-dev": {
         "phpunit/phpunit": "*@stable",
         "mockery/mockery": ">=0.9",
