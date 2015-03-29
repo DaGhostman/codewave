@@ -57,7 +57,7 @@ class Request implements RequestInterface
      * @param array $headers Headers for the message, if any.
      * @throws InvalidArgumentException for any invalid value.
      */
-    public function __construct($uri = null, $method = null, $body = 'php://memory', array $headers = [])
+    public function __construct($uri = null, $method = null, $body = 'php://input', array $headers = [])
     {
         if (! $uri instanceof UriInterface && ! is_string($uri) && null !== $uri) {
             throw new InvalidArgumentException(
