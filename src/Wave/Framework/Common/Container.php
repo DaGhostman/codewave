@@ -116,7 +116,7 @@ class Container implements \ArrayAccess, \Countable
             );
         }
 
-        if (array_key_exists($name, $this->static)) {
+        if (in_array($name, $this->static)) {
             return $this->static[$name];
         }
 
