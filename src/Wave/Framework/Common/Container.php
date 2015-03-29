@@ -39,7 +39,8 @@ class Container implements \ArrayAccess, \Countable
     /**
      * Prevent object cloning
      */
-    private function __clone() {
+    private function __clone()
+    {
         throw new \LogicException(
             'Class not cloneable'
         );
