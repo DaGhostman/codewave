@@ -46,6 +46,11 @@ class Container implements \ArrayAccess, \Countable
         );
     }
 
+    public static function newInstance()
+    {
+        return new Container([]);
+    }
+
     /**
      * Instantiates the current object
      *
