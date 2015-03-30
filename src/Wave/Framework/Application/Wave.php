@@ -1,204 +1,187 @@
 <?php
 namespace Wave\Framework\Application;
 
-use Wave\Framework\Http\Server\Request;
-use Wave\Framework\Http\Server\Response;
-use Wave\Framework\Router\Dispatcher;
+use Wave\Framework\Adapters\Link\Destination;
+use Wave\Framework\Common\Link;
+use Wave\Framework\Http\Request;
+use Wave\Framework\Http\Server;
 use Phroute\Phroute\Exception\HttpMethodNotAllowedException;
 use Phroute\Phroute\Exception\HttpRouteNotFoundException;
 use Phroute\Phroute\RouteCollector;
-use Wave\Framework\Router\Resolver;
 
 /**
  * Class Wave
  *
  * @package Wave\Framework\Application
  */
-class Wave
+class Wave implements Destination
 {
 
     /**
-     * @var callable Function to use for 404
+     * @type \Wave\Framework\Common\Container
      */
-    protected $notFound = null;
-
-    /**
-     * @var callable Function to use for 405
-     */
-    protected $notAllowed = null;
-
-    /**
-     * @var array|\ArrayAccess
-     */
-    protected $container = null;
+    protected $handler;
 
     /**
      * @var callable the dispatcher ot use with the request
      */
-    protected $dispatcher = null;
+    protected $dispatcher;
 
     /**
      * @var RouteCollector
      */
-    protected $router = null;
+    protected $router;
+
 
     /**
-     * @var array Containing the streams to use for 'in' and 'out'
+     * @var $request \Psr\Http\Message\RequestInterface;
      */
-    protected $streams = [
-        'in' => 'php://memory',
-        'out' => 'php://memory'
-    ];
+    protected $request;
 
-    protected $request = null;
-    protected $response = null;
 
-    protected static $instance = null;
+    protected static $instance;
 
     /**
-     * Creates the main application instance with the
-     * DI container as 1st argument, this container is
-     * later passed on to the Router\Resolver for route
-     * resolution.
+     * Takes a callback, which is invoked to create the dispatcher.
+     * The only argument passed to the callback is the Router object
      *
-     * @param $container array|\ArrayAccess
+     * @param $dispatcher callable
      * @throws \InvalidArgumentException
      */
-    public function __construct($container = [])
+    public function __construct(callable $dispatcher)
     {
-        $this->container = $container;
-        $this->router = new RouteCollector();
+        $this->link = new Link($this);
 
-        $router = $this->router;
-        if (! is_null($container)) {
-            /**
-             * @return mixed
-             *
-             * @codeCoverageIgnore
-             */
-            $container['router'] = function () use ($router) {
-                return $router;
-            };
-        }
-
-        /**
-         * @param $router RouteCollector
-         * @param $container
-         * @return Dispatcher
-         */
-        $this->dispatcher = function ($router, $container) {
-            return new Dispatcher(
-                $router->getData(),
-                new Resolver($container)
-            );
-        };
-
+        $this->dispatcher = $dispatcher;
         self::setInstance($this);
     }
 
+    public function setHandler($handler)
+    {
+        if (!method_exists($handler, 'invoke')) {
+            throw new \InvalidArgumentException(
+                sprintf('Handler should have method "invoke", not present in class %s', get_class($handler))
+            );
+        }
+        $this->handler = $handler;
+
+        return $this;
+    }
+
+    /**
+     * @param $request Request
+     * @return $this
+     */
+    public function setRequest($request)
+    {
+        $this->request = $request;
+
+        return $this;
+    }
+
+    /**
+     * Allows the dispatcher to be changed at runtime
+     *
+     * @param $dispatcher callable
+     * @return $this
+     */
+    public function setDispatcher(callable $dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
+
+        return $this;
+    }
+
+    /**
+     * This method should be used right after initialization of the
+     * application class, so it could work as proxy for the route generation.
+     *
+     * @param $router
+     * @return $this
+     */
+    public function setRouter($router)
+    {
+        $this->router = $router;
+
+        return $this;
+    }
+
+    /**
+     * Helps with the building of a singleton object
+     *
+     * @param $instance $this
+     */
     private static function setInstance($instance)
     {
         self::$instance = $instance;
     }
-    /**
-     * Returns the RouteCollector in use
-     *
-     * @return RouteCollector
-     */
-    public function getRouter()
-    {
-        return $this->router;
-    }
 
     /**
-     * Proxies all method calls to the PHRoute instance
+     * Proxies all method calls to the router instance
      *
      * @param string $name
      * @param array $args
      * @return mixed
+     *
+     * @throws \InvalidArgumentException
      */
     public function __call($name, $args)
     {
-        return call_user_func_array([
-            $this->router,
-            $name
-        ], $args);
-    }
-
-    public static function __callStatic($name, $args = [])
-    {
-        switch ($name) {
-            case 'getRequest':
-            case 'request':
-                return self::$instance->request;
-                break;
-            case 'getResponse':
-            case 'response':
-                return self::$instance->response;
-                break;
+        if (is_object($this->router)) {
+            return call_user_func_array([
+                $this->router,
+                $name
+            ], $args);
         }
+
+        throw new \RuntimeException(
+            sprintf('Expected router of type object, "%s" received', gettype($this->router))
+        );
     }
 
     /**
-     * Starts the application routing.
-     * Second argument is passed directly to the dispatcher. See
+     * Passes the request object to use for the request, recommended to use the
+     * Factory\Request::build method's result directly. It invokes the \Phly\Http\ServerRequestFactory,
+     * which already builds the object as per PSR-7
      *
-     * @param object $factory Factory object to construct the server instance to use
-     * @param \Psr\Http\Message\StreamableInterface $input
-     * @param \Psr\Http\Message\StreamableInterface $output
+     * @param $request \Psr\Http\Message\RequestInterface
+     * @param $callback callable
      */
-    public function run($factory, $input = null, $output = null)
+    public function run($request, callable $callback = null)
     {
-        $request = new Request();
-        if ($input) {
-            $request = $request->withBody($input);
-        }
+        $app = $this;
+        $router = $this->router;
 
-        $response = new Response();
-        if ($output) {
-            $response = $response->withBody($output);
-        }
+        /**
+         * @type Request
+         */
+        $request = new Request($request);
+        $server = new Server($request);
 
-        $this->request = $factory->withRequest($request);
-        $this->response = $factory->withResponse($response);
+        if ($callback === null) {
+            /**
+             * @param $request \Psr\Http\Message\RequestInterface
+             * @return mixed
+             */
+            $callback = function ($request) use ($app, $router) {
+                try {
+                    $dispatcher = call_user_func($app->dispatcher, $router);
 
-        $dispatcher = call_user_func($this->dispatcher, $this->router, $this->container);
-
-        try {
-            $srv = $factory->build();
-            $srv->dispatch(function ($request, $response) use ($dispatcher) {
-                if ($dispatcher instanceof Dispatcher) {
-                    return $dispatcher->dispatch($request, $response);
+                    $result = $dispatcher->dispatch($request->getMethod(), $request->getUri()->getPath());
+                    if ($result !== null) {
+                        return $result;
+                    }
+                } catch (HttpRouteNotFoundException $e) {
+                    $app->handler->invoke('notFound', [$request, $e]);
+                } catch (HttpMethodNotAllowedException $e) {
+                    $app->handler->invoke('notAllowed', [$request, $e]);
+                } catch (\Exception $e) {
+                    $app->handler->invoke('serverError', [$request, $e]);
                 }
-
-                return 0;
-            });
-            $srv->send();
-        } catch (HttpRouteNotFoundException $e) {
-            $this->notFound ? call_user_func($this->notFound, $e) : null;
-        } catch (HttpMethodNotAllowedException $e) {
-            $this->notAllowed ? call_user_func($this->notAllowed, $e) : null;
+            };
         }
-    }
 
-    /**
-     * Defines the callback to trigger on 404 error
-     *
-     * @param $func callable
-     */
-    public function setNotFoundHandler(callable $func)
-    {
-        $this->notFound = $func;
-    }
-
-    /**
-     * Defines the callback to fire, when request
-     * method is not allowed.
-     *
-     * @param $func callable
-     */
-    public function setNotAllowedHandler(callable $func)
-    {
-        $this->notAllowed = $func;
+        $server->listen($callback)
+            ->send();
     }
 }
