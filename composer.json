@@ -7,7 +7,8 @@
     "require": {
         "php": ">=5.4",
         "phroute/phroute": ">=1.0",
-        "psr/http-message": "*@stable"
+        "psr/http-message": "*@stable",
+        "phly/http": "@stable"
     },
     "license": "MIT",
     "authors": [
