@@ -9,7 +9,6 @@
 namespace Stub\Application;
 
 
-use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamableInterface;
 use Psr\Http\Message\UriInterface;

@@ -41,7 +41,7 @@ class Server implements Destination
 
     public function __construct ($request)
     {
-        if (!$request instanceof RequestInterface) {
+        if (!$request instanceof RequestInterface && !$request instanceof Request) {
             throw new \InvalidArgumentException(
                 sprintf('Class "%s" does not implement RequestInterface', get_class($request))
             );
@@ -65,6 +65,7 @@ class Server implements Destination
                 )
             );
         }
+
         $this->response->getBody()->write($result);
 
         return $this;
@@ -76,9 +77,9 @@ class Server implements Destination
             $this->sendHeaders();
         }
 
-        while (ob_get_level() >= $this->bufferLevel) {
-            if (ob_get_length() > 0) {
-                ob_end_flush();
+        if (ob_get_length() > 0) {
+            while (ob_get_level() >= $this->bufferLevel) {
+                ob_get_flush();
             }
         }
 

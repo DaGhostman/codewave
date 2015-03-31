@@ -109,7 +109,7 @@ class Wave implements Destination
     /**
      * Helps with the building of a singleton object
      *
-     * @param $instance $this
+     * @param $instance Wave
      */
     private static function setInstance($instance)
     {
@@ -162,6 +162,8 @@ class Wave implements Destination
             /**
              * @param $request \Psr\Http\Message\RequestInterface
              * @return mixed
+             *
+             * @codeCoverageIgnore
              */
             $callback = function ($request) use ($app, $router) {
                 try {
