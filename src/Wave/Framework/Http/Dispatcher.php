@@ -8,64 +8,23 @@
 
 namespace Wave\Framework\Http;
 
-use Wave\Framework\Adapters\Link\Linkable;
-use Wave\Framework\Common\Link;
+use Wave\Framework\Abstracts\AbstractLinkable;
 
-class Dispatcher implements Linkable
+class Dispatcher extends AbstractLinkable
 {
-
-    /**
-     * @var $link array
-     */
-    protected $link = [];
-
-    private $dispatcher = null;
-
-    public function __construct($dispatcher)
-    {
-        $this->dispatcher = $dispatcher;
-    }
-
-    public function notify()
-    {
-        foreach ($this->link as $link) {
-            $link->notify();
-        }
-
-        return $this;
-    }
-
-    public function update()
-    {
-        foreach ($this->link as $link) {
-            $link->update($this);
-        }
-
-        return $this;
-    }
-
-    public function getState()
-    {
-        return $this->dispatcher;
-    }
-
-
-    public function addLink(Link $link)
-    {
-        $this->link[] = $link;
-    }
-
     public function __call($name, array $args = [])
     {
-        $this->dispatcher = call_user_func_array([$this->dispatcher, $name], $args);
-        $this->update()
-            ->notify();
-    }
+        if (method_exists($this->instance, $name)) {
+            $result = call_user_func_array([$this->instance, $name], $args);
+            if (substr($name, 0, 3) !== 'get') {
+                $this->notify();
+                $this->instance = $result;
+                return $this;
+            }
 
-    public function __set($name, $value)
-    {
-        $this->dispatcher->$name = $value;
-        $this->update()
-            ->notify();
+            return $result;
+        }
+
+        return $this;
     }
 }

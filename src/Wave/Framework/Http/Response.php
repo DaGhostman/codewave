@@ -9,14 +9,11 @@
 namespace Wave\Framework\Http;
 
 use Psr\Http\Message\ResponseInterface;
-use Wave\Framework\Adapters\Link\Linkable;
+use Wave\Framework\Abstracts\AbstractLinkable;
 use Wave\Framework\Common\Link;
 
-class Response implements Linkable
+class Response extends AbstractLinkable
 {
-    private $response;
-
-    private $links = [];
 
     public function __construct($response)
     {
@@ -26,52 +23,23 @@ class Response implements Linkable
             );
         }
 
-        $this->response = $response;
+        parent::__construct($response);
     }
 
-    public function addLink(Link $link)
+    public function __call($name, array $args = [])
     {
-        $this->links[] = $link;
-    }
+        if (method_exists($this->instance, $name)) {
+            $result = call_user_func_array([$this->instance, $name], $args);
+            if (substr($name, 0, 3) !== 'get') {
+                $this->notify();
+                $this->instance = $result;
+                return $this;
+            }
 
-    public function update()
-    {
-        foreach ($this->links as $link) {
-            $link->update($this);
+            return $result;
         }
 
         return $this;
     }
 
-    public function notify()
-    {
-        foreach ($this->links as $link) {
-            $link->notify();
-        }
-    }
-
-    public function __call($name, array $args = [])
-    {
-        var_dump($name);
-        $this->response = call_user_func_array([$this->response, $name], $args);
-
-        $this->update($this)
-            ->notify();
-
-        return $this->response;
-    }
-
-    public function getState()
-    {
-        return $this->response;
-    }
-
-
-    public function __set($name, $value)
-    {
-        $this->response->$name = $value;
-
-        $this->update()
-            ->notify();
-    }
 }

@@ -7,24 +7,13 @@
  */
 namespace Wave\Framework\Http;
 
-use \Wave\Framework\Adapters\Link\Linkable;
+use \Wave\Framework\Abstracts\AbstractLinkable;
 use \Wave\Framework\Adapters\Link\Destination;
-use \Wave\Framework\Common\Link;
 
 use Psr\Http\Message\RequestInterface;
 
-class Request implements Linkable, Destination
+class Request extends AbstractLinkable implements Destination
 {
-    /**
-     * @var $link array[\Wave\Framework\Common\Link]
-     */
-    private $links = [];
-
-    /**
-     * @var $request RequestInterface
-     */
-    protected $request = null;
-
     /**
      * @param $request RequestInterface
      */
@@ -37,59 +26,21 @@ class Request implements Linkable, Destination
             ));
         }
 
-        $this->request = $request;
+        parent::__construct($request);
     }
 
-    public function notify()
-    {
-        foreach ($this->links as $link) {
-            $link->update($this);
-        }
-
-        return $this;
-    }
-
-    public function addLink(Link $link)
-    {
-        $this->links[] = $link;
-
-        return $this;
-    }
-
-    public function getState()
-    {
-        return $this->request;
-    }
-
-    public function setPsrRequest(RequestInterface $request)
-    {
-        $this->request = $request;
-
-        return $this;
-    }
 
     public function __call($name, array $args = [])
     {
-        $this->request = call_user_func_array([$this->request, $name], $args);
+        if (method_exists($this->instance, $name)) {
+            $result = call_user_func_array([$this->instance, $name], $args);
+            if (substr($name, 0, 3) !== 'get') {
+                $this->notify();
+                $this->instance = $result;
+                return $this;
+            }
 
-        $this->update($this)
-            ->notify();
-
-        return $this->request;
-    }
-
-    public function __set($name, $value)
-    {
-        $this->request->$name = $value;
-
-        $this->update()
-            ->notify();
-    }
-
-    public function update()
-    {
-        foreach ($this->links as $link) {
-            $link->update($this);
+            return $result;
         }
 
         return $this;
