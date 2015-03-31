@@ -18,7 +18,6 @@ class Link
      */
     private $destination = null;
 
-    private $hasChanged = false;
 
     private $links = [];
 
@@ -37,7 +36,7 @@ class Link
      */
     public function update($instance)
     {
-        $class = spl_object_hash($instance);
+        $class = get_class($instance);
 
         if (!array_key_exists($class, $this->links)) {
             throw new \InvalidArgumentException(
@@ -74,9 +73,7 @@ class Link
         }
 
         $link->addLink($this);
-        $this->links[spl_object_hash($link)] = [$link, $via];
-        $link->update();
-        $link->notify();
+        $this->links[get_class($link)] = [$link, $via];
 
         return $this;
     }
