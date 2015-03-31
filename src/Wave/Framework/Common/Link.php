@@ -8,7 +8,6 @@
 
 namespace Wave\Framework\Common;
 
-
 use Wave\Framework\Adapters\Link\Destination;
 use Wave\Framework\Adapters\Link\Linkable;
 
@@ -28,7 +27,7 @@ class Link
      *
      * @param \Wave\Framework\Adapters\Link\Destination $destination
      */
-    public function __construct (Destination $destination)
+    public function __construct(Destination $destination)
     {
         $this->destination = $destination;
     }

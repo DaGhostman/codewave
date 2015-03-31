@@ -31,7 +31,10 @@ class Request implements Linkable, Destination
     public function __construct($request)
     {
         if (!$request instanceof RequestInterface) {
-            throw new \InvalidArgumentException(sprintf('Expected instance of RequestInterface, %s received', get_class($request)));
+            throw new \InvalidArgumentException(sprintf(
+                'Expected instance of RequestInterface, %s received',
+                get_class($request)
+            ));
         }
 
         $this->request = $request;

@@ -39,7 +39,7 @@ class Server implements Destination
 
     protected $bufferLevel = null;
 
-    public function __construct ($request)
+    public function __construct($request)
     {
         if (!$request instanceof RequestInterface && !$request instanceof Request) {
             throw new \InvalidArgumentException(
@@ -50,7 +50,7 @@ class Server implements Destination
         $this->response = new Response();
     }
 
-    public function listen (callable $callback = null)
+    public function listen(callable $callback = null)
     {
         ob_start();
         $this->bufferLevel = ob_get_level();
@@ -141,7 +141,7 @@ class Server implements Destination
         return str_replace(' ', '-', $filtered);
     }
 
-    public function __get ($name)
+    public function __get($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -151,6 +151,4 @@ class Server implements Destination
             sprintf('Value "%s" not found in class', $name)
         );
     }
-
-
 }

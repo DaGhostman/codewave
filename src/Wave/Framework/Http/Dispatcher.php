@@ -8,11 +8,11 @@
 
 namespace Wave\Framework\Http;
 
-
 use Wave\Framework\Adapters\Link\Linkable;
 use Wave\Framework\Common\Link;
 
-class Dispatcher implements Linkable {
+class Dispatcher implements Linkable
+{
 
     /**
      * @var $link array
@@ -26,7 +26,7 @@ class Dispatcher implements Linkable {
         $this->dispatcher = $dispatcher;
     }
 
-    public function notify ()
+    public function notify()
     {
         foreach ($this->link as $link) {
             $link->notify();
@@ -50,7 +50,7 @@ class Dispatcher implements Linkable {
     }
 
 
-    public function addLink (Link $link)
+    public function addLink(Link $link)
     {
         $this->link[] = $link;
     }

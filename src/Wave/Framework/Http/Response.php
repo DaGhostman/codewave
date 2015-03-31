@@ -8,7 +8,6 @@
 
 namespace Wave\Framework\Http;
 
-
 use Psr\Http\Message\ResponseInterface;
 use Wave\Framework\Adapters\Link\Linkable;
 use Wave\Framework\Common\Link;

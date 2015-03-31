@@ -10,7 +10,8 @@ namespace Wave\Framework\Adapters\Link;
 
 use \Wave\Framework\Common\Link;
 
-interface Linkable {
+interface Linkable
+{
     public function notify();
     public function addLink(Link $link);
     public function update();

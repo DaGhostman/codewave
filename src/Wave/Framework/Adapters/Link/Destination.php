@@ -8,5 +8,7 @@
 
 namespace Wave\Framework\Adapters\Link;
 
+interface Destination
+{
 
-interface Destination {}
+}
