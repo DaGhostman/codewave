@@ -41,5 +41,4 @@ class Response extends AbstractLinkable
 
         return $this;
     }
-
 }

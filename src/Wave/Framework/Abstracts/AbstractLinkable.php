@@ -8,11 +8,11 @@
 
 namespace Wave\Framework\Abstracts;
 
-
 use Wave\Framework\Adapters\Link\Linkable;
 use Wave\Framework\Common\Link;
 
-abstract class AbstractLinkable implements Linkable {
+abstract class AbstractLinkable implements Linkable
+{
 
     /**
      * @type object
@@ -45,7 +45,7 @@ abstract class AbstractLinkable implements Linkable {
      * @param \Wave\Framework\Common\Link $link
      * @return $this
      */
-    public function addLink (Link $link)
+    public function addLink(Link $link)
     {
         array_push($this->links, $link);
 
@@ -67,7 +67,7 @@ abstract class AbstractLinkable implements Linkable {
      * note that this method is meant to cover only simple cases
      * and is advisable to overwrite it.
      */
-    public function notify ()
+    public function notify()
     {
         $this->instance = $this->getState();
         foreach ($this->links as $link) {
