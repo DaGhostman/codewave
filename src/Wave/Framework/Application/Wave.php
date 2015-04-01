@@ -14,12 +14,6 @@ use Wave\Framework\Http\Server;
  */
 class Wave implements Destination
 {
-
-    /**
-     * @type \Wave\Framework\Common\Container
-     */
-    protected $handler;
-
     /**
      * @var callable the dispatcher ot use with the request
      */
@@ -57,18 +51,6 @@ class Wave implements Destination
 
         $this->dispatcher = $dispatcher;
         self::setInstance($this);
-    }
-
-    public function setHandler($handler)
-    {
-        if (!method_exists($handler, 'invoke')) {
-            throw new \InvalidArgumentException(
-                sprintf('Handler should have method "invoke", not present in class %s', get_class($handler))
-            );
-        }
-        $this->handler = $handler;
-
-        return $this;
     }
 
     /**
