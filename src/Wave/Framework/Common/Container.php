@@ -15,7 +15,7 @@ class Container implements \ArrayAccess, \Countable
     /**
      * @var Container
      */
-    protected static $instance = null;
+    protected static $instance;
 
     protected $storage = [];
     protected $static = [];
@@ -29,7 +29,7 @@ class Container implements \ArrayAccess, \Countable
      *
      * @param $storage array Array to bootstrap the dependencies
      */
-    private function __construct($storage)
+    protected function __construct($storage)
     {
         foreach ($storage as $name => $callback) {
             self::$instance->storage[$name] = $callback;
@@ -57,7 +57,7 @@ class Container implements \ArrayAccess, \Countable
      * @param array $bootstrap Array to pass to the constructor
      * @return Container
      */
-    public static function getInstance($bootstrap = [])
+    public static function getInstance(array $bootstrap = [])
     {
         if (!self::$instance instanceof Container) {
             self::$instance = new Container($bootstrap);
@@ -74,7 +74,7 @@ class Container implements \ArrayAccess, \Countable
             );
         }
 
-        self::getInstance()->static[$name] = call_user_func($callback);
+        self::getInstance()->storage[$name] = call_user_func($callback);
     }
 
     public static function bind($name, callable $callback)
@@ -117,13 +117,7 @@ class Container implements \ArrayAccess, \Countable
                 return call_user_func_array($this->storage[$name], $args);
             }
 
-            throw new \RuntimeException(
-                sprintf('%s is not a closure', $name)
-            );
-        }
-
-        if (array_key_exists($name, $this->static)) {
-            return $this->static[$name];
+            return $this->storage[$name];
         }
 
         throw new \LogicException(
@@ -148,12 +142,22 @@ class Container implements \ArrayAccess, \Countable
 
     public function offsetSet($name, $value)
     {
-        self::bind($name, $value);
+        if (is_callable($value)) {
+            self::bind($name, $value);
+        }
     }
 
     public function offsetGet($name)
     {
-        return self::invoke($name, []);
+        if ($this->offsetExists($name)) {
+            if (is_callable($this->storage[$name])) {
+                return self::invoke($name, []);
+            }
+
+            return $this->storage[$name];
+        }
+
+        return null;
     }
 
     public function offsetExists($name)
