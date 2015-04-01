@@ -28,15 +28,20 @@ class Request extends AbstractLinkable implements Destination
     {
         if (method_exists($this->instance, $name)) {
             $result = call_user_func_array([$this->instance, $name], $args);
-            if (substr($name, 0, 3) !== 'get') {
-                $this->notify();
+
+            $class = get_class($this->instance);
+            if ($result instanceof $class) {
                 $this->instance = $result;
+                $this->notify();
+
                 return $this;
             }
 
             return $result;
         }
 
-        return $this;
+        throw new \RuntimeException(sprintf(
+            'Trying to call non-existing method "%s" on class', $name, get_class($this->instance)
+        ));
     }
 }

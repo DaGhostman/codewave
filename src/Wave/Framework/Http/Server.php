@@ -5,6 +5,7 @@ use Phly\Http\Response;
 use Phly\Http\ServerRequest;
 use Phly\Http\Stream;
 use Psr\Http\Message\RequestInterface;
+use Wave\Framework\Http\Response as LinkResponse;
 use Wave\Framework\Adapters\Link\Destination;
 
 class Server implements Destination
@@ -40,7 +41,7 @@ class Server implements Destination
             );
         }
         $this->request = $request->withBody(new Stream('php://input'), 'r+b');
-        $this->response = new Response();
+        $this->response = new LinkResponse(new Response());
     }
 
     public function listen(callable $callback = null)

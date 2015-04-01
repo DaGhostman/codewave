@@ -4,6 +4,7 @@ namespace Wave\Framework\Application;
 use Wave\Framework\Adapters\Link\Destination;
 use Wave\Framework\Common\Link;
 use Wave\Framework\Http\Request;
+use Wave\Framework\Http\Response;
 use Wave\Framework\Http\Server;
 
 /**
@@ -34,6 +35,11 @@ class Wave implements Destination
      * @var $request \Psr\Http\Message\RequestInterface;
      */
     protected $request;
+
+    /**
+     * @var $request \Psr\Http\Message\ResponseInterface;
+     */
+    protected $response;
 
 
     protected static $instance;
@@ -74,6 +80,29 @@ class Wave implements Destination
         $this->request = $request;
 
         return $this;
+    }
+
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+
+
+    /**
+     * @param $response
+     * @return $this
+     */
+    public function setResponse($response)
+    {
+        $this->response = $response;
+
+        return $this;
+    }
+
+    public function getResponse()
+    {
+        return $this->response;
     }
 
     /**
@@ -154,6 +183,9 @@ class Wave implements Destination
          */
         $request = new Request($request);
         $server = new Server($request);
+
+        (new Link($this))->push($server->request, 'setRequest');
+        (new Link($this))->push($server->response, 'setResponse');
 
         if ($callback === null) {
             /**
