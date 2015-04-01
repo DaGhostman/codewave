@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: elham_asmar
- * Date: 30/03/2015
- * Time: 12:10
- */
-
 namespace Wave\Framework\Common;
 
 use Wave\Framework\Adapters\Link\Destination;

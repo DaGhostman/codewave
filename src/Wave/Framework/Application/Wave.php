@@ -168,7 +168,11 @@ class Wave implements Destination
 
 
                 try {
-                    $dispatcher = call_user_func($app->dispatcher, $router, new \Wave\Framework\External\Phroute\RouteResolver($di));
+                    $dispatcher = call_user_func(
+                        $app->dispatcher,
+                        $router,
+                        new \Wave\Framework\External\Phroute\RouteResolver($di)
+                    );
 
                     $result = $dispatcher->dispatch($request->getMethod(), $request->getUri()->getPath());
                     if ($result !== null) {

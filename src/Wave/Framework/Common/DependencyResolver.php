@@ -1,19 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: elham_asmar
- * Date: 01/04/2015
- * Time: 11:54
- */
-
 namespace Wave\Framework\Common;
-
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Wave\Framework\Annotation\Inject;
 
-class DependencyResolver {
+class DependencyResolver
+{
 
     protected $parser = null;
     protected $container = null;
@@ -67,9 +60,10 @@ class DependencyResolver {
                         array_push($dependencies, $this->container[$annotation->name]);
                         continue;
                     } elseif (!isset($this->container[$annotation->name]) && $annotation->type === 'Static') {
-                        throw new \RuntimeException(
-                            sprintf('Dependency "%s" was requested as static, but was not in the container', $annotation->name)
-                        );
+                        throw new \RuntimeException(sprintf(
+                            'Dependency "%s" was requested as static, but was not in the container',
+                            $annotation->name
+                        ));
                     } else {
                         if (class_exists($annotation->name)) {
                             $class = $annotation->name;

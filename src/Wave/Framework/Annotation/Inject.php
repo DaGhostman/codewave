@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: elham_asmar
- * Date: 01/04/2015
- * Time: 11:40
- */
-
 namespace Wave\Framework\Annotation;
 
 /**
@@ -20,7 +13,8 @@ namespace Wave\Framework\Annotation;
  *   @Attribute("name", type = "string", required = true),
  * })
  */
-class Inject {
+class Inject
+{
     /**
      * @Enum({"Object", "Static"})
      */

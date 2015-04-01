@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: elham_asmar
- * Date: 30/03/2015
- * Time: 13:50
- */
-
 namespace Wave\Framework\Http;
 
 use Phly\Http\Response;

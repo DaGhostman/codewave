@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daghostman
- * Date: 06/02/15
- * Time: 00:30
- */
 namespace Wave\Framework\Legacy\Router\Bridge;
 
 use Wave\Framework\Legacy\Router\Common\ArgumentsContext;

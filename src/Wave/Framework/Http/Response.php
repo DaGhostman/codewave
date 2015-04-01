@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: elham_asmar
- * Date: 30/03/2015
- * Time: 15:09
- */
-
 namespace Wave\Framework\Http;
 
 use Psr\Http\Message\ResponseInterface;

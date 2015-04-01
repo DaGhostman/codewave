@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: elham_asmar
- * Date: 31/03/2015
- * Time: 16:25
- */
-
 namespace Wave\Framework\Abstracts;
 
 use Wave\Framework\Adapters\Link\Linkable;

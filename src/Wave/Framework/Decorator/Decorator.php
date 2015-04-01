@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: dagho_000
- * Date: 13/01/2015
- * Time: 18:21
- */
 namespace Wave\Framework\Decorator;
 
 class Decorator

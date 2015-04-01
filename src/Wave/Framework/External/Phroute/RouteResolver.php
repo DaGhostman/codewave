@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: elham_asmar
- * Date: 01/04/2015
- * Time: 16:18
- */
-
 namespace Wave\Framework\External\Phroute;
-
 
 use Phroute\Phroute\HandlerResolverInterface;
 
-class RouteResolver implements HandlerResolverInterface{
+class RouteResolver implements HandlerResolverInterface
+{
 
     protected $resolver;
 
