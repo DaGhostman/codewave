@@ -5,9 +5,6 @@ use Wave\Framework\Adapters\Link\Destination;
 use Wave\Framework\Common\Link;
 use Wave\Framework\Http\Request;
 use Wave\Framework\Http\Server;
-use Phroute\Phroute\Exception\HttpMethodNotAllowedException;
-use Phroute\Phroute\Exception\HttpRouteNotFoundException;
-use Phroute\Phroute\RouteCollector;
 
 /**
  * Class Wave
@@ -28,7 +25,7 @@ class Wave implements Destination
     protected $dispatcher;
 
     /**
-     * @var RouteCollector
+     * @var object
      */
     protected $router;
 
@@ -166,16 +163,22 @@ class Wave implements Destination
              * @codeCoverageIgnore
              */
             $callback = function ($request) use ($app, $router) {
+                $container = \Wave\Framework\Common\Container::getInstance();
+                $di = new \Wave\Framework\Common\DependencyResolver($container);
+
+
                 try {
-                    $dispatcher = call_user_func($app->dispatcher, $router);
+                    $dispatcher = call_user_func($app->dispatcher, $router, new \Wave\Framework\External\Phroute\RouteResolver($di));
 
                     $result = $dispatcher->dispatch($request->getMethod(), $request->getUri()->getPath());
                     if ($result !== null) {
                         return $result;
                     }
-                } catch (HttpRouteNotFoundException $e) {
+
+
+                } catch (\Phroute\Phroute\Exception\HttpRouteNotFoundException $e) {
                     $app->handler->invoke('notFound', [$request, $e]);
-                } catch (HttpMethodNotAllowedException $e) {
+                } catch (\Phroute\Phroute\Exception\HttpMethodNotAllowedException $e) {
                     $app->handler->invoke('notAllowed', [$request, $e]);
                 } catch (\Exception $e) {
                     $app->handler->invoke('serverError', [$request, $e]);
