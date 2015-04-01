@@ -41,7 +41,9 @@ class Request extends AbstractLinkable implements Destination
         }
 
         throw new \RuntimeException(sprintf(
-            'Trying to call non-existing method "%s" on class', $name, get_class($this->instance)
+            'Trying to call non-existing method "%s" on class',
+            $name,
+            get_class($this->instance)
         ));
     }
 }
