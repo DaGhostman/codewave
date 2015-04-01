@@ -67,6 +67,7 @@ class Link
 
         $link->addLink($this);
         $this->links[get_class($link)] = [$link, $via];
+        $this->notify();
 
         return $this;
     }
