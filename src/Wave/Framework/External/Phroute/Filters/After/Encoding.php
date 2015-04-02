@@ -3,7 +3,8 @@ namespace Wave\Framework\External\Phroute\Filters\After;
 
 use Wave\Framework\Application\Wave;
 
-class Encoding {
+class Encoding
+{
     /**
      * Sets the content type to `application/json`
      */
