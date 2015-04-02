@@ -23,7 +23,7 @@ class RouteResolver implements HandlerResolverInterface
     public function resolve($handler)
     {
         if (is_array($handler) && is_string($handler[0])) {
-            $handler[0] = $this->resolver->reolve($handler[0]);
+            $handler[0] = $this->resolver->resolve($handler[0]);
         }
 
         return $handler;
