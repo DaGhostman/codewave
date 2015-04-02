@@ -10,8 +10,6 @@ use Wave\Framework\Adapters\Link\Destination;
 
 class Server implements Destination
 {
-
-
     /**
      * @type ServerRequest
      */
@@ -33,6 +31,14 @@ class Server implements Destination
 
     protected $bufferLevel = null;
 
+    /**
+     * Accepts a request object and switches it's Stream to 'php://input',
+     * which allows to retrieve the body of the request (usually in POST requests).
+     * And will construct a ResponseInterface object as linkable which is then picked
+     * up by the application class and linked.
+     *
+     * @param $request RequestInterface
+     */
     public function __construct($request)
     {
         if (!$request instanceof RequestInterface && !$request instanceof Request) {
@@ -44,6 +50,12 @@ class Server implements Destination
         $this->response = new LinkResponse(new Response());
     }
 
+    /**
+     * Invokes the callback provided in Wave::run
+     *
+     * @param callable $callback
+     * @return $this
+     */
     public function listen(callable $callback = null)
     {
         ob_start();
@@ -65,6 +77,9 @@ class Server implements Destination
         return $this;
     }
 
+    /**
+     * Sends the headers, outputs the output buffer contents and the contents of the response object
+     */
     public function send()
     {
         if (!headers_sent()) {
@@ -88,7 +103,6 @@ class Server implements Destination
      *
      * Sends the response status/reason, followed by all headers;
      * header names are filtered to be word-cased.
-     *
      */
     private function sendHeaders()
     {
