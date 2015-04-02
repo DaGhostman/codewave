@@ -35,6 +35,11 @@ Just add `"codewave/codewave": "@stable"` to your composer.json required section
 
 ## Documentation
 Will follow shortly, just have to make the finishing touches and it will be added.
+But if you are not patient enough to wait for stable, want to see for your self what is 
+going on or you are interested in helping with the project, here is the code which 
+can get you started.
+
+<script src="https://gist.github.com/DaGhostman/4217ca38261101a42864.js?file=codewave_index.php"></script>
 
 ## Contributors
   - Dimitar Dimitrov a.k.a DaGhostman &lt;daghostman[at]gmail.com&gt;
