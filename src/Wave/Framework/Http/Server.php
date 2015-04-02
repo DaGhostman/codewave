@@ -51,14 +51,15 @@ class Server implements Destination
     }
 
     /**
-     * Invokes the callback provided in Wave::run
+     * Starts output buffering with `ob_gzhandler` and
+     * invokes the callback provided in Wave::run
      *
      * @param callable $callback
      * @return $this
      */
     public function listen(callable $callback = null)
     {
-        ob_start();
+        ob_start('ob_gzhandler');
         $this->bufferLevel = ob_get_level();
         $result = call_user_func($callback, $this->request, $this->response);
 
