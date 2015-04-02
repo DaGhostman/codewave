@@ -167,7 +167,7 @@ class Wave implements Destination
             /**
              * @param $request \Psr\Http\Message\RequestInterface
              * @return mixed
-             *
+             * @throws \Exception
              * @codeCoverageIgnore
              */
             $callback = function ($request) use ($app, $router) {
@@ -189,11 +189,11 @@ class Wave implements Destination
 
 
                 } catch (\Phroute\Phroute\Exception\HttpRouteNotFoundException $e) {
-                    $app->handler->invoke('notFound', [$request, $e]);
+                    echo $e->getMessage();
                 } catch (\Phroute\Phroute\Exception\HttpMethodNotAllowedException $e) {
-                    $app->handler->invoke('notAllowed', [$request, $e]);
+                    echo $e->getMessage();
                 } catch (\Exception $e) {
-                    $app->handler->invoke('serverError', [$request, $e]);
+                    throw new \ErrorException($e->getMessage(), null, $e);
                 }
             };
         }
