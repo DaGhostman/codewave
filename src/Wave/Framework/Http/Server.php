@@ -13,23 +13,23 @@ class Server implements Destination
     /**
      * @type ServerRequest
      */
-    protected $request = null;
+    protected $request;
 
     /**
      * @type Response
      */
-    protected $response = null;
+    protected $response;
 
     /**
      * @type callable
      */
-    protected $callback = null;
+    protected $callback;
 
     /**
      * @param $request Request
      */
 
-    protected $bufferLevel = null;
+    protected $bufferLevel;
 
     /**
      * Accepts a request object and switches it's Stream to 'php://input',
