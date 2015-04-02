@@ -4,7 +4,6 @@ namespace Wave\Framework\Application;
 use Wave\Framework\Adapters\Link\Destination;
 use Wave\Framework\Common\Link;
 use Wave\Framework\Http\Request;
-use Wave\Framework\Http\Response;
 use Wave\Framework\Http\Server;
 
 /**
@@ -36,6 +35,9 @@ class Wave implements Destination
     protected $response;
 
 
+    /**
+     * @type Wave
+     */
     protected static $instance;
 
     /**
@@ -47,8 +49,13 @@ class Wave implements Destination
      */
     public function __construct(callable $dispatcher)
     {
-        $this->link = new Link($this);
+        if (!is_callable($dispatcher)) {
+            throw new \InvalidArgumentException(
+                'The dispatcher factory provided is invalid'
+            );
+        }
 
+        $this->link = new Link($this);
         $this->dispatcher = $dispatcher;
         self::setInstance($this);
     }
@@ -64,9 +71,14 @@ class Wave implements Destination
         return $this;
     }
 
-    public function getRequest()
+    /**
+     * Returns the current value of the request for the application
+     *
+     * @return null|\Psr\Http\Message\RequestInterface
+     */
+    public static function getRequest()
     {
-        return $this->request;
+        return self::$instance->request;
     }
 
 
@@ -82,13 +94,18 @@ class Wave implements Destination
         return $this;
     }
 
-    public function getResponse()
+    /**
+     * Returns the response created for the function.
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public static function getResponse()
     {
-        return $this->response;
+        return self::$instance->response;
     }
 
     /**
-     * Allows the dispatcher to be changed at runtime
+     * Allows the dispatcher to be changed at runtime.
      *
      * @param $dispatcher callable
      * @return $this
@@ -122,29 +139,6 @@ class Wave implements Destination
     private static function setInstance($instance)
     {
         self::$instance = $instance;
-    }
-
-    /**
-     * Proxies all method calls to the router instance
-     *
-     * @param string $name
-     * @param array $args
-     * @return mixed
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function __call($name, $args)
-    {
-        if (is_object($this->router)) {
-            return call_user_func_array([
-                $this->router,
-                $name
-            ], $args);
-        }
-
-        throw new \RuntimeException(
-            sprintf('Expected router of type object, "%s" received', gettype($this->router))
-        );
     }
 
     /**
