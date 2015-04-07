@@ -1,7 +1,5 @@
 <?php
-
 namespace Wave\Framework\Service\View;
-
 
 class Translation
 {

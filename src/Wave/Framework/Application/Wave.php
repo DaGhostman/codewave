@@ -201,7 +201,7 @@ class Wave implements Destination
                 } catch (\Phroute\Phroute\Exception\HttpMethodNotAllowedException $e) {
                     echo $e->getMessage();
                 } catch (\Exception $e) {
-                    throw new \ErrorException($e->getMessage(), null, $e);
+                    throw new \ErrorException($e->getMessage(), 0, 1, $e->getFile(), $e->getLine(), $e);
                 }
             };
         }

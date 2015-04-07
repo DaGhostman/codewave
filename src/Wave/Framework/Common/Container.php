@@ -109,7 +109,7 @@ class Container implements \ArrayAccess, \Countable
      * @throws \RuntimeException
      * @throws \LogicException
      */
-    public function invoke($name, $args)
+    public function invoke($name, $args = [])
     {
         if (array_key_exists($name, $this->storage)) {
             if ($this->storage[$name] instanceof \Closure) {

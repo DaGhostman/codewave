@@ -33,8 +33,8 @@ class Response extends AbstractLinkable
             return $result;
         }
 
-        throw new \RuntimeException(sprintf(
-            'Trying to call non-existing method "%s" on class',
+        throw new \BadMethodCallException(sprintf(
+            'Trying to call non-existing method "%s" on class "%s"',
             $name,
             get_class($this->instance)
         ));
