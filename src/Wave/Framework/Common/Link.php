@@ -4,6 +4,13 @@ namespace Wave\Framework\Common;
 use Wave\Framework\Adapters\Link\Destination;
 use Wave\Framework\Adapters\Link\Linkable;
 
+/**
+ * Class Link
+ *
+ * @package Wave\Framework\Common
+ *
+ * The link between the destination and source(s)
+ */
 class Link
 {
     /**

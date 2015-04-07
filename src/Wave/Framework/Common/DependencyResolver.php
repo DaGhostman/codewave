@@ -5,6 +5,19 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Wave\Framework\Annotation\Inject;
 
+/**
+ * @TODO Implement strategy pattern
+ * Implementing the pattern will allow using the same object instance to resolve
+ * method calls as well as function calls, without using separate objects and etc.
+ */
+/**
+ * Class DependencyResolver
+ *
+ * @package Wave\Framework\Common
+ *
+ * Dependency resolving class, currently supports only class dependencies.
+ */
+
 class DependencyResolver
 {
 
