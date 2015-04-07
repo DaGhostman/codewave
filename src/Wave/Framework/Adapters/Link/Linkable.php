@@ -3,6 +3,15 @@ namespace Wave\Framework\Adapters\Link;
 
 use \Wave\Framework\Common\Link;
 
+/**
+ * Interface Linkable
+ *
+ * @package Wave\Framework\Adapters\Link
+ *
+ * Defines the methods which should be implemented by each Linkable object
+ * also only objects implementing this class are allowed to be pushed to a
+ * link.
+ */
 interface Linkable
 {
     /**

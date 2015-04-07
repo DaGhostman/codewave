@@ -10,6 +10,9 @@ use Wave\Framework\Http\Server;
  * Class Wave
  *
  * @package Wave\Framework\Application
+ *
+ * This is the application class, which at the moment serves mostly as
+ * a gluing object between all the interaction
  */
 class Wave implements Destination
 {
@@ -61,6 +64,8 @@ class Wave implements Destination
     }
 
     /**
+     * Sets the request from the link after run() is called
+     *
      * @param $request Request
      * @return $this
      */
@@ -84,6 +89,8 @@ class Wave implements Destination
 
 
     /**
+     * Sets the response object once the server is instantiated
+     *
      * @param $response
      * @return $this
      */
@@ -132,7 +139,8 @@ class Wave implements Destination
     }
 
     /**
-     * Helps with the building of a singleton object
+     * Allows using this object to retrieve the request and response
+     * objects and keep them available in the global scope
      *
      * @param $instance Wave
      */

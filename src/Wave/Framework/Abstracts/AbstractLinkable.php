@@ -4,6 +4,14 @@ namespace Wave\Framework\Abstracts;
 use Wave\Framework\Adapters\Link\Linkable;
 use Wave\Framework\Common\Link;
 
+/**
+ * Class AbstractLinkable
+ *
+ * @package Wave\Framework\Abstracts
+ *
+ * Abstract implementation which should be sufficient for
+ * basic application of the links.
+ */
 abstract class AbstractLinkable implements Linkable
 {
 
