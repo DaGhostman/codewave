@@ -26,12 +26,14 @@ class Translate implements ExtensionInterface
         }
     }
 
-    public function register(Engine $engine) {
+    public function register(Engine $engine)
+    {
         $engine->registerFunction('translate', [$this, 'translate']);
         $engine->registerFunction('plural', [$this, 'plural']);
     }
 
-    public function translate($string) {
+    public function translate($string)
+    {
         return $this->translator->translate($string);
     }
 
