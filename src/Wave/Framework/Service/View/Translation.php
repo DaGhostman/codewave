@@ -21,13 +21,13 @@ class Translation
         $this->plurals = $plurals;
     }
 
-    public function translate($id, $plural = false)
+    public function translate($id)
     {
         if (!array_key_exists($id, $this->source)) {
             return $id;
         }
 
-        return ($plural ? $this->plural($this->source[$id], $plural[0], $plural[1]) : $this->source[$id]);
+        return $this->source[$id];
     }
 
     /**
@@ -35,12 +35,13 @@ class Translation
      *
      * @param $id mixed
      * @param $num int
-     * @param $format
+     * @param string $format
      *
      * @return string
      */
-    public function plural($id, $num = 1, $format = '%s %s')
+    public function plural($id, $num = 1, $format = null)
     {
+        $format = ($format !== null) ? $format : '%d %s';
         $translated = $this->translate($id);
 
         if (array_key_exists($translated, $this->plurals)) {
