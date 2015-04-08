@@ -179,15 +179,10 @@ class Wave implements Destination
              * @codeCoverageIgnore
              */
             $callback = function ($request) use ($app, $router) {
-                $container = \Wave\Framework\Common\Container::getInstance();
-                $di = new \Wave\Framework\Common\DependencyResolver($container);
-
-
                 try {
                     $dispatcher = call_user_func(
                         $app->dispatcher,
-                        $router,
-                        new \Wave\Framework\External\Phroute\RouteResolver($di)
+                        $router
                     );
 
                     $result = $dispatcher->dispatch($request->getMethod(), $request->getUri()->getPath());
