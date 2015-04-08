@@ -2,17 +2,17 @@
 namespace Wave\Framework\Common;
 
 /**
- * Class Container
+ * Class Repository
  * @package Wave\Framework\Common
  *
  * This class should server as a *very simple* DI container,
  * which can contain application logic which needs to be reused
  * across models, controller and/or other user-land objects.
  */
-class Container implements \ArrayAccess, \Countable
+class Repository implements \ArrayAccess, \Countable
 {
     /**
-     * @var Container
+     * @var Repository
      */
     protected static $instance;
 
@@ -47,19 +47,19 @@ class Container implements \ArrayAccess, \Countable
 
     public static function newInstance()
     {
-        return new Container([]);
+        return new Repository([]);
     }
 
     /**
      * Instantiates the current object
      *
      * @param array $bootstrap Array to pass to the constructor
-     * @return Container
+     * @return Repository
      */
     public static function getInstance(array $bootstrap = [])
     {
-        if (!self::$instance instanceof Container) {
-            self::$instance = new Container($bootstrap);
+        if (!self::$instance instanceof Repository) {
+            self::$instance = new Repository($bootstrap);
         }
 
         return self::$instance;

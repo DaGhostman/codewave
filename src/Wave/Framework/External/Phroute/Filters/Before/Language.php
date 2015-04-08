@@ -32,6 +32,6 @@ class Language
             $languages[] = sprintf('%s=%s', $language, $rawLanguages[$language]);
         }
 
-        $request->withHeader('accept-language', $languages);
+        $request->withHeader('X-Accept-Language', $languages);
     }
 }

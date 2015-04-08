@@ -8,8 +8,7 @@
         "php": ">=5.4",
         "phroute/phroute": ">=1.0",
         "psr/http-message": "*@stable",
-        "phly/http": "@stable",
-        "doctrine/common": "v2.4.2"
+        "phly/http": "@stable"
     },
     "license": "MIT",
     "authors": [
