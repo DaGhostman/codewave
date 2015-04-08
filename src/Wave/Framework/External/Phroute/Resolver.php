@@ -3,7 +3,7 @@ namespace Wave\Framework\External\Phroute;
 
 use Phroute\Phroute\HandlerResolverInterface;
 
-class RouteResolver implements HandlerResolverInterface
+class Resolver implements HandlerResolverInterface
 {
 
     protected $resolver;
