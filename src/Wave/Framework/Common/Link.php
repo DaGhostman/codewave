@@ -29,8 +29,11 @@ class Link
     public function __construct($destination)
     {
         if (!$destination instanceof Destination) {
-            throw new \InvalidArgumentException('Invalid destination provided, must implement "Adapters\Link\Destination" interface');
+            throw new \InvalidArgumentException(
+                'Invalid destination provided, must implement "Adapters\Link\Destination" interface'
+            );
         }
+
         $this->destination = $destination;
     }
 
