@@ -6,7 +6,7 @@
     "type": "library",
     "require": {
         "php": ">=5.4",
-        "phroute/phroute": ">=1.0",
+        "phroute/phroute": ">=2.0",
         "psr/http-message": "*@stable",
         "phly/http": "@stable"
     },
