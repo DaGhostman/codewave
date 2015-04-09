@@ -17,7 +17,6 @@ class Repository implements \ArrayAccess, \Countable
     protected static $instance;
 
     protected $storage = [];
-    protected $static = [];
 
     /**
      * Hidden constructor to disable creation of multiple instances
@@ -31,7 +30,7 @@ class Repository implements \ArrayAccess, \Countable
     protected function __construct($storage)
     {
         foreach ($storage as $name => $callback) {
-            self::$instance->storage[$name] = $callback;
+            $this->storage[$name] = $callback;
         }
     }
 
@@ -65,37 +64,37 @@ class Repository implements \ArrayAccess, \Countable
         return self::$instance;
     }
 
-    public static function singleton($name, callable $callback)
+    public function singleton($name, callable $callback)
     {
-        if (array_key_exists($name, self::getInstance()->static)) {
+        if (array_key_exists($name, $this->static)) {
             throw new \RuntimeException(
                 sprintf('Unable to override %s')
             );
         }
 
-        self::getInstance()->storage[$name] = call_user_func($callback);
+        $this->storage[$name] = call_user_func($callback);
     }
 
-    public static function bind($name, callable $callback)
+    public function bind($name, callable $callback)
     {
-        if (array_key_exists($name, self::getInstance()->storage)) {
+        if (array_key_exists($name, $this->storage)) {
             throw new \InvalidArgumentException(
                 sprintf('Name %s already registered', $name)
             );
         }
 
-        self::getInstance()->storage[$name] = $callback;
+        $this->storage[$name] = $callback;
     }
 
-    public static function remove($name)
+    public function remove($name)
     {
-        if (!array_key_exists($name, self::getInstance()->storage[$name])) {
+        if (!array_key_exists($name, $this->storage[$name])) {
             throw new \InvalidArgumentException(
                 sprintf('Cannot unset not existing declaration %s', $name)
             );
         }
 
-        unset(self::getInstance()->storage[$name]);
+        unset($this->storage[$name]);
     }
 
     /**
@@ -142,7 +141,7 @@ class Repository implements \ArrayAccess, \Countable
     public function offsetSet($name, $value)
     {
         if (is_callable($value)) {
-            self::bind($name, $value);
+            $this->bind($name, $value);
         }
     }
 
@@ -150,7 +149,7 @@ class Repository implements \ArrayAccess, \Countable
     {
         if ($this->offsetExists($name)) {
             if (is_callable($this->storage[$name])) {
-                return self::invoke($name, []);
+                return $this->invoke($name, []);
             }
 
             return $this->storage[$name];
@@ -166,7 +165,7 @@ class Repository implements \ArrayAccess, \Countable
 
     public function offsetUnset($name)
     {
-        self::remove($name);
+        $this->remove($name);
     }
 
     public static function destroy()
