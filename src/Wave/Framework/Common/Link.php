@@ -26,8 +26,11 @@ class Link
      *
      * @param \Wave\Framework\Adapters\Link\Destination $destination
      */
-    public function __construct(Destination $destination)
+    public function __construct($destination)
     {
+        if (!$destination instanceof Destination) {
+            throw new \InvalidArgumentException('Invalid destination provided, must implement "Adapters\Link\Destination" interface');
+        }
         $this->destination = $destination;
     }
 
