@@ -59,7 +59,9 @@ class Server implements Destination
      */
     public function listen(callable $callback = null)
     {
-        ob_start('ob_gzhandler');
+        if (!headers_sent()) {
+            ob_start('ob_gzhandler');
+        }
         $this->bufferLevel = ob_get_level();
         $result = call_user_func($callback, $this->request, $this->response);
 
