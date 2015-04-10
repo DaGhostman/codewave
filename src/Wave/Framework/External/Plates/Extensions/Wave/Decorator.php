@@ -21,15 +21,16 @@ class Decorator implements ExtensionInterface
         }
 
         array_walk($this->decorators, function ($entry, $key) {
-                if (!$entry instanceof Chain) {
-                    throw new \UnexpectedValueException(sprintf(
-                        'Invalid array member at key "%s".' .
-                        'Expected instance of \Wave\Framework\Decorator\Decorator, "%s" received',
-                        $key,
-                        gettype($entry)
-                    ));
-                }
-            });
+            if (!$entry instanceof Chain) {
+                throw new \UnexpectedValueException(sprintf(
+                    'Invalid array member at key "%s".' .
+                    'Expected instance of \Wave\Framework\Decorator\Decorator, "%s" received',
+                    $key,
+                    gettype($entry)
+                ));
+            }
+        });
+
         $this->decorators = $decorator;
     }
 
