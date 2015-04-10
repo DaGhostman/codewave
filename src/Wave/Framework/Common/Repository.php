@@ -2,12 +2,12 @@
 namespace Wave\Framework\Common;
 
 /**
- * Class Repository
- * @package Wave\Framework\Common
- *
- * This class should server as a *very simple* DI container,
+ * Class Repository should server as a *very simple* DI container,
  * which can contain application logic which needs to be reused
  * across models, controller and/or other user-land objects.
+ *
+ * @package Wave\Framework\Common
+ *
  */
 class Repository implements \ArrayAccess, \Countable
 {
@@ -66,13 +66,15 @@ class Repository implements \ArrayAccess, \Countable
 
     public function singleton($name, callable $callback)
     {
-        if (array_key_exists($name, $this->static)) {
+        if (array_key_exists($name, $this->storage)) {
             throw new \RuntimeException(
                 sprintf('Unable to override %s')
             );
         }
 
         $this->storage[$name] = call_user_func($callback);
+
+        return true;
     }
 
     public function bind($name, callable $callback)
@@ -108,10 +110,10 @@ class Repository implements \ArrayAccess, \Countable
      * @throws \RuntimeException
      * @throws \LogicException
      */
-    public function invoke($name, $args = [])
+    public function invoke($name, array $args = [])
     {
         if (array_key_exists($name, $this->storage)) {
-            if ($this->storage[$name] instanceof \Closure) {
+            if ($this->storage[$name] instanceof \Closure || is_callable($this->storage[$name])) {
                 return call_user_func_array($this->storage[$name], $args);
             }
 
@@ -119,7 +121,7 @@ class Repository implements \ArrayAccess, \Countable
         }
 
         throw new \LogicException(
-            sprintf('Trying to invoke non-declared method %s', $name)
+            sprintf('Trying to access non-declared entry %s', $name)
         );
     }
 
@@ -147,20 +149,16 @@ class Repository implements \ArrayAccess, \Countable
 
     public function offsetGet($name)
     {
-        if ($this->offsetExists($name)) {
-            if (is_callable($this->storage[$name])) {
-                return $this->invoke($name, []);
-            }
-
-            return $this->storage[$name];
-        }
-
-        return null;
+        return $this->invoke($name);
     }
 
     public function offsetExists($name)
     {
-        return array_key_exists($name, $this->storage);
+        if (self::$instance) {
+            return array_key_exists($name, $this->storage);
+        }
+
+        return false;
     }
 
     public function offsetUnset($name)
@@ -168,8 +166,9 @@ class Repository implements \ArrayAccess, \Countable
         $this->remove($name);
     }
 
-    public static function destroy()
+    public function destroy()
     {
-        unset(self::$instance);
+        $this->storage = [];
+        self::$instance = null;
     }
 }

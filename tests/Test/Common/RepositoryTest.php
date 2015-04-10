@@ -12,7 +12,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
      */
     protected $repo;
 
-    protected function setUp ()
+    protected function setUp()
     {
         $this->repo = Repository::getInstance(['stub1' => 'demo']);
     }
@@ -21,16 +21,17 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame('demo', $this->repo['stub1']);
         $this->assertSame('demo', $this->repo->invoke('stub1'));
+        $this->assertSame('demo', $this->repo->stub1());
     }
 
-    public function testNewInstance ()
+    public function testNewInstance()
     {
         $this->assertNotSame(spl_object_hash($this->repo), spl_object_hash(Repository::newInstance()));
         $r = $this->repo;
         $this->assertNotSame(spl_object_hash($r), spl_object_hash($r::newInstance()));
     }
 
-    public function testCloning ()
+    public function testCloning()
     {
         $ref = new \ReflectionObject($this->repo);
         $method = $ref->getMethod('__clone');
@@ -39,9 +40,38 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $method->invoke($this->repo);
     }
 
-    public function testDestroy ()
+    public function testDestroy()
     {
-        $repo = $this->$repo;
+        $this->repo->destroy();
+        $this->assertFalse(isset($this->repo['demo']));
+        $this->assertNotSame(spl_object_hash($this->repo), spl_object_hash(Repository::getInstance()));
+        $this->assertSame(0, count($this->repo));
     }
 
+    public function testBadInvokeMethodCall()
+    {
+        $this->setExpectedException('\LogicException', 'Trying to access non-declared entry');
+        $this->assertNull($this->repo->invoke('some-bad-name'));
+
+    }
+
+    public function testBadInvokeArrayAccess()
+    {
+        $this->setExpectedException('\LogicException', 'Trying to access non-declared entry');
+        $this->repo['another-bad-name'];
+    }
+
+    public function testStaticDefinitions()
+    {
+        $this->assertTrue($this->repo->singleton('test', function() {
+            return 'OK';
+        }));
+
+        $this->assertSame('OK', $this->repo->test());
+    }
+
+    protected function tearDown()
+    {
+        $this->repo->destroy();
+    }
 }
