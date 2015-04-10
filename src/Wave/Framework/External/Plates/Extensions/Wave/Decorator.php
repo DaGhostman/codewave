@@ -12,16 +12,15 @@ class Decorator implements ExtensionInterface
     private $decorators = [];
     public function __construct($decorator)
     {
-        if (!is_array($decorator)) {
-            if (!$decorator instanceof Chain) {
-                throw new \InvalidArgumentException(
-                    'Argument should be instance  or array of instances of \Wave\Framework\Decorator\Decorator'
-                );
-            }
-
+        if ($decorator instanceof Chain) {
             array_push($this->decorators, $decorator);
-        } else {
-            array_walk($decorators, function ($entry, $key) {
+        }
+
+        if (is_array($decorator)) {
+            $this->decorators += $decorator;
+        }
+
+        array_walk($this->decorators, function ($entry, $key) {
                 if (!$entry instanceof Chain) {
                     throw new \UnexpectedValueException(sprintf(
                         'Invalid array member at key "%s".' .
@@ -31,9 +30,7 @@ class Decorator implements ExtensionInterface
                     ));
                 }
             });
-
-            $this->decorators = $decorator;
-        }
+        $this->decorators = $decorator;
     }
 
     public function register(Engine $engine)

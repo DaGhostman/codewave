@@ -57,7 +57,7 @@ class Link
 
     public function notify()
     {
-        foreach ($this->links as $key => $value) {
+        foreach ($this->links as $value) {
             call_user_func([$this->destination, $value[1]], $value[0]);
         }
     }

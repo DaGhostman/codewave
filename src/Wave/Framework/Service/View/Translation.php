@@ -19,36 +19,36 @@ class Translation
         $this->plurals = $plurals;
     }
 
-    public function translate($id)
+    public function translate($string)
     {
-        if (!array_key_exists($id, $this->source)) {
-            return $id;
+        if (!array_key_exists($string, $this->source)) {
+            return $string;
         }
 
-        return $this->source[$id];
+        return $this->source[$string];
     }
 
     /**
      * Convert the string to plural based on the choices
      *
-     * @param $id mixed
+     * @param $string mixed
      * @param $num int
      * @param string $format
      *
      * @return string
      */
-    public function plural($id, $num = 1, $format = null)
+    public function plural($string, $num = 1, $format = null)
     {
         $format = ($format !== null) ? $format : '%d %s';
-        $translated = $this->translate($id);
+        $translated = $this->translate($string);
 
         if (array_key_exists($translated, $this->plurals)) {
             $translated = $this->plurals[$translated];
             if (is_array($translated)) {
+                $translated = $translated[0];
+
                 if ($num !== 1) {
                     $translated = $translated[1];
-                } else {
-                    $translated = $translated[0];
                 }
             }
         }
