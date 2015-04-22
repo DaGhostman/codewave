@@ -5,12 +5,13 @@
     "homepage": "https://github.com/DaGhostman/codewave",
     "type": "library",
     "require": {
-        "php": ">=5.4",
-        "phroute/phroute": ">=2.0",
-        "psr/http-message": "*@stable",
-        "phly/http": "@stable"
+        "php": ">=5.4"
     },
-    "license": "MIT",
+  "prefer-stable": true,
+  "suggest": {
+    "phroute/phroute": "2.0.*",
+  },
+  "license": "MIT",
     "authors": [
         {
             "name": "Dimitar Dimitrov",
@@ -20,9 +21,15 @@
     ],
     "minimum-stability": "stable",
     "autoload": {
-        "psr-0": { "Wave\\Framework\\": "src", "Stub\\": "tests" }
+        "psr-0": { "Wave\\Framework\\": "src" }
     },
+  "autoload-dev": {
+    "psr-0": {
+      "Stub\\": "tests"
+    }
+  },
     "require-dev": {
+        "phroute/phroute": "2.0.0",
         "phpunit/phpunit": "*@stable",
         "mockery/mockery": ">=0.9",
         "squizlabs/php_codesniffer": "@stable",
