@@ -157,19 +157,20 @@ class Wave implements Destination
      * @param $request \Psr\Http\Message\RequestInterface
      * @param $callback callable
      */
-    public function run($request, callable $callback = null)
+    public function run($serverVars = null, callable $callback = null)
     {
         $app = $this;
         $router = $this->router;
+        if ($serverVars === null) {
+            $serverVars = filter_input_array(INPUT_SERVER);
+        }
 
         /**
          * @type Request
          */
-        $request = new Request($request);
-        $server = new Server($request);
-
-        (new Link($this))->push($server->request, 'setRequest');
-        (new Link($this))->push($server->response, 'setResponse');
+        $server = new Server($serverVars);
+        $this->request = $server->getRequest();
+        $this->response = $server->getRequest();
 
         if ($callback === null) {
             /**
@@ -185,7 +186,7 @@ class Wave implements Destination
                         $router
                     );
 
-                    $result = $dispatcher->dispatch($request->getMethod(), $request->getUri()->getPath());
+                    $result = $dispatcher->dispatch($request->getMethod(), $request->getUrl()->getPath());
                     if ($result !== null) {
                         return $result;
                     }
@@ -201,7 +202,6 @@ class Wave implements Destination
             };
         }
 
-        $server->listen($callback)
-            ->send();
+        $server->listen($callback);
     }
 }
