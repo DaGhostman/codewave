@@ -1,17 +1,12 @@
 <?php
 namespace Wave\Framework\Http;
 
-use Phly\Http\Response;
-use Phly\Http\ServerRequest;
-use Phly\Http\Stream;
-use Psr\Http\Message\RequestInterface;
-use Wave\Framework\Http\Response as LinkResponse;
-use Wave\Framework\Adapters\Link\Destination;
+use Wave\Framework\Http\Entities\Url\Query;
 
-class Server implements Destination
+class Server
 {
     /**
-     * @type ServerRequest
+     * @type Request
      */
     protected $request;
 
@@ -37,17 +32,21 @@ class Server implements Destination
      * And will construct a ResponseInterface object as linkable which is then picked
      * up by the application class and linked.
      *
-     * @param $request RequestInterface
+     * @param $source array
+     *
      */
-    public function __construct($request)
+    public function __construct(array $source = null)
     {
-        if (!$request instanceof RequestInterface && !$request instanceof Request) {
-            throw new \InvalidArgumentException(
-                sprintf('Class "%s" does not implement RequestInterface', get_class($request))
-            );
+        if ($source === null) {
+            $source = filter_input_array(INPUT_SERVER);
         }
-        $this->request = $request->withBody(new Stream('php://input'), 'r+b');
-        $this->response = new LinkResponse(new Response());
+        $this->bufferLevel = ob_get_level();
+
+
+        $this->request = (new Request($source['REQUEST_METHOD'], $this->buildUrl($source)))
+            ->addHeaders($this->buildHeaders($source));
+
+        $this->response = new Response();
     }
 
     /**
@@ -59,13 +58,15 @@ class Server implements Destination
      */
     public function listen(callable $callback = null)
     {
+
+
         if (!headers_sent()) {
             ob_start('ob_gzhandler');
         }
-        $this->bufferLevel = ob_get_level();
+
         $result = call_user_func($callback, $this->request, $this->response);
 
-        if (is_array($result) || is_object($result) || is_callable($result)) {
+        if (is_array($result) || (is_object($result) && $result instanceof Response) || is_callable($result)) {
             throw new \RuntimeException(
                 sprintf(
                     'Unexpected result type "%s" from callback,' .
@@ -75,15 +76,15 @@ class Server implements Destination
             );
         }
 
-        $this->response->getBody()->write($result);
+        echo $result;
 
-        return $this;
+        $this->send();
     }
 
     /**
      * Sends the headers, outputs the output buffer contents and the contents of the response object
      */
-    public function send()
+    private function send()
     {
         if (!headers_sent()) {
             $this->sendHeaders();
@@ -94,11 +95,7 @@ class Server implements Destination
                 ob_get_flush();
             }
         }
-
         $this->bufferLevel = null;
-
-        echo $this->response
-            ->getBody();
     }
 
     /**
@@ -110,23 +107,17 @@ class Server implements Destination
     private function sendHeaders()
     {
         $response = $this->response;
-        if ($response->getReasonPhrase()) {
-            header(sprintf(
-                'HTTP/%s %d %s',
-                $response->getProtocolVersion(),
-                $response->getStatusCode(),
-                $response->getReasonPhrase()
-            ));
-        } else {
-            header(sprintf(
-                'HTTP/%s %d',
-                $response->getProtocolVersion(),
-                $response->getStatusCode()
-            ));
-        }
+        $status = $response->getStatus();
 
-        foreach ($response->getHeaders() as $header => $values) {
-            $name  = $this->filterHeader($header);
+        header(sprintf(
+            'HTTP/%s %d %s',
+            $response->getVersion(),
+            $status[0],
+            $status[1]
+        ), true, $status[0]);
+
+        foreach ($response->getHeaders() as $name => $values) {
+            //$name  = $this->filterHeader($header);
             $first = true;
             foreach ($values as $value) {
                 header(sprintf(
@@ -139,27 +130,57 @@ class Server implements Destination
         }
     }
 
-    /**
-     * Filter a header name to wordcase
-     *
-     * @param string $header
-     * @return string
-     */
-    private function filterHeader($header)
+    public function getRequest()
     {
-        $filtered = str_replace('-', ' ', $header);
-        $filtered = ucwords($filtered);
-        return str_replace(' ', '-', $filtered);
+        return $this->request;
     }
 
-    public function __get($name)
+    public function getResponse()
     {
-        if (property_exists($this, $name)) {
-            return $this->$name;
+        return $this->response;
+    }
+
+    private function buildUrl($server)
+    {
+        $url = new Url();
+
+        if ($server['SERVER_PORT'] === 443 ||
+            (isset($server['HTTPS']) && $server['HTTPS'] !== 'off' && !empty($server['HTTPS']))
+        ) {
+            $url = $url->setScheme('https');
         }
 
-        throw new \InvalidArgumentException(
-            sprintf('Value "%s" not found in class', $name)
-        );
+        $url = $url->setHost($server['SERVER_NAME'])
+            ->setPort((int) $server['SERVER_PORT'])
+            ->setPath(parse_url($server['REQUEST_URI'], PHP_URL_PATH))
+            ->setQuery(new Query(parse_url($server['REQUEST_URI'], PHP_URL_QUERY)));
+
+        return $url;
+    }
+
+    private function buildHeaders($server)
+    {
+        $headers = [];
+        foreach ($server as $key => $value) {
+            if (strpos($key, 'HTTP_COOKIE') === 0) {
+                // Cookies are handled using the $_COOKIE super global
+                continue;
+            }
+            if ($value && strpos($key, 'HTTP_') === 0) {
+                $name = strtr(substr($key, 5), '_', ' ');
+                $name = strtr(ucwords(strtolower($name)), ' ', '-');
+                $name = strtolower($name);
+                $headers[$name] = $value;
+                continue;
+            }
+            if ($value && strpos($key, 'CONTENT_') === 0) {
+                $name = substr($key, 8); // Content-
+                $name = 'Content-' . (($name === 'MD5') ? $name : ucfirst(strtolower($name)));
+                $name = strtolower($name);
+                $headers[$name] = $value;
+                continue;
+            }
+        }
+        return $headers;
     }
 }
