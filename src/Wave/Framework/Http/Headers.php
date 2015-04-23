@@ -65,10 +65,11 @@ trait Headers
      */
     public function addHeader($header, $value)
     {
+
         if ($this->hasHeader($header)) {
             $this->headers[$this->parseHeaders($header)][] = $value;
         } else {
-            $this->setHeader($header, $value);
+            $this->headers[$this->parseHeaders($header)] =  [$value];
         }
 
         return $this;
