@@ -9,7 +9,7 @@
     },
   "prefer-stable": true,
   "suggest": {
-    "phroute/phroute": "2.0.*",
+    "phroute/phroute": "2.0.*"
   },
   "license": "MIT",
     "authors": [
