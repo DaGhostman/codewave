@@ -29,7 +29,7 @@ class Request
 
     /**
      * @param string $method
-     * @param Uri $uri
+     * @param Url $uri
      * @param string $body
      */
     public function __construct($method, $uri, $body = 'php://input')
@@ -75,6 +75,9 @@ class Request
         return $this->method;
     }
 
+    /**
+     * @return Url
+     */
     public function getUrl()
     {
         return $this->url;

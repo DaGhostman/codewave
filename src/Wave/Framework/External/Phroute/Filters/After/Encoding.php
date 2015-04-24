@@ -24,7 +24,7 @@ class Encoding
          * Assumes that if no content type is provided, the client accepts anything (* / *)
          */
         if (strpos($header, $type) === false && strpos($header, '*/*') === false) {
-            Wave::getResponse()->withStatus(406);
+            Wave::getResponse()->setStatus(406);
         }
     }
 
@@ -35,7 +35,7 @@ class Encoding
     public function useJSON()
     {
         $this->verifyAcceptance(self::ENC_JSON);
-        Wave::getResponse()->withHeader('content-type', 'application/json');
+        Wave::getResponse()->setHeader('content-type', 'application/json');
     }
 
     /**
@@ -44,7 +44,7 @@ class Encoding
     public function useXML()
     {
         $this->verifyAcceptance(self::ENC_XML);
-        Wave::getResponse()->withHeader('content-type', 'text/xml');
+        Wave::getResponse()->setHeader('content-type', 'text/xml');
     }
 
     /**
@@ -53,12 +53,12 @@ class Encoding
     public function useHTML()
     {
         $this->verifyAcceptance(self::ENC_HTML);
-        Wave::getResponse()->withHeader('content-type', 'text/html');
+        Wave::getResponse()->setHeader('content-type', 'text/html');
     }
 
     public function usePlain()
     {
         $this->verifyAcceptance(self::ENC_PLAIN);
-        Wave::getResponse()->withHeader('content-type', 'text/plain');
+        Wave::getResponse()->setHeader('content-type', 'text/plain');
     }
 }

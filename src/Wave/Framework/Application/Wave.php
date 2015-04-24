@@ -2,7 +2,6 @@
 namespace Wave\Framework\Application;
 
 use Wave\Framework\Adapters\Link\Destination;
-use Wave\Framework\Common\Link;
 use Wave\Framework\Http\Request;
 use Wave\Framework\Http\Server;
 
@@ -21,19 +20,14 @@ class Wave implements Destination
      */
     protected $dispatcher;
 
-    /**
-     * @var object
-     */
-    protected $router;
-
 
     /**
-     * @var $request \Psr\Http\Message\RequestInterface;
+     * @var $request Request
      */
     protected $request;
 
     /**
-     * @var $request \Psr\Http\Message\ResponseInterface;
+     * @var $request \Wave\Framework\Http\Response;
      */
     protected $response;
 
@@ -52,14 +46,6 @@ class Wave implements Destination
      */
     public function __construct(callable $dispatcher)
     {
-        if (!is_callable($dispatcher)) {
-            throw new \InvalidArgumentException(
-                'The dispatcher factory provided is invalid'
-            );
-        }
-
-        $this->link = new Link($this);
-        $this->dispatcher = $dispatcher;
         self::setInstance($this);
     }
 
@@ -79,7 +65,7 @@ class Wave implements Destination
     /**
      * Returns the current value of the request for the application
      *
-     * @return null|\Psr\Http\Message\RequestInterface
+     * @return null|Request
      */
     public static function getRequest()
     {
@@ -104,38 +90,11 @@ class Wave implements Destination
     /**
      * Returns the response created for the function.
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return \Wave\Framework\Http\Response
      */
     public static function getResponse()
     {
         return self::$instance->response;
-    }
-
-    /**
-     * Allows the dispatcher to be changed at runtime.
-     *
-     * @param $dispatcher callable
-     * @return $this
-     */
-    public function setDispatcher(callable $dispatcher)
-    {
-        $this->dispatcher = $dispatcher;
-
-        return $this;
-    }
-
-    /**
-     * This method should be used right after initialization of the
-     * application class, so it could work as proxy for the route generation.
-     *
-     * @param $router
-     * @return $this
-     */
-    public function setRouter($router)
-    {
-        $this->router = $router;
-
-        return $this;
     }
 
     /**
@@ -154,52 +113,21 @@ class Wave implements Destination
      * Factory\Request::build method's result directly. It invokes the \Phly\Http\ServerRequestFactory,
      * which already builds the object as per PSR-7
      *
-     * @param $request \Psr\Http\Message\RequestInterface
+     * @param $serverVars array Usually should default to $_SERVER
      * @param $callback callable
      */
     public function run($serverVars = null, callable $callback = null)
     {
-        $app = $this;
-        $router = $this->router;
         if ($serverVars === null) {
             $serverVars = filter_input_array(INPUT_SERVER);
         }
 
-        /**
-         * @type Request
-         */
         $server = new Server($serverVars);
         $this->request = $server->getRequest();
-        $this->response = $server->getRequest();
+        $this->response = $server->getResponse();
 
         if ($callback === null) {
-            /**
-             * @param $request \Psr\Http\Message\RequestInterface
-             * @return mixed
-             * @throws \Exception
-             * @codeCoverageIgnore
-             */
-            $callback = function ($request) use ($app, $router) {
-                try {
-                    $dispatcher = call_user_func(
-                        $app->dispatcher,
-                        $router
-                    );
-
-                    $result = $dispatcher->dispatch($request->getMethod(), $request->getUrl()->getPath());
-                    if ($result !== null) {
-                        return $result;
-                    }
-
-
-                } catch (\Phroute\Phroute\Exception\HttpRouteNotFoundException $e) {
-                    echo $e->getMessage();
-                } catch (\Phroute\Phroute\Exception\HttpMethodNotAllowedException $e) {
-                    echo $e->getMessage();
-                } catch (\Exception $e) {
-                    throw new \ErrorException($e->getMessage(), 0, 1, $e->getFile(), $e->getLine(), $e);
-                }
-            };
+            throw new \InvalidArgumentException('Invalid callback provided');
         }
 
         $server->listen($callback);
