@@ -2,6 +2,7 @@
 namespace Wave\Framework\Http;
 
 use Wave\Framework\Http\Entities\Url\Query;
+use Wave\Framework\Interfaces\Http\ResponseInterface;
 
 class Server
 {
@@ -66,7 +67,7 @@ class Server
 
         $result = call_user_func($callback, $this->request, $this->response);
 
-        if (is_array($result) || (is_object($result) && $result instanceof Response) || is_callable($result)) {
+        if (is_array($result) || (is_object($result) && $result instanceof ResponseInterface) || is_callable($result)) {
             throw new \RuntimeException(
                 sprintf(
                     'Unexpected result type "%s" from callback,' .

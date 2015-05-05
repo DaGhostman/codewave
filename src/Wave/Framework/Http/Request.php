@@ -2,7 +2,9 @@
 
 namespace Wave\Framework\Http;
 
-class Request
+use Wave\Framework\Interfaces\Http\RequestInterface;
+
+class Request implements RequestInterface
 {
     use Headers {
         setHeader as protected setNewHeader;
@@ -28,11 +30,13 @@ class Request
     ];
 
     /**
-     * @param string $method
-     * @param Url $uri
-     * @param string $body
+     * @see \Wave\Framework\Interfaces\Http\RequestInterface::__construct
+     * @param string                                              $method
+     * @param string|\Wave\Framework\Interfaces\Http\UrlInterface $uri
+     * @param array                                               $headers
+     * @param string                                              $body
      */
-    public function __construct($method, $uri, $body = 'php://input')
+    public function __construct($method, $uri, array $headers = [], $body = 'php://input')
     {
         if (!$this->isValidMethod($method)) {
             throw new \InvalidArgumentException(sprintf(

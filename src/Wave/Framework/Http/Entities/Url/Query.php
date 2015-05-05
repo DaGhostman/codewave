@@ -3,18 +3,12 @@
 namespace Wave\Framework\Http\Entities\Url;
 
 use Wave\Framework\Http\Exceptions\InvalidKeyException;
+use Wave\Framework\Interfaces\Http\QueryInterface;
 
-class Query implements \Countable
+class Query implements QueryInterface ,\Countable
 {
     private $parts = [];
 
-    /**
-     * Parses the $query and stores it internally as an array.
-     * all elements can be accessed using 'get' method
-     * and 'set' for updating/adding new ones.
-     *
-     * @param $query string|array The url query
-     */
     public function __construct($query = '')
     {
         if (is_array($query)) {
@@ -24,13 +18,6 @@ class Query implements \Countable
         }
     }
 
-    /**
-     * Returns entry in the query based on
-     *
-     * @param $key string name of the entry
-     * @return mixed value of the entry
-     * @throws \Wave\Framework\Http\Exceptions\InvalidKeyException
-     */
     public function get($key)
     {
         if (!array_key_exists($key, $this->parts)) {
@@ -43,14 +30,6 @@ class Query implements \Countable
         return $this->parts[$key];
     }
 
-    /**
-     * Creates a new instance of Query and sets/updates
-     * the new value in it and returns it
-     *
-     * @param $key string
-     * @param $value string
-     * @return Query
-     */
     public function set($key, $value)
     {
         $self = clone $this;
@@ -59,31 +38,21 @@ class Query implements \Countable
         return $self;
     }
 
-    /**
-     * Check if the a specific $key exists
-     *
-     * @param $key
-     * @return bool
-     */
     public function has($key)
     {
         return array_key_exists($key, $this->parts);
     }
 
-    /**
-     * @param $key
-     * @throws \Wave\Framework\Http\Exceptions\InvalidKeyException
-     */
-    public function remove($key)
+    public function remove($name)
     {
-        if (!$this->has($key)) {
+        if (!$this->has($name)) {
             throw new InvalidKeyException(sprintf(
                 'Unable to remove, non-existing entry "%s"',
-                $key
+                $name
             ));
         }
 
-        unset($this->parts[$key]);
+        unset($this->parts[$name]);
     }
 
     /**
@@ -93,7 +62,7 @@ class Query implements \Countable
      * @param $entities array key => value pairs
      * @return Query
      */
-    public function import($entities)
+    public function import(array $entities)
     {
         $self = clone $this;
         $self->parts = array_merge($self->parts, $entities);

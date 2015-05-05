@@ -2,7 +2,9 @@
 
 namespace Wave\Framework\Http;
 
-class Response
+use Wave\Framework\Interfaces\Http\ResponseInterface;
+
+class Response implements ResponseInterface
 {
     use Headers;
 
@@ -68,11 +70,18 @@ class Response
         506 => 'Variant Also Negotiates',
         507 => 'Insufficient Storage',
         508 => 'Loop Detected',
-        511 => 'Network Authentication Required',
+        511 => 'Network Authentication Required'
     ];
 
     protected $status = 200;
     protected $body = '';
+
+    public function __construct(array $headers = [])
+    {
+        if (!empty($headers)) {
+            $this->addHeaders($headers);
+        }
+    }
 
     public function __toString()
     {

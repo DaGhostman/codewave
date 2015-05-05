@@ -3,8 +3,10 @@
 namespace Wave\Framework\Http;
 
 use \Wave\Framework\Http\Entities\Url\Query;
+use Wave\Framework\Interfaces\Http\QueryInterface;
+use Wave\Framework\Interfaces\Http\UrlInterface;
 
-class Url implements \Serializable
+class Url implements UrlInterface ,\Serializable
 {
     const SCHEME_NORM   = 'http';
     const SCHEME_SECURE = 'https';
@@ -42,17 +44,9 @@ class Url implements \Serializable
         }
     }
 
-    /**
-     * @param string $path path of the url
-     * @param Entities\Url\Query $query the query string if any
-     * @param string $host the name of the host
-     * @param int $port
-     * @param string $scheme
-     * @param string $fragment
-     */
     public function __construct(
         $path = '/',
-        Query $query = null,
+        QueryInterface $query = null,
         $host = null,
         $port = null,
         $scheme = '',
@@ -199,7 +193,7 @@ class Url implements \Serializable
         return $self;
     }
 
-    public function setQuery(Query $query)
+    public function setQuery(QueryInterface $query)
     {
         $self = clone $this;
         $self->query = $query;
@@ -215,11 +209,24 @@ class Url implements \Serializable
         return $self;
     }
 
+    /**
+     * Checks if the request is made over HTTPS
+     *
+     * @return bool
+     */
     public function isHttps()
     {
         return ($this->scheme === self::SCHEME_SECURE);
     }
 
+    /**
+     * Checks to determine if a port number is a standard
+     * port, i.e 80 or 443
+     *
+     * @param $port
+     *
+     * @return bool
+     */
     private function isStandardPort($port)
     {
         return in_array($port, $this->standardPorts, true);
