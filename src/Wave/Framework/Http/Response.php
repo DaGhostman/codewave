@@ -76,6 +76,12 @@ class Response implements ResponseInterface
     protected $status = 200;
     protected $body = '';
 
+    /**
+     * Constructs an object and populates it with the headers
+     * provided in $headers
+     *
+     * @param array $headers list of headers
+     */
     public function __construct(array $headers = [])
     {
         if (!empty($headers)) {
@@ -110,7 +116,13 @@ class Response implements ResponseInterface
         return [$this->status, $this->codes[$this->status]];
     }
 
-
+    /**
+     * Set the status code of the response
+     *
+     * @param int $code
+     *
+     * @return mixed
+     */
     public function setStatus($code)
     {
         if (!array_key_exists($code, $this->codes)) {
@@ -124,5 +136,102 @@ class Response implements ResponseInterface
         $self->status = $code;
 
         return $self;
+    }
+
+    /**
+     * Add a header to the current object.
+     * This method should have dual behaviour, based on the $append
+     * variable. If set to true the method should create/append the new
+     * header value or create/overwrite the header's value.
+     *
+     * @param string $header
+     * @param string $value
+     * @param bool   $append
+     *
+     * @return mixed
+     */
+    public function addHeader($header, $value, $append = true)
+    {
+        $header = $this->parseHeader($header);
+        if (!is_array($value)) {
+            $value = [$value];
+        }
+
+        if ($append) {
+            if ($this->hasHeader($header)) {
+                $this->headers[$header] = array_merge($this->headers[$header], $value);
+            } else {
+                $this->headers[$header] = $value;
+            }
+        } else {
+            $this->headers[$header] = $value;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Same behaviour as addHeader method, but instead of adding single
+     * header, it adds multiple headers. Respectively from the key => value
+     * pairs in the $headers argument.
+     *
+     * @see ResponseInterface::addHeader
+     *
+     * @param array $headers
+     * @param bool  $append
+     *
+     * @return mixed
+     */
+    public function addHeaders(array $headers, $append = true)
+    {
+        foreach ($headers as $header => $value) {
+            $this->addHeader($header, $value, $append);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Return the value of a header identified by $header.
+     * If the header does not exist it is recommended to be handled
+     * gracefully, i.e no need to throw an exception as it is acceptable
+     * for a client to not send a given header. Exception throwing should
+     * come from the application if the headers if required for its normal
+     * operation.
+     *
+     * @param string $header
+     *
+     * @return mixed
+     */
+    public function getHeader($header)
+    {
+        if ($this->hasHeader($header)) {
+            if (count($this->headers[$this->parseHeader($header)]) > 1) {
+                return $this->headers[$this->parseHeader($header)];
+            }
+
+            return $this->headers[$this->parseHeader($header)][0];
+        }
+
+        return null;
+    }
+
+    /**
+     * Check if a header exists in the current set of headers
+     *
+     * @param string $header
+     *
+     * @return mixed
+     */
+    public function hasHeader($header)
+    {
+        return array_key_exists($this->parseHeader($header), $this->headers);
+    }
+
+    private function parseHeader($header)
+    {
+        $header = str_replace('-', ' ', $header);
+        $header = ucwords(strtolower($header));
+        return str_replace(' ', '-', $header);
     }
 }

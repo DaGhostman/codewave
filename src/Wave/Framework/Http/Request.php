@@ -3,18 +3,16 @@
 namespace Wave\Framework\Http;
 
 use Wave\Framework\Interfaces\Http\RequestInterface;
+use Wave\Framework\Interfaces\Http\UrlInterface;
 
 class Request implements RequestInterface
 {
-    use Headers {
-        setHeader as protected setNewHeader;
-        addHeaders as protected addNewHeaders;
-        addHeader as protected addNewHeader;
-    }
-
     private $method;
     private $url;
     private $body;
+
+    protected $headers = [];
+    protected $version = 'HTTP/1.1';
 
 
     private $methods = [
@@ -30,14 +28,20 @@ class Request implements RequestInterface
     ];
 
     /**
-     * @see \Wave\Framework\Interfaces\Http\RequestInterface::__construct
-     * @param string                                              $method
-     * @param string|\Wave\Framework\Interfaces\Http\UrlInterface $uri
-     * @param array                                               $headers
-     * @param string                                              $body
+     * The constructor of the request object should be responsible
+     * for defining all mandatory fields of the request object.
+     * The $uri should be either string or object instance implementing
+     * the UrlInterface. This is so to ensure compatibility of all internal
+     * components which rely on that object, i.e \Wave\Framework\Http\Server
+     *
+     * @param string              $method  A valid HTTP method verb
+     * @param UrlInterface $uri     Object or string
+     * @param array               $headers Array of headers to set up on construction
+     * @param string              $body    The stream from which to get the HTTP body, defaults to 'php://input'
      */
-    public function __construct($method, $uri, array $headers = [], $body = 'php://input')
+    public function __construct($method, UrlInterface $uri, array $headers = [], $body = 'php://input')
     {
+        $method = strtoupper($method);
         if (!$this->isValidMethod($method)) {
             throw new \InvalidArgumentException(sprintf(
                 'Method "%s" is not a valid HTTP method',
@@ -46,54 +50,168 @@ class Request implements RequestInterface
         }
         $this->method = strtoupper($method);
 
+        foreach ($headers as $header => $value) {
+            if (!is_array($value)) {
+                $value = [$value];
+            }
+
+            $this->headers[$this->parseHeader($header)] = $value;
+        }
+
         $this->url = $uri;
-        $this->body = file_get_contents($body);
+
+        $this->body = $body;
     }
 
-    public function setHeader($header, $value)
+    /**
+     * Add a header to the current object.
+     * This method should have dual behaviour, based on the $append
+     * variable. If set to true the method should create/append the new
+     * header value or create/overwrite the header's value.
+     *
+     * In case of representing server requests, this method should return a
+     * new instance of the object with the new value added.
+     *
+     * @param string $header
+     * @param string $value
+     * @param bool   $append
+     *
+     * @return mixed
+     */
+    public function addHeader($header, $value, $append = true)
     {
+        $header = $this->parseHeader($header);
+        if (!is_array($value)) {
+            $value = [$value];
+        }
+
         $self = clone $this;
-        $self->setNewHeader($header, $value);
+
+        if ($append) {
+            if ($self->hasHeader($header)) {
+                $self->headers[$header] = array_merge($self->headers[$header], $value);
+            } else {
+                $self->headers[$header] = $value;
+            }
+        } else {
+            $self->headers[$header] = $value;
+        }
 
         return $self;
     }
 
-    public function addHeader($header, $value)
+    /**
+     * Same behaviour as addHeader method, but instead of adding single
+     * header, it adds multiple headers. Respectively from the key => value
+     * pairs in the $headers argument.
+     *
+     * @see RequestInterface::addHeader
+     *
+     * @param array $headers
+     * @param bool  $append
+     *
+     * @return mixed
+     */
+    public function addHeaders(array $headers, $append = true)
     {
         $self = clone $this;
-        $self->addNewHeader($header, $value);
+        foreach ($headers as $header => $value) {
+            $self = $self->addHeader($header, $value, $append);
+        }
 
         return $self;
     }
 
-    public function addHeaders($headers)
+    /**
+     * Check if a header is defined
+     *
+     * @param $header string
+     *
+     * @return bool
+     */
+    public function hasHeader($header)
     {
-        $self = clone $this;
-        $self->addNewHeaders($headers);
-
-        return $self;
+        return array_key_exists($this->parseHeader($header), $this->headers);
     }
 
+    /**
+     * Return the value of a header identified by $header.
+     * If the header does not exist it is recommended to be handled
+     * gracefully, i.e no need to throw an exception as it is acceptable
+     * for a client to not send a given header. Exception throwing should
+     * come from the application if the headers if required for its normal
+     * operation.
+     *
+     * @param $header string name of the headers to retrieve
+     *
+     * @return mixed
+     */
+    public function getHeader($header)
+    {
+        if ($this->hasHeader($header)) {
+            if (count($this->headers[$this->parseHeader($header)]) > 1) {
+                return $this->headers[$this->parseHeader($header)];
+            }
+
+            return $this->headers[$this->parseHeader($header)][0];
+        }
+
+        return null;
+    }
+
+    /**
+     * Return the HTTP request method verb with which the request was performed
+     *
+     * @return string
+     */
     public function getMethod()
     {
         return $this->method;
     }
 
     /**
-     * @return Url
+     * Return the current URL as object.
+     *
+     * @see UrlInterface
+     *
+     * @return UrlInterface
      */
     public function getUrl()
     {
         return $this->url;
     }
 
+    /**
+     * Return the raw request body of the request.
+     * Handle with care as request body could be memory consuming
+     * in case of file uploads for example.
+     *
+     * @return string|null
+     */
     public function getBody()
     {
-        return $this->body;
+        return file_get_contents($this->body);
     }
 
     private function isValidMethod($method)
     {
         return in_array($method, $this->methods, true);
+    }
+
+    private function parseHeader($header)
+    {
+        $header = str_replace('-', ' ', $header);
+        $header = ucwords(strtolower($header));
+        return str_replace(' ', '-', $header);
+    }
+
+    /**
+     * Return all headers which are defined in the current request object
+     *
+     * @return mixed
+     */
+    public function getHeaders()
+    {
+        return $this->headers;
     }
 }
