@@ -28,11 +28,11 @@ interface RequestInterface
      * components which rely on that object, i.e \Wave\Framework\Http\Server
      *
      * @param string $method A valid HTTP method verb
-     * @param string|UrlInterface  $uri Object or string
+     * @param UrlInterface  $uri Object or string
      * @param array  $headers Array of headers to set up on construction
      * @param string $body The stream from which to get the HTTP body, defaults to 'php://input'
      */
-    public function __construct($method, $uri, array $headers = [], $body = 'php://input');
+    public function __construct($method, UrlInterface $uri, array $headers = [], $body = 'php://input');
 
     /**
      * Add a header to the current object.
@@ -110,13 +110,6 @@ interface RequestInterface
      */
     public function getBody();
 
-    /**
-     * Return the protocol version, '1.1' or '1.0' as of
-     * the moment of writing.
-     *
-     * @return mixed
-     */
-    public function getVersion();
 
     /**
      * Check if a header is defined
