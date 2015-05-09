@@ -2,11 +2,10 @@
 
 namespace Wave\Framework\Http;
 
-use \Wave\Framework\Http\Entities\Url\Query;
 use Wave\Framework\Interfaces\Http\QueryInterface;
 use Wave\Framework\Interfaces\Http\UrlInterface;
 
-class Url implements UrlInterface ,\Serializable
+class Url implements UrlInterface, \Serializable
 {
     const SCHEME_NORM   = 'http';
     const SCHEME_SECURE = 'https';
