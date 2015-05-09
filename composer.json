@@ -1,39 +1,42 @@
 {
-    "name": "codewave/codewave",
-    "description": "Small extensible framework in PHP",
-    "keywords": ["CodeWave", "PHP Framework", "MVC Framework"],
-    "homepage": "https://github.com/DaGhostman/codewave",
-    "type": "library",
-    "require": {
-        "php": ">=5.4"
-    },
+  "name": "codewave/codewave",
+  "description": "Small extensible framework in PHP",
+  "keywords": ["CodeWave", "PHP Framework", "MVC Framework"],
+  "homepage": "https://github.com/DaGhostman/codewave",
+  "type": "library",
+  "require": {
+    "php": ">=5.4"
+  },
   "prefer-stable": true,
   "suggest": {
     "phroute/phroute": "2.0.*"
   },
   "license": "MIT",
-    "authors": [
-        {
-            "name": "Dimitar Dimitrov",
-            "email": "daghostman.dimitrov@gmail.com",
-            "role": "development"
-        }
-    ],
-    "minimum-stability": "stable",
-    "autoload": {
-        "psr-0": { "Wave\\Framework\\": "src" }
-    },
+  "authors": [
+    {
+      "name": "Dimitar Dimitrov",
+      "email": "daghostman.dimitrov@gmail.com",
+      "role": "development"
+    }
+  ],
+  "minimum-stability": "stable",
+  "autoload": {
+    "psr-0": { "Wave\\Framework\\": "src" }
+  },
   "autoload-dev": {
     "psr-0": {
       "Stub\\": "tests"
     }
   },
-    "require-dev": {
-        "phroute/phroute": "2.0.0",
-        "phpunit/phpunit": "*@stable",
-        "mockery/mockery": ">=0.9",
-        "squizlabs/php_codesniffer": "@stable",
-        "phpmd/phpmd": "@stable",
-        "satooshi/php-coveralls": "dev-master"
-    }
+  "require": {
+    "phroute/phroute": "2.0.0",
+    "psr/log": "1.0.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*@stable",
+    "mockery/mockery": ">=0.9",
+    "squizlabs/php_codesniffer": "@stable",
+    "phpmd/phpmd": "@stable",
+    "satooshi/php-coveralls": "dev-master"
+  }
 }
