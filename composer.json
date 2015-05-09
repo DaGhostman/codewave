@@ -25,7 +25,8 @@
   },
   "autoload-dev": {
     "psr-0": {
-      "Stub\\": "tests"
+      "Stub\\": "tests",
+      "Test\\": "tests"
     }
   },
   "require": {
