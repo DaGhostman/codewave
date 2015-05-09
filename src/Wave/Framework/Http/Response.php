@@ -71,7 +71,9 @@ class Response implements ResponseInterface
         511 => 'Network Authentication Required'
     ];
 
+    protected $version = 1.0;
     protected $status = 200;
+    protected $headers = [];
     protected $body = '';
 
     /**
@@ -90,7 +92,7 @@ class Response implements ResponseInterface
     public function __toString()
     {
         $status = $this->getStatus();
-        $response = sprintf('HTTP/%s %d %s' . PHP_EOL, $this->getVersion(), $status[0], $status[1]);
+        $response = sprintf('HTTP/%s %.1f %s' . PHP_EOL, $this->getVersion(), $status[0], $status[1]);
         foreach ($this->headers as $header => $value) {
             foreach ($value as $val) {
                 $response .= $header . ': ' . $val . PHP_EOL;
@@ -231,5 +233,18 @@ class Response implements ResponseInterface
         $header = str_replace('-', ' ', $header);
         $header = ucwords(strtolower($header));
         return str_replace(' ', '-', $header);
+    }
+
+    public function setVersion($version)
+    {
+        if (!is_float($version)) {
+            throw new \InvalidArgumentException('HTTP version for response should be float');
+        }
+        $this->version = $version;
+    }
+
+    public function getVersion()
+    {
+        return $this->version;
     }
 }
