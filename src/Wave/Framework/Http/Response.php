@@ -6,8 +6,6 @@ use Wave\Framework\Interfaces\Http\ResponseInterface;
 
 class Response implements ResponseInterface
 {
-    use Headers;
-
     private $codes = [
         // INFORMATIONAL CODES
         100 => 'Continue',
