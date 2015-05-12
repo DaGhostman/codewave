@@ -84,7 +84,7 @@ class Response implements ResponseInterface
      */
     public function __construct(array $headers = [])
     {
-        if (!empty($headers)) {
+        if (0 !== count($headers)) {
             $this->addHeaders($headers);
         }
     }
@@ -130,7 +130,7 @@ class Response implements ResponseInterface
      * header value or create/overwrite the header's value.
      *
      * @param string $header
-     * @param string $value
+     * @param string|array $value
      * @param bool   $append
      *
      * @return mixed
@@ -138,6 +138,7 @@ class Response implements ResponseInterface
     public function addHeader($header, $value, $append = true)
     {
         $header = $this->parseHeader($header);
+        /** @noinspection ArrayCastingEquivalentInspection */
         if (!is_array($value)) {
             $value = [$value];
         }
@@ -230,6 +231,6 @@ class Response implements ResponseInterface
 
     public function getVersion()
     {
-        return $this->version;
+        return (float) $this->version;
     }
 }
