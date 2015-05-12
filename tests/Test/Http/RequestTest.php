@@ -1,124 +1,152 @@
 <?php
 
-namespace Test\Http;
+namespace {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+}
 
-use Wave\Framework\Http\Request;
+namespace Test\Http {
 
-class RequestTest extends \PHPUnit_Framework_TestCase
-{
-    protected $server = [];
-    protected $url;
-    /**
-     * @type \Wave\Framework\Interfaces\Http\RequestInterface
-     */
-    protected $request;
+    use Wave\Framework\Http\Request;
 
-    protected function setUp()
+    class RequestTest extends \PHPUnit_Framework_TestCase
     {
-        parent::setUp();
-        $this->server = [
-            'method' => 'GET',
-            'url' => '/',
-            'HTTP_USER_AGENT' => 'UnitTest',
-            'x-legit-header' => 'OK'
-        ];
+        protected $server = [];
+        protected $url;
+        protected $query;
+        /**
+         * @type \Wave\Framework\Interfaces\Http\RequestInterface
+         */
+        protected $request;
 
-        $this->url = $this->getMockBuilder('\Wave\Framework\Http\Url')
-            ->disableOriginalConstructor()
-            ->setMethods(['getMethod', 'getPath'])
-            ->getMock();
+        protected function setUp()
+        {
+            parent::setUp();
+            $this->server = [
+                'method' => 'GET',
+                'url' => '/',
+                'HTTP_USER_AGENT' => 'UnitTest',
+                'x-legit-header' => 'OK'
+            ];
 
-        $this->request = new Request($this->server['method'], $this->url, $this->server);
-    }
+            $this->url = $this->getMockBuilder('\Wave\Framework\Http\Url')
+                ->disableOriginalConstructor()
+                ->setMethods(['getMethod', 'getPath', 'setScheme', 'setHost', 'setPort', 'setPath', 'setQuery'])
+                ->getMock();
 
-    public function testBadHttpMethod()
-    {
-        $this->setExpectedException('\InvalidArgumentException');
-        new Request('READ', $this->url);
-    }
+            $this->query = $this->getMockBuilder('\Wave\Framework\Http\Entities\Url\Query')
+                ->disableOriginalConstructor()
+                ->setMethods(['import', 'get'])
+                ->getMock();
 
-    public function testHeaderGetters()
-    {
-        $this->assertSame('UnitTest', $this->request->getHeader('HTTP_USER_AGENT'));
-        $this->assertSame('OK', $this->request->getHeader('x-legit-header'));
-        $this->assertNull($this->request->getHeader('non-existing-header'));
-    }
+            $this->request = new Request($this->server['method'], $this->url, $this->server);
+        }
 
-    public function testHeadersExistence()
-    {
-        $this->assertNotSame($this->server, $this->request->getHeaders());
-        $this->assertSame($this->server['HTTP_USER_AGENT'], $this->request->getHeader('HTTP_USER_AGENT'));
-        $this->assertSame($this->server['x-legit-header'], $this->request->getHeader('x-legit-header'));
-    }
+        public function testBadHttpMethod()
+        {
+            $this->setExpectedException('\InvalidArgumentException');
+            new Request('READ', $this->url);
+        }
 
-    public function testConstructorHeaders()
-    {
-        $req = new Request('GET', $this->url, [
-            'User-Agent' => 'UnitTest',
-            'x-legit-header' => 'OK',
-            'content-type' => 'text/plain'
-        ]);
+        public function testHeaderGetters()
+        {
+            $this->assertSame('UnitTest', $this->request->getHeader('HTTP_USER_AGENT'));
+            $this->assertSame('OK', $this->request->getHeader('x-legit-header'));
+            $this->assertNull($this->request->getHeader('non-existing-header'));
+        }
 
-        $this->assertTrue($req->hasHeader('USER-AGENT'));
-        $this->assertTrue($req->hasHeader('X-LEGIT-HEADER'));
-        $this->assertTrue($req->hasHeader('CONTENT-TYPE'));
+        public function testHeadersExistence()
+        {
+            $this->assertNotSame($this->server, $this->request->getHeaders());
+            $this->assertSame($this->server['HTTP_USER_AGENT'], $this->request->getHeader('HTTP_USER_AGENT'));
+            $this->assertSame($this->server['x-legit-header'], $this->request->getHeader('x-legit-header'));
+        }
 
-        $this->assertSame('UnitTest', $req->getHeader('user-agent'));
-        $this->assertSame('OK', $req->getHeader('x-legit-header'));
-        $this->assertSame('text/plain', $req->getHeader('content-type'));
-    }
+        public function testConstructorHeaders()
+        {
+            $req = new Request('GET', $this->url, [
+                'User-Agent' => 'UnitTest',
+                'x-legit-header' => 'OK',
+                'content-type' => 'text/plain'
+            ]);
 
-    public function testImmutability()
-    {
-        $hash = $request = new Request('GET', $this->url);
-        $request = $request->addHeader('Test', '55');
-        $this->assertNotSame($hash, $request);
+            $this->assertTrue($req->hasHeader('USER-AGENT'));
+            $this->assertTrue($req->hasHeader('X-LEGIT-HEADER'));
+            $this->assertTrue($req->hasHeader('CONTENT-TYPE'));
+
+            $this->assertSame('UnitTest', $req->getHeader('user-agent'));
+            $this->assertSame('OK', $req->getHeader('x-legit-header'));
+            $this->assertSame('text/plain', $req->getHeader('content-type'));
+        }
+
+        public function testImmutability()
+        {
+            $hash = $request = new Request('GET', $this->url);
+            $request = $request->addHeader('Test', '55');
+            $this->assertNotSame($hash, $request);
 
 
-    }
+        }
 
-    public function testHeaderAppending()
-    {
-        $request = $this->request->addHeader('x-legit-header', 'PERFECT');
-        $this->assertSame(['OK', 'PERFECT'], $request->getHeader('x-legit-header'));
-    }
-    public function testSetterOverwriting()
+        public function testHeaderAppending()
+        {
+            $request = $this->request->addHeader('x-legit-header', 'PERFECT');
+            $this->assertSame(['OK', 'PERFECT'], $request->getHeader('x-legit-header'));
+        }
 
-    {
-        $request = $this->request->addHeader('X-Legit-Header', 'PERFECT', false);
-        $this->assertSame('PERFECT', $request->getHeader('x-legit-header'));
-    }
+        public function testSetterOverwriting()
 
-    public function testMultiHeaderAppending()
-    {
-        $request = new Request('get', $this->url, []);
-        $request = $request->addHeaders([
-            'x-legit-headers' => ['PERFECTLY', 'WORKING'],
-            'x-legit-header' => '!!!'
-        ]);
+        {
+            $request = $this->request->addHeader('X-Legit-Header', 'PERFECT', false);
+            $this->assertSame('PERFECT', $request->getHeader('x-legit-header'));
+        }
 
-        $this->assertEquals(
-            ['X-Legit-Header' =>
-                 ['!!!'],
-             'X-Legit-Headers' =>
-                 ['PERFECTLY', 'WORKING']
-            ],
-            $request->getHeaders()
-        );
-    }
+        public function testMultiHeaderAppending()
+        {
+            $request = new Request('get', $this->url, []);
+            $request = $request->addHeaders([
+                'x-legit-headers' => ['PERFECTLY', 'WORKING'],
+                'x-legit-header' => '!!!'
+            ]);
 
-    public function testAdditionalGetters()
-    {
-        $this->assertEmpty($this->request->getBody());
-        $this->assertSame($this->url, $this->request->getUrl());
-        $this->assertSame('GET', $this->request->getMethod());
-    }
+            $this->assertEquals(
+                ['X-Legit-Header' =>
+                    ['!!!'],
+                    'X-Legit-Headers' =>
+                        ['PERFECTLY', 'WORKING']
+                ],
+                $request->getHeaders()
+            );
+        }
 
-    protected function tearDown()
-    {
-        parent::tearDown();
-        $this->server = null;
-        $this->request = null;
-        $this->url = null;
+        public function testAdditionalGetters()
+        {
+            $this->assertEmpty($this->request->getBody());
+            $this->assertSame($this->url, $this->request->getUrl());
+            $this->assertSame('GET', $this->request->getMethod());
+        }
+
+        public function testUrlBuilding()
+        {
+            $server = [
+                'SERVER_PORT' => 80,
+                'HTTPS' => 'off',
+                'SERVER_NAME' => 'localhost',
+                'REQUEST_URI' => '/index?param=value'
+            ];
+            //var_dump(get_class_methods($this->url));
+            $url = Request::buildUrl($this->url, $this->query, $server);
+
+            $this->assertInstanceOf('\Wave\Framework\Http\Url', $url);
+            $this->assertSame('https://localhost/index?param=value', (string)$url);
+        }
+
+        protected function tearDown()
+        {
+            parent::tearDown();
+            $this->server = null;
+            $this->request = null;
+            $this->url = null;
+        }
     }
 }
