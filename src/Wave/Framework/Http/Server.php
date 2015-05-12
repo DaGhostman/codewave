@@ -1,7 +1,6 @@
 <?php
 namespace Wave\Framework\Http;
 
-use Wave\Framework\Http\Entities\Url\Query;
 use Wave\Framework\Interfaces\Http\ResponseInterface;
 
 class Server
@@ -44,8 +43,11 @@ class Server
         $this->bufferLevel = ob_get_level();
 
 
-        $this->request = (new Request($source['REQUEST_METHOD'], $this->buildUrl($source)))
-            ->addHeaders($this->buildHeaders($source));
+        $this->request = new Request(
+            $source['REQUEST_METHOD'],
+            Request::buildUrl($source),
+            $this->buildHeaders($source)
+        );
 
         $this->response = new Response();
     }
@@ -139,24 +141,6 @@ class Server
     public function getResponse()
     {
         return $this->response;
-    }
-
-    private function buildUrl($server)
-    {
-        $url = new Url();
-
-        if ($server['SERVER_PORT'] === 443 ||
-            (isset($server['HTTPS']) && $server['HTTPS'] !== 'off' && !empty($server['HTTPS']))
-        ) {
-            $url = $url->setScheme('https');
-        }
-
-        $url = $url->setHost($server['SERVER_NAME'])
-            ->setPort((int) $server['SERVER_PORT'])
-            ->setPath(parse_url($server['REQUEST_URI'], PHP_URL_PATH))
-            ->setQuery(new Query(parse_url($server['REQUEST_URI'], PHP_URL_QUERY)));
-
-        return $url;
     }
 
     private function buildHeaders($server)

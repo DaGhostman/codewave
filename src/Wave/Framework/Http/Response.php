@@ -89,21 +89,6 @@ class Response implements ResponseInterface
         }
     }
 
-    public function __toString()
-    {
-        $status = $this->getStatus();
-        $response = sprintf('HTTP/%s %.1f %s' . PHP_EOL, $this->getVersion(), $status[0], $status[1]);
-        foreach ($this->headers as $header => $value) {
-            foreach ($value as $val) {
-                $response .= $header . ': ' . $val . PHP_EOL;
-            }
-        }
-        $response .= PHP_EOL . PHP_EOL;
-        $response .= (string) $this->body;
-
-        return $response;
-    }
-
     /**
      * Returns numeric array with the current status code and message
      *      0 => the status code

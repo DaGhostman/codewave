@@ -1,5 +1,7 @@
 <?php
 namespace Wave\Framework\Http\Entities\Parameters;
+use Wave\Framework\Interfaces\Http\RequestInterface;
+use Wave\Framework\Interfaces\Http\ParametersInterface;
 
 /**
  * Class JsonObject
@@ -8,14 +10,14 @@ namespace Wave\Framework\Http\Entities\Parameters;
  *
  * @package Wave\Framework\Http\Entities\Parameters
  */
-class JsonObject implements \ArrayAccess
+class Json implements ParametersInterface, \ArrayAccess
 {
     private $parameters = [];
 
-    public function __construct($string)
+    public function __construct(RequestInterface $request)
     {
-        if (strlen(trim($string)) > 0) {
-            $this->parameters = json_decode($string, true);
+        if (strlen(trim($request->getBody())) > 0) {
+            $this->parameters = json_decode($request->getBody(), true);
         }
     }
 

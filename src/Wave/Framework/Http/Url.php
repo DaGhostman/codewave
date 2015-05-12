@@ -15,12 +15,12 @@ class Url implements UrlInterface, \Serializable
         'http'  => 80
     ];
 
-    private $scheme    = '';
-    private $host      = '';
-    private $port      = 80;
-    private $path      = '/';
-    private $query     = '';
-    private $fragment  = '';
+    protected $scheme    = '';
+    protected $host      = '';
+    protected $port      = 80;
+    protected $path      = '/';
+    protected $query     = '';
+    protected $fragment  = '';
 
     public function serialize()
     {
@@ -33,6 +33,7 @@ class Url implements UrlInterface, \Serializable
             'fragment' => $this->fragment
         ]);
     }
+
     public function unserialize($data)
     {
         $data = unserialize($data);
@@ -179,7 +180,7 @@ class Url implements UrlInterface, \Serializable
 
 
         $self = clone $this;
-        $self->host = (int) $port;
+        $self->port = (int) $port;
 
         return $self;
     }
