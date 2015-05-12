@@ -98,5 +98,4 @@ interface ResponseInterface
      * @return float
      */
     public function getVersion();
-
 }
