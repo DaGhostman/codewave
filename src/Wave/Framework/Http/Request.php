@@ -85,10 +85,11 @@ class Request implements RequestInterface
             $url = $url->setScheme('https');
         }
 
+        parse_str(parse_url($server['REQUEST_URI'], PHP_URL_QUERY), $params);
         return $url->setHost($server['SERVER_NAME'])
             ->setPort((int) $server['SERVER_PORT'])
             ->setPath(parse_url($server['REQUEST_URI'], PHP_URL_PATH))
-            ->setQuery($query->import(parse_url($server['REQUEST_URI'], PHP_URL_QUERY)));
+            ->setQuery($query->import($params));
     }
 
     /**
