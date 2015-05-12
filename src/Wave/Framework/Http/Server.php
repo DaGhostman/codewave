@@ -7,12 +7,12 @@ use Wave\Framework\Interfaces\Http\ResponseInterface;
 class Server
 {
     /**
-     * @type Request
+     * @type RequestInterface
      */
     protected $request;
 
     /**
-     * @type Response
+     * @type ResponseInterface
      */
     protected $response;
 
@@ -22,9 +22,8 @@ class Server
     protected $callback;
 
     /**
-     * @param $request Request
+     * @type int
      */
-
     protected $bufferLevel;
 
     /**
