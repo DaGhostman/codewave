@@ -1,6 +1,7 @@
 <?php
 namespace Wave\Framework\Http;
 
+use Wave\Framework\Interfaces\Http\RequestInterface;
 use Wave\Framework\Interfaces\Http\ResponseInterface;
 
 class Server
@@ -32,10 +33,12 @@ class Server
      * And will construct a ResponseInterface object as linkable which is then picked
      * up by the application class and linked.
      *
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @param $source array
      *
      */
-    public function __construct(array $source = null)
+    public function __construct(RequestInterface $request, ResponseInterface $response, array $source = null)
     {
         if ($source === null) {
             $source = filter_input_array(INPUT_SERVER);
@@ -43,13 +46,8 @@ class Server
         $this->bufferLevel = ob_get_level();
 
 
-        $this->request = new Request(
-            $source['REQUEST_METHOD'],
-            Request::buildUrl($source),
-            $this->buildHeaders($source)
-        );
-
-        $this->response = new Response();
+        $this->request = $request->addHeaders($this->buildHeaders($source), false);
+        $this->response = $response;
     }
 
     /**
