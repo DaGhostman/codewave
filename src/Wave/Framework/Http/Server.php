@@ -3,8 +3,9 @@ namespace Wave\Framework\Http;
 
 use Wave\Framework\Interfaces\Http\RequestInterface;
 use Wave\Framework\Interfaces\Http\ResponseInterface;
+use Wave\Framework\Interfaces\Http\ServerInterface;
 
-class Server
+class Server implements ServerInterface
 {
     /**
      * @type RequestInterface
