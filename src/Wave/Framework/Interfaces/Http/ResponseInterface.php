@@ -76,4 +76,20 @@ interface ResponseInterface
      * @return int
      */
     public function getStatus();
+
+    /**
+     * Defines the HTTP version being used for the response
+     * @param $version
+     *
+     * @return float
+     */
+    public function setVersion($version);
+
+    /**
+     * Retrieve the version of HTTP being used
+     *
+     * @return float
+     */
+    public function getVersion();
+
 }
