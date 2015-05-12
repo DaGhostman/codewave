@@ -2,6 +2,7 @@
 /build
 /demo
 /docs
+/bin
 phpdoc.dist.xml
 *~
 .project
