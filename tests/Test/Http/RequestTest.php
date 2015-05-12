@@ -7,6 +7,8 @@ namespace {
 
 namespace Test\Http {
 
+    use Stub\MockQuery;
+    use Stub\MockUrl;
     use Wave\Framework\Http\Request;
 
     class RequestTest extends \PHPUnit_Framework_TestCase
@@ -29,15 +31,9 @@ namespace Test\Http {
                 'x-legit-header' => 'OK'
             ];
 
-            $this->url = $this->getMockBuilder('\Wave\Framework\Http\Url')
-                ->disableOriginalConstructor()
-                ->setMethods(['getMethod', 'getPath', 'setScheme', 'setHost', 'setPort', 'setPath', 'setQuery'])
-                ->getMock();
+            $this->url = new MockUrl();
 
-            $this->query = $this->getMockBuilder('\Wave\Framework\Http\Entities\Url\Query')
-                ->disableOriginalConstructor()
-                ->setMethods(['import', 'get'])
-                ->getMock();
+            $this->query = new MockQuery();
 
             $this->request = new Request($this->server['method'], $this->url, $this->server);
         }
@@ -130,15 +126,15 @@ namespace Test\Http {
         {
             $server = [
                 'SERVER_PORT' => 80,
-                'HTTPS' => 'off',
+                'HTTPS' => '1',
                 'SERVER_NAME' => 'localhost',
                 'REQUEST_URI' => '/index?param=value'
             ];
             //var_dump(get_class_methods($this->url));
             $url = Request::buildUrl($this->url, $this->query, $server);
 
-            $this->assertInstanceOf('\Wave\Framework\Http\Url', $url);
-            $this->assertSame('https://localhost/index?param=value', (string)$url);
+            $this->assertInstanceOf('\Wave\Framework\Interfaces\Http\UrlInterface', $url);
+            $this->assertSame('https://localhost/index?param=value', (string) $url);
         }
 
         protected function tearDown()

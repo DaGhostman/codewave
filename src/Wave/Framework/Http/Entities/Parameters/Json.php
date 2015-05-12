@@ -1,5 +1,6 @@
 <?php
 namespace Wave\Framework\Http\Entities\Parameters;
+
 use Wave\Framework\Interfaces\Http\RequestInterface;
 use Wave\Framework\Interfaces\Http\ParametersInterface;
 

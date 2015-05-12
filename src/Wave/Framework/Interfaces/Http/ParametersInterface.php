@@ -3,7 +3,6 @@
 
 namespace Wave\Framework\Interfaces\Http;
 
-
 interface ParametersInterface
 {
     public function __construct(RequestInterface $request);
