@@ -15,12 +15,12 @@ class Url implements UrlInterface, \Serializable
         'http'  => 80
     ];
 
-    protected $scheme    = '';
-    protected $host      = '';
-    protected $port      = 80;
-    protected $path      = '/';
-    protected $query     = '';
-    protected $fragment  = '';
+    private $scheme    = '';
+    private $host      = '';
+    private $port      = 80;
+    private $path      = '/';
+    private $query     = '';
+    private $fragment  = '';
 
     public function serialize()
     {
@@ -38,8 +38,8 @@ class Url implements UrlInterface, \Serializable
     {
         $data = unserialize($data);
         foreach ($data as $key => $value) {
-            if (property_exists($this, '_' . strtolower($key))) {
-                $this->{'_' . $key} = $value;
+            if (property_exists($this, $key)) {
+                $this->$key = $value;
             }
         }
     }
@@ -50,13 +50,19 @@ class Url implements UrlInterface, \Serializable
         $host = null,
         $port = null,
         $scheme = '',
-        $fragment = ''
+        $fragment = null
     ) {
         $this->path = $path;
         $this->query = $query;
 
         $this->host = (string) $host;
-        if (1 <= (int) $port && (int) $port <= 65535) {
+
+        if (!is_int($port) && null !== $port) {
+            throw new \InvalidArgumentException(
+                'Supplied port argument must be an integer'
+            );
+        }
+        if (1 <= $port && $port <= 65535) {
             $this->port = (int) $port;
         } else {
             if ($port !== null) {
@@ -166,7 +172,7 @@ class Url implements UrlInterface, \Serializable
 
     public function setPort($port)
     {
-        if (!is_int($port)) {
+        if (!is_int($port) && null !== $port) {
             throw new \InvalidArgumentException(
                 'Supplied port argument must be an integer'
             );
