@@ -202,6 +202,11 @@ class Response implements ResponseInterface
         return null;
     }
 
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+
     /**
      * Check if a header exists in the current set of headers
      *

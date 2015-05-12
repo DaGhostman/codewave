@@ -53,6 +53,13 @@ interface ResponseInterface
     public function getHeader($header);
 
     /**
+     * Returns all headers defined
+     *
+     * @return array
+     */
+    public function getHeaders();
+
+    /**
      * Check if a header exists in the current set of headers
      *
      * @param string $header
