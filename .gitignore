@@ -9,4 +9,4 @@ phpdoc.dist.xml
 .externalToolBuilders
 .settings
 composer.lock
-./legacy/*
+.idea
