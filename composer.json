@@ -9,7 +9,8 @@
   },
   "prefer-stable": true,
   "suggest": {
-    "phroute/phroute": "2.0.*"
+    "phroute/phroute": "2.0.*",
+    "psr/log": "1.0.0"
   },
   "license": "MIT",
   "authors": [
@@ -28,10 +29,6 @@
       "Stub\\": "tests",
       "Test\\": "tests"
     }
-  },
-  "require": {
-    "phroute/phroute": "2.0.0",
-    "psr/log": "1.0.0"
   },
   "require-dev": {
     "phpunit/phpunit": "*@stable",
