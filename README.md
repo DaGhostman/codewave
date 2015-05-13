@@ -24,11 +24,9 @@ There ware bad decisions made, and supported and eventually they ate the version
  
 ## Notable features in v3
  - Huge decoupling: this was supposed to be the case even in v2, but as I said above: 'There ware bad decisions made, and supported'
- - 1-to-Many links: A `Destination` object gets updated when every of the `Linkable` using value objects
  - Swappable routing: The route dispatcher is instantiated using a callback, which allows it to be changed with almost everything.
  - Semi-middleware (Value Middleware, i.e Decorators): These decorators, are more of value decorators, as their intent is to allow, developers to
- reuse common logic, like decoding a base64 encoded json string and returning the json array/object(it is a minimal example).
- - DI package, a container and resolver, which can be used together or independently from each other.
+ reuse common logic, like decoding a base64 encoded json string and returning the json array/object(it is a minimal example). [ WIP :construction: ]
  
 ## Installation
 Just add `"codewave/codewave": "@stable"` to your composer.json required section and use `composer update` to install
