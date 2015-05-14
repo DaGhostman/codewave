@@ -98,4 +98,11 @@ interface ResponseInterface
      * @return float
      */
     public function getVersion();
+
+    /**
+     * Return the contents of the Object body
+     *
+     * @return mixed
+     */
+    public function getBody();
 }

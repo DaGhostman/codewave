@@ -202,6 +202,10 @@ class Response implements ResponseInterface
         return null;
     }
 
+    /**
+     * Retrieve all headers
+     * @return array
+     */
     public function getHeaders()
     {
         return $this->headers;
@@ -219,6 +223,13 @@ class Response implements ResponseInterface
         return array_key_exists($this->parseHeader($header), $this->headers);
     }
 
+    /**
+     * Performs necessary transformation on header names to make them valid HTTP header names
+     *
+     * @param $header
+     *
+     * @return mixed
+     */
     private function parseHeader($header)
     {
         $header = str_replace('-', ' ', $header);
@@ -226,6 +237,12 @@ class Response implements ResponseInterface
         return str_replace(' ', '-', $header);
     }
 
+    /**
+     * Sets the HTTP version to use
+     *
+     * @param float $version
+     * @return void
+     */
     public function setVersion($version)
     {
         if (!is_float($version)) {
@@ -234,8 +251,26 @@ class Response implements ResponseInterface
         $this->version = $version;
     }
 
+    /**
+     * Returns the HTTP version of the response
+     *
+     * @return float
+     */
     public function getVersion()
     {
         return (float) $this->version;
+    }
+
+    /**
+     * Retrieve the contents of the response body.
+     *
+     * At the current implementation this defaults to php://memory,
+     * which is where the server writes all data
+     *
+     * @return string
+     */
+    public function getBody()
+    {
+        return file_get_contents('php://memory');
     }
 }
