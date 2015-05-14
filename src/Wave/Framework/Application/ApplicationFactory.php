@@ -98,6 +98,12 @@ class ApplicationFactory
     public function build(UrlInterface $url)
     {
         $requestReflection = new \ReflectionClass($this->requestClass);
+        if (!$requestReflection->implementsInterface('\Wave\Framework\Interfaces\Http\RequestInterface')) {
+            throw new \RuntimeException(sprintf(
+                'The request class needs to implement \Wave\Framework\Interfaces\Http\RequestInterface'
+            ));
+        }
+
         $request = $requestReflection->newInstance(
             $this->serverVariables['REQUEST_METHOD'],
             $url,
@@ -105,29 +111,22 @@ class ApplicationFactory
             $this->requestBodySource
         );
 
-        if (!$request instanceof RequestInterface) {
-            throw new \RuntimeException(sprintf(
-                'The request class needs to implement \Wave\Framework\Interfaces\Http\RequestInterface'
-            ));
-        }
-
         $responseReflection = new \ReflectionClass($this->responseClass);
-        $response = $responseReflection->newInstance();
-
-        if (!$response instanceof ResponseInterface) {
+        if (!$responseReflection->implementsInterface('\Wave\Framework\Interfaces\Http\ResponseInterface')) {
             throw new \RuntimeException(sprintf(
                 'The response class needs to implement \Wave\Framework\Interfaces\Http\ResponseInterface'
             ));
         }
+        $response = $responseReflection->newInstance();
 
         $serverReflection = new \ReflectionClass($this->serverClass);
-        $server = $serverReflection->newInstance($request, $response, $this->serverVariables);
-
-        if (!$server instanceof RequestInterface) {
+        if (!$serverReflection->implementsInterface('\Wave\Framework\Interfaces\Http\ServerInterface')) {
             throw new \RuntimeException(sprintf(
                 'The request class needs to implement \Wave\Framework\Interfaces\Http\ServerInterface'
             ));
         }
+        $server = $serverReflection->newInstance($request, $response, $this->serverVariables);
+
 
         return $server;
     }
