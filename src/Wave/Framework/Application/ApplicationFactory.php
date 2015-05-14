@@ -1,8 +1,6 @@
 <?php
 namespace Wave\Framework\Application;
 
-use Wave\Framework\Interfaces\Http\RequestInterface;
-use Wave\Framework\Interfaces\Http\ResponseInterface;
 use Wave\Framework\Interfaces\Http\UrlInterface;
 
 class ApplicationFactory
