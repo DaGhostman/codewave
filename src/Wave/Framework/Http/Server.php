@@ -67,7 +67,7 @@ class Server implements ServerInterface
 
         $result = call_user_func($callback, $this->request, $this->response);
 
-        if (is_array($result) || (is_object($result) && $result instanceof ResponseInterface) || is_callable($result)) {
+        if (!is_string($result) && null !== $result) {
             throw new \RuntimeException(
                 sprintf(
                     'Unexpected result type "%s" from callback,' .
@@ -78,6 +78,7 @@ class Server implements ServerInterface
         }
 
         echo $result;
+
 
         $this->send();
     }
@@ -93,10 +94,18 @@ class Server implements ServerInterface
 
         if (ob_get_length() > 0) {
             while (ob_get_level() >= $this->bufferLevel) {
-                ob_get_flush();
+                $this->bufferWrite(ob_get_clean());
             }
         }
         $this->bufferLevel = null;
+    }
+
+    private function bufferWrite($contents)
+    {
+        $fp = fopen('php://memory', 'a');
+        flock($fp, LOCK_EX);
+        fwrite($fp, $contents);
+        flock($fp, LOCK_UN);
     }
 
     /**
@@ -118,7 +127,6 @@ class Server implements ServerInterface
         ), true, $status[0]);
 
         foreach ($response->getHeaders() as $name => $values) {
-            //$name  = $this->filterHeader($header);
             $first = true;
             foreach ($values as $value) {
                 header(sprintf(
