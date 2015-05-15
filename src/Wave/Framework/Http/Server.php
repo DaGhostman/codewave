@@ -4,8 +4,10 @@ namespace Wave\Framework\Http;
 use Wave\Framework\Interfaces\Http\RequestInterface;
 use Wave\Framework\Interfaces\Http\ResponseInterface;
 use Wave\Framework\Interfaces\Http\ServerInterface;
+use Wave\Framework\Helper\MiddlewareAware;
+use Wave\Framework\Interfaces\Middleware\MiddlewareInterface;
 
-class Server implements ServerInterface
+class Server extends MiddlewareAware implements ServerInterface
 {
     /**
      * @type RequestInterface
@@ -26,6 +28,8 @@ class Server implements ServerInterface
      * @type int
      */
     protected $bufferLevel;
+
+    private $middleware = [];
 
     /**
      * Accepts a request object and switches it's Stream to 'php://input',
@@ -51,34 +55,28 @@ class Server implements ServerInterface
     }
 
     /**
-     * Starts output buffering with `ob_gzhandler` and
-     * invokes the callback provided in Wave::run
+     * Responsible for invoking the $callback as well as trigger the
+     * middleware stack. Note that the middleware is running as if
+     * going through layers of onion, the layer you first enter is
+     * the one which you pass before you exit.
+     *
      *
      * @param callable $callback
      * @return $this
      */
     public function listen(callable $callback = null)
     {
-
-
-        if (!headers_sent()) {
-            ob_start('ob_gzhandler');
+        // Invoke the middleware stack, as FIFO
+        foreach ($this->middleware as $middleware) {
+            $middleware->before($this->request);
         }
 
-        $result = call_user_func($callback, $this->request, $this->response);
+        call_user_func($callback, $this->request, $this->response);
 
-        if (!is_string($result) && null !== $result) {
-            throw new \RuntimeException(
-                sprintf(
-                    'Unexpected result type "%s" from callback,' .
-                    ' valid return types are all except: callable, array, object',
-                    gettype($result)
-                )
-            );
+        // Invoke the middleware stack as LIFO
+        foreach (array_reverse($this->middleware) as $middleware) {
+            $middleware->after($this->response);
         }
-
-        echo $result;
-
 
         $this->send();
     }
@@ -92,20 +90,7 @@ class Server implements ServerInterface
             $this->sendHeaders();
         }
 
-        if (ob_get_length() > 0) {
-            while (ob_get_level() >= $this->bufferLevel) {
-                $this->bufferWrite(ob_get_clean());
-            }
-        }
-        $this->bufferLevel = null;
-    }
-
-    private function bufferWrite($contents)
-    {
-        $fp = fopen('php://memory', 'a');
-        flock($fp, LOCK_EX);
-        fwrite($fp, $contents);
-        flock($fp, LOCK_UN);
+        echo $this->response->getBody();
     }
 
     /**
@@ -147,6 +132,11 @@ class Server implements ServerInterface
     public function getResponse()
     {
         return $this->response;
+    }
+
+    public function addMiddleware(MiddlewareInterface $middleware)
+    {
+        array_push($this->middleware, $middleware);
     }
 
     private function buildHeaders($server)
