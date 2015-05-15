@@ -117,10 +117,8 @@ class Response implements ResponseInterface
             ));
         }
 
-        $self = clone $this;
-        $self->status = $code;
-
-        return $self;
+        $this->status = $code;
+        return $this;
     }
 
     /**
@@ -271,6 +269,11 @@ class Response implements ResponseInterface
      */
     public function getBody()
     {
-        return file_get_contents('php://memory');
+        return $this->body;
+    }
+
+    public function setBody($body)
+    {
+        $this->body = $body;
     }
 }

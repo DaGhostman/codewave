@@ -15,7 +15,6 @@ class Request implements RequestInterface
     protected $headers = [];
     protected $version = 'HTTP/1.1';
 
-
     private $methods = [
         'CONNECT',
         'HEAD',
