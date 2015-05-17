@@ -54,7 +54,7 @@ class ApplicationFactory
      *
      * @return $this
      */
-    public function setResponseClass($class)
+    public function setResponse($class)
     {
         $this->checkClass($class);
         $this->responseClass = $class;
@@ -68,11 +68,11 @@ class ApplicationFactory
      * Note that the class name that is passed to this method needs to implement the ServerInterface,
      * otherwise when constructing the server object (the point at which all classes get instantiated)
      * an RuntimeException is thrown.
-     * @param $class
+     * @param string $class
      *
      * @return $this
      */
-    public function setServerClass($class)
+    public function setServer($class)
     {
         $this->checkClass($class);
         $this->serverClass = $class;
@@ -120,7 +120,7 @@ class ApplicationFactory
         $serverReflection = new \ReflectionClass($this->serverClass);
         if (!$serverReflection->implementsInterface('\Wave\Framework\Interfaces\Http\ServerInterface')) {
             throw new \RuntimeException(sprintf(
-                'The request class needs to implement \Wave\Framework\Interfaces\Http\ServerInterface'
+                'The server class needs to implement \Wave\Framework\Interfaces\Http\ServerInterface'
             ));
         }
         $server = $serverReflection->newInstance($request, $response, $this->serverVariables);
