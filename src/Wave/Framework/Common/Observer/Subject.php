@@ -2,6 +2,11 @@
 
 namespace Wave\Framework\Common\Observer;
 
+/**
+ * Class Subject
+ *
+ * @package Wave\Framework\Common\Observer
+ */
 class Subject
 {
     /**
@@ -13,18 +18,21 @@ class Subject
      * Notifies the observers that an $event has occurred.
      *
      * @param string $event
-     * @param array $args
+     * @param array $context
      */
-    public function notify($event, $args = [])
+    public function notify($event, array $context = [])
     {
         /**
          * @var $observer Observer
          */
         foreach ($this->observers as $observer) {
-            $observer->trigger($event, $args);
+            $observer->trigger($event, $context);
         }
     }
 
+    /**
+     * @param \Wave\Framework\Common\Observer\Observer $observer
+     */
     public function addObserver(Observer $observer)
     {
         $this->observers[] = $observer;
