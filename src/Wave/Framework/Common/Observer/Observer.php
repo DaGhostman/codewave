@@ -6,27 +6,42 @@ class Observer
 {
     protected $subscriptions = [];
 
-    public function __construct(Subject $subject)
+    /**
+     * @param \Wave\Framework\Common\Observer\Subject $subject
+     */
+    public function __construct(Subject $subject = null)
     {
-        $subject->addObserver($this);
+        if (null !== $subject) {
+            $subject->addObserver($this);
+        }
     }
 
-    public function subscribe($event, $callback)
+    /**
+     * @param string $event
+     * @param callable $callback
+     *
+     * @return $this
+     */
+    public function subscribe($event, callable $callback)
     {
         if (!array_key_exists($event, $this->subscriptions)) {
             $this->subscriptions[$event] = [];
         }
 
-        array_push($this->subscriptions[$event], $callback);
+        $this->subscriptions[$event][] = $callback;
 
         return $this;
     }
 
-    public function trigger($event, $args = [])
+    /**
+     * @param string $event
+     * @param array $context
+     */
+    public function trigger($event, array $context = [])
     {
         if (array_key_exists($event, $this->subscriptions)) {
             foreach ($this->subscriptions[$event] as $callback) {
-                call_user_func_array($callback, $args);
+                call_user_func_array($callback, $context);
             }
         }
     }
