@@ -17,7 +17,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $this->repo = Repository::getInstance(['stub1' => 'demo']);
     }
 
-    public function testRepositoryBootstrapping ()
+    public function testRepositoryBootstrapping()
     {
         $this->assertSame('demo', $this->repo['stub1']);
         $this->assertSame('demo', $this->repo->invoke('stub1'));
@@ -63,11 +63,58 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
 
     public function testStaticDefinitions()
     {
-        $this->assertTrue($this->repo->singleton('test', function() {
+        $this->assertTrue($this->repo->singleton('test', function () {
             return 'OK';
         }));
 
         $this->assertSame('OK', $this->repo->test());
+    }
+
+    public function testStaticDefinitionException()
+    {
+        $this->setExpectedException('\Wave\Framework\Exceptions\DuplicateKeyException');
+        $this->repo->singleton('singleton', function () {});
+        $this->repo->singleton('singleton', function () {});
+    }
+
+    public function testBinds()
+    {
+        $this->expectOutputString('Hello, World!');
+        $this->repo->bind('bind', function() { echo 'Hello, World!'; });
+
+        $this->repo->invoke('bind');
+    }
+
+    public function testBindException()
+    {
+        $this->setExpectedException('\Wave\Framework\Exceptions\DuplicateKeyException');
+        $this->repo->bind('bind', function(){});
+        $this->repo->bind('bind', function(){});
+    }
+
+    public function testSingletonMagicCall()
+    {
+        $this->repo->bind('test', function() {return true;});
+        $this->assertTrue(Repository::test());
+    }
+
+    public function testArrayAccessSetter()
+    {
+        $this->repo['test'] = function() { return true; };
+        $this->assertTrue($this->repo->invoke('test'));
+    }
+
+    public function testArrayAccessUnset()
+    {
+        $this->repo->bind('test', function() {});
+        unset($this->repo['test']);
+        $this->assertFalse(isset($this->repo['test']));
+    }
+
+    public function testRemoveException()
+    {
+        $this->setExpectedException('\Wave\Framework\Exceptions\InvalidKeyException');
+        $this->repo->remove('bad-key');
     }
 
     protected function tearDown()

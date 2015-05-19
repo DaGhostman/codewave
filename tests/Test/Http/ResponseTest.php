@@ -93,4 +93,17 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('\InvalidArgumentException');
         $this->response->setVersion(3);
     }
+
+    public function testListOfHeaders()
+    {
+        $this->response->addHeader('x-header', 'value');
+        $this->assertSame(['X-Header' => ['value']], $this->response->getHeaders());
+    }
+
+    public function testBodyGetterAndSetter()
+    {
+        $this->assertSame('', $this->response->getBody());
+        $this->assertNull($this->response->setBody('content'));
+        $this->assertSame('content', $this->response->getBody());
+    }
 }
