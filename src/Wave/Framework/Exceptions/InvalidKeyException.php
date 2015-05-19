@@ -1,6 +1,6 @@
 <?php
 
-namespace Wave\Framework\Http\Exceptions;
+namespace Wave\Framework\Exceptions;
 
 class InvalidKeyException extends \Exception
 {

@@ -1,6 +1,7 @@
 <?php
 namespace Wave\Framework\Http\Entities\Parameters;
 
+use Wave\Framework\Exceptions\InvalidKeyException;
 use Wave\Framework\Interfaces\Http\RequestInterface;
 use Wave\Framework\Interfaces\Http\ParametersInterface;
 
@@ -31,14 +32,14 @@ class Json implements ParametersInterface, \ArrayAccess
      * Retrieve entry based on $name
      *
      * @param $name string
-     * @throws \InvalidArgumentException
+     * @throws \Wave\Framework\Exceptions\InvalidKeyException
      *
      * @return mixed
      */
     public function fetch($name)
     {
         if (!$this->has($name)) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidKeyException(sprintf(
                 'Key %s does not exist in list of parameters',
                 $name
             ));
@@ -85,13 +86,13 @@ class Json implements ParametersInterface, \ArrayAccess
      * an exception is thrown
      *
      * @param $name string
-     * @throws \InvalidArgumentException
+     * @throws \Wave\Framework\Exceptions\InvalidKeyException
      * @return null
      */
     public function remove($name)
     {
         if (!$this->has($name)) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidKeyException(sprintf(
                 'Key %s does not exist in list of parameters',
                 $name
             ));

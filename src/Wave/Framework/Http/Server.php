@@ -5,9 +5,10 @@ use Wave\Framework\Interfaces\Http\RequestInterface;
 use Wave\Framework\Interfaces\Http\ResponseInterface;
 use Wave\Framework\Interfaces\Http\ServerInterface;
 use Wave\Framework\Helper\MiddlewareAware;
+use Wave\Framework\Interfaces\Middleware\MiddlewareAwareInterface;
 use Wave\Framework\Interfaces\Middleware\MiddlewareInterface;
 
-class Server extends MiddlewareAware implements ServerInterface
+class Server implements ServerInterface, MiddlewareAwareInterface
 {
     /**
      * @type RequestInterface

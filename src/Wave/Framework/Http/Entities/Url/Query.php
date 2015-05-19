@@ -2,7 +2,7 @@
 
 namespace Wave\Framework\Http\Entities\Url;
 
-use Wave\Framework\Http\Exceptions\InvalidKeyException;
+use Wave\Framework\Exceptions\InvalidKeyException;
 use Wave\Framework\Interfaces\Http\QueryInterface;
 
 class Query implements QueryInterface, \Countable

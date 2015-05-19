@@ -1,6 +1,9 @@
 <?php
 namespace Wave\Framework\Common;
 
+use \Wave\Framework\Exceptions\DuplicateKeyException;
+use Wave\Framework\Exceptions\InvalidKeyException;
+
 /**
  * Class Repository should server as a *very simple* DI container,
  * which can contain application logic which needs to be reused
@@ -67,8 +70,8 @@ class Repository implements \ArrayAccess, \Countable
     public function singleton($name, callable $callback)
     {
         if (array_key_exists($name, $this->storage)) {
-            throw new \RuntimeException(
-                sprintf('Unable to override %s')
+            throw new DuplicateKeyException(
+                sprintf('Name %s already defined', $name)
             );
         }
 
@@ -80,8 +83,8 @@ class Repository implements \ArrayAccess, \Countable
     public function bind($name, callable $callback)
     {
         if (array_key_exists($name, $this->storage)) {
-            throw new \InvalidArgumentException(
-                sprintf('Name %s already registered', $name)
+            throw new DuplicateKeyException(
+                sprintf('Name %s already defined', $name)
             );
         }
 
@@ -90,9 +93,9 @@ class Repository implements \ArrayAccess, \Countable
 
     public function remove($name)
     {
-        if (!array_key_exists($name, $this->storage[$name])) {
-            throw new \InvalidArgumentException(
-                sprintf('Cannot unset not existing declaration %s', $name)
+        if (!array_key_exists($name, $this->storage)) {
+            throw new InvalidKeyException(
+                sprintf('Cannot unset non existing declaration %s', $name)
             );
         }
 
