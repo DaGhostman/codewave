@@ -103,7 +103,7 @@ class Url implements UrlInterface, \Serializable
             $format .= '?{query}';
         }
 
-        if ($this->fragment !== '') {
+        if ($this->fragment !== '' && $this->fragment !== null) {
             $format .= '#{fragment}';
         }
 
