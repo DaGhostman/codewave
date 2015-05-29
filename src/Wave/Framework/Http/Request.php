@@ -10,7 +10,7 @@ class Request implements RequestInterface
 {
     private $method;
     private $url;
-    private $body;
+    private $body = 'php://input';
 
     protected $headers = [];
     protected $version = 'HTTP/1.1';
@@ -39,7 +39,7 @@ class Request implements RequestInterface
      * @param array               $headers Array of headers to set up on construction
      * @param string              $body    The stream from which to get the HTTP body, defaults to 'php://input'
      */
-    public function __construct($method, UrlInterface $uri, array $headers = [], $body = 'php://input')
+    public function __construct($method, UrlInterface $uri, array $headers = [], $body = null)
     {
         $method = strtoupper($method);
         if (!$this->isValidMethod($method)) {
@@ -60,7 +60,9 @@ class Request implements RequestInterface
 
         $this->url = $uri;
 
-        $this->body = $body;
+        if (!is_null($body)) {
+            $this->body = $body;
+        }
     }
 
     /**
