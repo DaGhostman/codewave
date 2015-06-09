@@ -105,7 +105,7 @@ class Server implements ServerInterface, MiddlewareAwareInterface
         $status = $response->getStatus();
 
         header(sprintf(
-            'HTTP/%s %d %s',
+            'HTTP/%0.1f %d %s',
             $response->getVersion(),
             $status[0],
             $status[1]
