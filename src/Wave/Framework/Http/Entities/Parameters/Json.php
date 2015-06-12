@@ -140,7 +140,7 @@ class Json implements ParametersInterface, \ArrayAccess
      */
     public function offsetGet($offset)
     {
-        return $this->fetch($offset);
+        return $this->get($offset);
     }
 
     /**
