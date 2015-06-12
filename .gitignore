@@ -1,6 +1,6 @@
 /vendor/
 /build
-/demo
+/demo/*
 /docs
 /bin
 phpdoc.dist.xml
@@ -9,5 +9,4 @@ phpdoc.dist.xml
 .buildpath
 .externalToolBuilders
 .settings
-composer.lock
 .idea

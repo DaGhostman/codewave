@@ -36,7 +36,7 @@ class Json implements ParametersInterface, \ArrayAccess
      *
      * @return mixed
      */
-    public function fetch($name)
+    public function get($name)
     {
         if (!$this->has($name)) {
             throw new InvalidKeyException(sprintf(
@@ -99,6 +99,11 @@ class Json implements ParametersInterface, \ArrayAccess
         }
 
         unset($this->parameters[$name]);
+    }
+
+    public function export()
+    {
+        return $this->parameters;
     }
 
     /**

@@ -3,12 +3,19 @@
 namespace Wave\Framework\Http\Entities\Url;
 
 use Wave\Framework\Exceptions\InvalidKeyException;
+use Wave\Framework\Interfaces\Http\ParametersInterface;
 use Wave\Framework\Interfaces\Http\QueryInterface;
 
-class Query implements QueryInterface, \Countable
+class Query implements ParametersInterface, QueryInterface, \Countable, \Serializable
 {
     private $parts = [];
 
+    /**
+     * Allows constructor injection of the query string,
+     * or already parsed array with parameters.
+     *
+     * @param string|array $query
+     */
     public function __construct($query = '')
     {
         if (is_array($query)) {
@@ -70,6 +77,11 @@ class Query implements QueryInterface, \Countable
         return $self;
     }
 
+    public function export()
+    {
+        return $this->parts;
+    }
+
     public function __toString()
     {
         $query = [];
@@ -83,5 +95,15 @@ class Query implements QueryInterface, \Countable
     public function count()
     {
         return count($this->parts);
+    }
+
+    public function serialize()
+    {
+        return serialize($this->parts);
+    }
+
+    public function unserialize($string)
+    {
+        $this->parts = unserialize($string);
     }
 }
