@@ -67,6 +67,9 @@ class Server implements ServerInterface, MiddlewareAwareInterface
     public function listen(callable $callback = null)
     {
         // Invoke the middleware stack, as FIFO
+        /**
+         * @var $middleware MiddlewareInterface
+         */
         foreach ($this->middleware as $middleware) {
             $middleware->before($this->request);
         }
@@ -134,9 +137,16 @@ class Server implements ServerInterface, MiddlewareAwareInterface
         return $this->response;
     }
 
+    /**
+     * Adds middleware instances to the middleware stack
+     *
+     * @param \Wave\Framework\Interfaces\Middleware\MiddlewareInterface $middleware
+     *
+     * @return null
+     */
     public function addMiddleware(MiddlewareInterface $middleware)
     {
-        array_push($this->middleware, $middleware);
+        $this->middleware[] = $middleware;
     }
 
     private function buildHeaders($server)

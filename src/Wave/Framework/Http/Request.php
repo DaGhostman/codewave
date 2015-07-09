@@ -6,6 +6,10 @@ use Wave\Framework\Interfaces\Http\QueryInterface;
 use Wave\Framework\Interfaces\Http\RequestInterface;
 use Wave\Framework\Interfaces\Http\UrlInterface;
 
+/**
+ * Class Request
+ * @package Wave\Framework\Http
+ */
 class Request implements RequestInterface
 {
     private $method;
@@ -38,6 +42,8 @@ class Request implements RequestInterface
      * @param UrlInterface $uri     Object or string
      * @param array               $headers Array of headers to set up on construction
      * @param string              $body    The stream from which to get the HTTP body, defaults to 'php://input'
+     *
+     * @throws \InvalidArgumentException
      */
     public function __construct($method, UrlInterface $uri, array $headers = [], $body = 'php://input')
     {
@@ -79,7 +85,7 @@ class Request implements RequestInterface
     public static function buildUrl(UrlInterface $url, QueryInterface $query, array $server)
     {
         if ($server['SERVER_PORT'] === 443 ||
-            (isset($server['HTTPS']) && $server['HTTPS'] !== 'off' && !empty($server['HTTPS']))
+            (array_key_exists('HTTPS', $server) && $server['HTTPS'] !== 'off' && !empty($server['HTTPS']))
         ) {
             $url = $url->setScheme('https');
         }
@@ -101,7 +107,7 @@ class Request implements RequestInterface
      * new instance of the object with the new value added.
      *
      * @param string $header
-     * @param string $value
+     * @param mixed $value <string|array>
      * @param bool   $append
      *
      * @return mixed

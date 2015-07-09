@@ -39,6 +39,8 @@ class Repository implements \ArrayAccess, \Countable
 
     /**
      * Prevent object cloning
+     *
+     * @throws \LogicException
      */
     private function __clone()
     {
@@ -138,11 +140,33 @@ class Repository implements \ArrayAccess, \Countable
         return $this->invoke($name, $args);
     }
 
+    /**
+     * (PHP 5 &gt;= 5.1.0)<br/>
+     * Count elements of an object
+     * @link http://php.net/manual/en/countable.count.php
+     * @return int The custom count as an integer.
+     * </p>
+     * <p>
+     * The return value is cast to an integer.
+     */
     public function count()
     {
         return count($this->storage);
     }
 
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Offset to set
+     * @link http://php.net/manual/en/arrayaccess.offsetset.php
+     * @param mixed $name
+     * @param mixed $value <p>
+     * The value to set.
+     * </p>
+     * @throws DuplicateKeyException
+     * @internal param mixed $offset <p>
+     * The offset to assign the value to.
+     * </p>
+     */
     public function offsetSet($name, $value)
     {
         if (is_callable($value)) {
@@ -150,11 +174,35 @@ class Repository implements \ArrayAccess, \Countable
         }
     }
 
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Offset to retrieve
+     * @link http://php.net/manual/en/arrayaccess.offsetget.php
+     * @param mixed $name
+     * @throws \RuntimeException
+     * @throws \LogicException
+     * @return mixed Can return all value types.
+     * @internal param mixed $offset The offset to retrieve.
+     *
+     */
     public function offsetGet($name)
     {
         return $this->invoke($name);
     }
 
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Whether a offset exists
+     * @link http://php.net/manual/en/arrayaccess.offsetexists.php
+     * @param mixed $name
+     * @return bool true on success or false on failure.
+     * </p>
+     * <p>
+     * The return value will be casted to boolean if non-boolean was returned.
+     * @internal param mixed $offset <p>
+     * An offset to check for.
+     * </p>
+     */
     public function offsetExists($name)
     {
         if (self::$instance) {
@@ -164,6 +212,15 @@ class Repository implements \ArrayAccess, \Countable
         return false;
     }
 
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Offset to unset
+     * @link http://php.net/manual/en/arrayaccess.offsetunset.php
+     * @param mixed $name
+     * The offset to unset.
+     * </p>
+     * @return void
+     */
     public function offsetUnset($name)
     {
         $this->remove($name);

@@ -31,6 +31,8 @@ class ApplicationFactory
      * @param array $headers array of pre-configured headers inject to the object
      * @param string $body The stream to use when retrieving the request's body, defaults to 'php://input'
      *
+     * @throws \InvalidArgumentException
+     *
      * @return $this
      */
     public function setRequest($class, array $headers = [], $body = 'php://input')
@@ -52,6 +54,8 @@ class ApplicationFactory
      *
      * @param string $class The class name
      *
+     * @throws \InvalidArgumentException
+     *
      * @return $this
      */
     public function setResponse($class)
@@ -69,6 +73,8 @@ class ApplicationFactory
      * otherwise when constructing the server object (the point at which all classes get instantiated)
      * an RuntimeException is thrown.
      * @param string $class
+     *
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -132,6 +138,8 @@ class ApplicationFactory
     /**
      * A minimal method to avoid repeating the check and if the class exists
      * and throw exception
+     *
+     * @throws \InvalidArgumentException
      *
      * @param $class string
      */

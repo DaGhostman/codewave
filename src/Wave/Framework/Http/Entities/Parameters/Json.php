@@ -131,6 +131,8 @@ class Json implements ParametersInterface, \ArrayAccess
      *                      The offset to retrieve.
      *                      </p>
      *
+     * @throws InvalidKeyException
+     *
      * @return mixed Can return all value types.
      */
     public function offsetGet($offset)
@@ -167,6 +169,8 @@ class Json implements ParametersInterface, \ArrayAccess
      * @param mixed $offset <p>
      *                      The offset to unset.
      *                      </p>
+     *
+     * @throws InvalidKeyException
      *
      * @return void
      */

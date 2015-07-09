@@ -106,6 +106,8 @@ class Response implements ResponseInterface
      *
      * @param int $code
      *
+     * @throws \InvalidArgumentException
+     *
      * @return mixed
      */
     public function setStatus($code)
@@ -239,6 +241,9 @@ class Response implements ResponseInterface
      * Sets the HTTP version to use
      *
      * @param float $version
+     *
+     * @throws \InvalidArgumentException
+     *
      * @return void
      */
     public function setVersion($version)

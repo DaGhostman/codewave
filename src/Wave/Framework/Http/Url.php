@@ -5,6 +5,10 @@ namespace Wave\Framework\Http;
 use Wave\Framework\Interfaces\Http\QueryInterface;
 use Wave\Framework\Interfaces\Http\UrlInterface;
 
+/**
+ * Class Url
+ * @package Wave\Framework\Http
+ */
 class Url implements UrlInterface, \Serializable
 {
     const SCHEME_NORM   = 'http';
@@ -22,6 +26,12 @@ class Url implements UrlInterface, \Serializable
     private $query     = '';
     private $fragment  = '';
 
+    /**
+     * (PHP 5 &gt;= 5.1.0)<br/>
+     * String representation of object
+     * @link http://php.net/manual/en/serializable.serialize.php
+     * @return string the string representation of the object or null
+     */
     public function serialize()
     {
         return serialize([
@@ -34,6 +44,15 @@ class Url implements UrlInterface, \Serializable
         ]);
     }
 
+    /**
+     * (PHP 5 &gt;= 5.1.0)<br/>
+     * Constructs the object
+     * @link http://php.net/manual/en/serializable.unserialize.php
+     * @param string $data
+     * @internal param string $serialized <p>
+     * The string representation of the object.
+     * </p>
+     */
     public function unserialize($data)
     {
         $data = unserialize($data);
@@ -44,6 +63,23 @@ class Url implements UrlInterface, \Serializable
         }
     }
 
+    /**
+     * Adds all mandatory fields for the URL, the only needed part is $path,
+     * as it is always present, others can be safely omitted, although $path
+     * can be set to default to '/' it is not recommended to make the code
+     * more self-explanatory.
+     *
+     * @param string $path The path of the request
+     * @param QueryInterface $query Object representing the current query
+     * @param string $host the host name to use in the URL
+     * @param int $port A valid port number from 1 - 65535
+     * @param string $scheme the scheme of the request (in case of 'file://' urls,
+     *                       make sure to use a standard http port [80|443])
+     * @param string $fragment
+     *
+     * @throws \InvalidArgumentException
+     * @throws \OutOfRangeException
+     */
     public function __construct(
         $path = '/',
         QueryInterface $query = null,
@@ -88,6 +124,9 @@ class Url implements UrlInterface, \Serializable
         $this->fragment = $fragment;
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         $format = '';
@@ -117,36 +156,61 @@ class Url implements UrlInterface, \Serializable
         ]);
     }
 
+    /**
+     * @return string|null
+     */
     public function getScheme()
     {
         return $this->scheme;
     }
 
+    /**
+     * @return string|null
+     */
     public function getHost()
     {
         return $this->host;
     }
 
+    /**
+     * @return int|null
+     */
     public function getPort()
     {
         return $this->port;
     }
 
+    /**
+     * @return string
+     */
     public function getPath()
     {
         return $this->path;
     }
 
+    /**
+     * @return QueryInterface
+     */
     public function getQuery()
     {
         return $this->query;
     }
 
+    /**
+     * @return string|null
+     */
     public function getFragment()
     {
         return $this->fragment;
     }
 
+    /**
+     * @param string $scheme
+     *
+     * @throws \InvalidArgumentException
+     *
+     * @return mixed
+     */
     public function setScheme($scheme)
     {
         if (!in_array(strtolower($scheme), [self::SCHEME_SECURE, self::SCHEME_NORM, ''], true)) {
@@ -162,6 +226,11 @@ class Url implements UrlInterface, \Serializable
         return $self;
     }
 
+    /**
+     * @param string $host
+     *
+     * @return mixed
+     */
     public function setHost($host)
     {
         $self = clone $this;
@@ -170,6 +239,14 @@ class Url implements UrlInterface, \Serializable
         return $self;
     }
 
+    /**
+     * @param int $port
+     *
+     * @throws \InvalidArgumentException
+     * @throws \OutOfRangeException
+     *
+     * @return mixed
+     */
     public function setPort($port)
     {
         if (!is_int($port) && null !== $port) {
@@ -191,6 +268,11 @@ class Url implements UrlInterface, \Serializable
         return $self;
     }
 
+    /**
+     * @param string $path
+     *
+     * @return mixed
+     */
     public function setPath($path)
     {
         $self = clone $this;
@@ -199,6 +281,11 @@ class Url implements UrlInterface, \Serializable
         return $self;
     }
 
+    /**
+     * @param QueryInterface $query
+     *
+     * @return mixed
+     */
     public function setQuery(QueryInterface $query)
     {
         $self = clone $this;
@@ -207,6 +294,11 @@ class Url implements UrlInterface, \Serializable
         return $self;
     }
 
+    /**
+     * @param string $fragment
+     *
+     * @return mixed
+     */
     public function setFragment($fragment)
     {
         $self = clone $this;

@@ -17,8 +17,7 @@ interface ServerInterface
     public function __construct(RequestInterface $request, ResponseInterface $response, array $source = null);
 
     /**
-     * Starts output buffering with `ob_gzhandler` and
-     * invokes the callback provided in Wave::run
+     * Invokes the callback provided in ServerInterface::run
      *
      * @param callable $callback
      *
