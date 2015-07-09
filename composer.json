@@ -5,11 +5,11 @@
   "homepage": "https://github.com/DaGhostman/codewave",
   "type": "library",
   "require": {
-    "php": ">=5.4"
+    "php": ">=5.4",
+    "nikic/fast-route": "v0.6.0"
   },
   "prefer-stable": true,
   "suggest": {
-    "phroute/phroute": "2.0.*",
     "psr/log": "1.0.0"
   },
   "license": "MIT",
@@ -31,10 +31,10 @@
     }
   },
   "require-dev": {
-    "phpunit/phpunit": "*@stable",
-    "mockery/mockery": ">=0.9",
-    "squizlabs/php_codesniffer": "@stable",
-    "phpmd/phpmd": "@stable",
+    "phpunit/phpunit": "4.7",
+    "mockery/mockery": "~0.9",
+    "squizlabs/php_codesniffer": "2.3@stable",
+    "phpmd/phpmd": "2.2",
     "satooshi/php-coveralls": "dev-master"
   }
 }
