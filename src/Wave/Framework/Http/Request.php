@@ -2,7 +2,6 @@
 
 namespace Wave\Framework\Http;
 
-use Wave\Framework\Interfaces\Http\QueryInterface;
 use Wave\Framework\Interfaces\Http\RequestInterface;
 use Wave\Framework\Interfaces\Http\UrlInterface;
 
@@ -69,34 +68,6 @@ class Request implements RequestInterface
         if (!is_null($body)) {
             $this->body = $body;
         }
-    }
-
-    /**
-     * Factory for the Url object.
-     * Although this creates a tight coupling, the URL is
-     * vital part of the HTTP request, it seems inappropriate if the
-     * construction logic is entirely placed within the Server object,
-     * as the server should do the heavy lifting for the
-     *
-     *
-     * @param array $server
-     * @param UrlInterface $url
-     * @param QueryInterface $query
-     * @return Url
-     */
-    public static function buildUrl(UrlInterface $url, QueryInterface $query, array $server)
-    {
-        if ($server['SERVER_PORT'] === 443 ||
-            (array_key_exists('HTTPS', $server) && $server['HTTPS'] !== 'off' && !empty($server['HTTPS']))
-        ) {
-            $url = $url->setScheme('https');
-        }
-
-        parse_str(parse_url($server['REQUEST_URI'], PHP_URL_QUERY), $params);
-        return $url->setHost($server['SERVER_NAME'])
-            ->setPort((int) $server['SERVER_PORT'])
-            ->setPath(parse_url($server['REQUEST_URI'], PHP_URL_PATH))
-            ->setQuery($query->import($params));
     }
 
     /**

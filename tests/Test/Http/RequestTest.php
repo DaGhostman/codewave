@@ -122,21 +122,6 @@ namespace Test\Http {
             $this->assertSame('GET', $this->request->getMethod());
         }
 
-        public function testUrlBuilding()
-        {
-            $server = [
-                'SERVER_PORT' => 80,
-                'HTTPS' => '1',
-                'SERVER_NAME' => 'localhost',
-                'REQUEST_URI' => '/index?param=value'
-            ];
-            //var_dump(get_class_methods($this->url));
-            $url = Request::buildUrl($this->url, $this->query, $server);
-
-            $this->assertInstanceOf('\Wave\Framework\Interfaces\Http\UrlInterface', $url);
-            $this->assertSame('https://localhost/index?param=value', (string) $url);
-        }
-
         protected function tearDown()
         {
             parent::tearDown();

@@ -1,6 +1,7 @@
 <?php
 namespace Wave\Framework\Application;
 
+use Wave\Framework\Http\Entities\Url\Query;
 use Wave\Framework\Interfaces\Http\UrlInterface;
 
 class ApplicationFactory
@@ -11,11 +12,17 @@ class ApplicationFactory
     private $responseClass = '\Wave\Framework\Http\Response';
     private $serverClass = '\Wave\Framework\Http\Server';
 
-    private $serverVariables = [];
+    private $serverVariables = [
+        'SERVER_PORT'   => 80,
+        'SERVER_NAME'   => 'localhost',
+        'REQUEST_URI'   => '',
+        'QUERY_STRING'  => '',
+        'HTTPS'         => null,
+    ];
 
     public function __construct(array $server)
     {
-        $this->serverVariables = $server;
+        $this->serverVariables = array_merge($this->serverVariables, $server);
     }
 
     /**
@@ -107,6 +114,20 @@ class ApplicationFactory
                 'The request class needs to implement \Wave\Framework\Interfaces\Http\RequestInterface'
             ));
         }
+
+
+        if ($this->serverVariables['SERVER_PORT'] === 443 ||
+            (array_key_exists('HTTPS', $this->serverVariables) &&
+                $this->serverVariables['HTTPS'] !== 'off' &&
+                !empty($this->serverVariables['HTTPS']))
+        ) {
+            $url = $url->setScheme('https');
+        }
+
+        $url = $url->setHost($this->serverVariables['SERVER_NAME'])
+            ->setPort((int) $this->serverVariables['SERVER_PORT'])
+            ->setPath(parse_url($this->serverVariables['REQUEST_URI'], PHP_URL_PATH))
+            ->setQuery(new Query($this->serverVariables['QUERY_STRING']));
 
         $request = $requestReflection->newInstance(
             $this->serverVariables['REQUEST_METHOD'],
