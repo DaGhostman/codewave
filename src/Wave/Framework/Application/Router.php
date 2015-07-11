@@ -182,15 +182,12 @@ class Router
 
         switch ($r[0]) {
             case 0:
-                $response->setStatus(404);
                 throw new HttpNotFoundException('Route not found');
                 break;
             case 1:
                 call_user_func($r[1], $request, $r[2], $response);
                 break;
             case 2:
-                $response->setStatus(405);
-                $response->addHeader('allowed', implode(',', $r[1]));
                 throw new HttpNotAllowedException('Method not allowed', 0, null, $r[1]);
                 break;
         }

@@ -100,7 +100,19 @@ class Server implements ServerInterface, MiddlewareAwareInterface
         }
 
         if ($this->request->getMethod() !== 'TRACE') {
-            $router->dispatch($this->request, $this->response);
+            try {
+                $router->dispatch($this->request, $this->response);
+            } catch (HttpNotFoundException $e) {
+                $this->response->setStatus(404);
+                throw $e;
+            } catch (HttpNotAllowedException $e) {
+                $this->response->setStatus(405);
+                $this->response->addHeader('Allowed', implode(',', $e->getAllowed()));
+                throw $e;
+            } catch (\Exception $e) {
+                $this->response->setStatus(500);
+                throw $e;
+            }
         }
 
         // Invoke the middleware stack as LIFO
