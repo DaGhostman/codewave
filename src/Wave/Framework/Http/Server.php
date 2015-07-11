@@ -107,7 +107,7 @@ class Server implements ServerInterface, MiddlewareAwareInterface
                 throw $e;
             } catch (HttpNotAllowedException $e) {
                 $this->response->setStatus(405);
-                $this->response->addHeader('Allowed', implode(',', $e->getAllowed()));
+                $this->response->addHeader('Allow', implode(', ', $e->getAllowed()));
                 throw $e;
             } catch (\Exception $e) {
                 $this->response->setStatus(500);
