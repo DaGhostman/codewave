@@ -68,6 +68,7 @@ class Server implements ServerInterface, MiddlewareAwareInterface
      * @throws \InvalidArgumentException
      * @throws HttpNotAllowedException
      * @throws HttpNotFoundException
+     * @throws \Exception
      * @return $this
      */
     public function listen($router)
@@ -211,6 +212,7 @@ class Server implements ServerInterface, MiddlewareAwareInterface
                 continue;
             }
         }
+
         return $headers;
     }
 }

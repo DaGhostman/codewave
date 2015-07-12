@@ -160,6 +160,6 @@ class MockUrl implements UrlInterface
      */
     public function __toString ()
     {
-        return $this->scheme . '://' . $this->host . $this->path . '?' . $this->query;
+        return $this->scheme . '://' . $this->host . ':' . $this->port . $this->path . ($this->query ? '?' . $this->query : '');
     }
 }
