@@ -4,6 +4,7 @@
 namespace Test\Http;
 
 
+use Stub\MockUrl;
 use Stub\StubRequest;
 use Wave\Framework\Http\Entities\Parameters\Json;
 
@@ -15,7 +16,7 @@ class JsonParametersTest extends \PHPUnit_Framework_TestCase
     protected $params;
     protected function setUp()
     {
-        $this->params = new Json(new StubRequest());
+        $this->params = new Json(new StubRequest('GET', new MockUrl()));
     }
 
     public function testGetters()

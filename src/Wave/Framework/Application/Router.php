@@ -23,7 +23,7 @@ class Router
     /**
      * @var array
      */
-    protected $namedRoutes;
+    protected $namedRoutes = [];
 
     public function __construct(array $options = [])
     {
@@ -57,13 +57,6 @@ class Router
     public function get($pattern, array $callback, $name = null)
     {
         $this->addRoute('get', $pattern, $callback, $name);
-
-        return $this;
-    }
-
-    public function head($pattern, array $callback, $name = null)
-    {
-        $this->addRoute('head', $pattern, $callback, $name);
 
         return $this;
     }
@@ -103,13 +96,6 @@ class Router
         return $this;
     }
 
-    public function trace($pattern, array $callback, $name = null)
-    {
-        $this->addRoute('trace', $pattern, $callback, $name);
-
-        return $this;
-    }
-
     public function group($callback, array $options = [])
     {
         $oldPrefix = $this->prefix;
@@ -143,7 +129,7 @@ class Router
         if (!is_array($this->namedRoutes[$name])) {
             $pattern = $this->namedRoutes[$name];
             $patterns = [];
-            preg_match_all('#\{([A-Z\}:\[\]|/-_])+#i', $pattern, $matches);
+            preg_match_all('#\{([A-Z\}:\[\]|+_-])+#i', $pattern, $matches);
 
             foreach ($matches[0] as $match) {
                 if (strpos($match, ':') !== false) {
@@ -159,6 +145,13 @@ class Router
         }
 
         $replace = [];
+
+        if (array_diff_key($args, $this->namedRoutes[$name][1]) !== []) {
+            throw new \LogicException(
+                'Number of arguments does not match the number of bound parameters'
+            );
+        }
+
         foreach ($args as $key => $value) {
             if (preg_match('/' . $this->namedRoutes[$name][1][$key] . '/', $value) !== 1) {
                 throw new \InvalidArgumentException(sprintf(
@@ -181,7 +174,11 @@ class Router
     public function dispatch(RequestInterface $request, ResponseInterface $response)
     {
         $d = new \FastRoute\Dispatcher\GroupCountBased($this->collector->getData());
-        $r = $d->dispatch($request->getMethod(), $request->getUrl()->getPath());
+        $r = $d->dispatch(
+            ($request->getMethod() === 'HEAD' ? 'GET' : $request->getMethod()),
+            $request->getUrl()
+                ->getPath()
+        );
 
         switch ($r[0]) {
             case 0:
