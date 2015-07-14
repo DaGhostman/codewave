@@ -48,7 +48,7 @@ class Server implements ServerInterface, MiddlewareAwareInterface
     public function __construct(RequestInterface $request, ResponseInterface $response, array $source = null)
     {
         if ($source === null) {
-            $source = filter_input_array(INPUT_SERVER);
+            $source = filter_input_array(INPUT_SERVER, FILTER_FLAG_NONE);
         }
         $this->bufferLevel = ob_get_level();
 
