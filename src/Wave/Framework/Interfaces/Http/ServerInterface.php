@@ -1,6 +1,8 @@
 <?php
 namespace Wave\Framework\Interfaces\Http;
 
+use Wave\Framework\Application\Router;
+
 interface ServerInterface
 {
     /**
@@ -19,11 +21,11 @@ interface ServerInterface
     /**
      * Invokes the callback provided in ServerInterface::run
      *
-     * @param callable $callback
+     * @param mixed $router
      *
      * @return $this
      */
-    public function listen(callable $callback = null);
+    public function listen($router);
 
     public function getRequest();
 

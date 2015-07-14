@@ -1,6 +1,7 @@
 <?php
 namespace Wave\Framework\Http;
 
+use FastRoute\Route;
 use Wave\Framework\Application\Router;
 use Wave\Framework\Exceptions\HttpNotAllowedException;
 use Wave\Framework\Exceptions\HttpNotFoundException;
@@ -70,8 +71,14 @@ class Server implements ServerInterface, MiddlewareAwareInterface
      * @throws HttpNotFoundException
      * @return $this
      */
-    public function listen(Router $router)
+    public function listen($router)
     {
+
+        if (!$router instanceof Router) {
+            throw new \InvalidArgumentException(
+                'Passed argument must be instance of Application\Router'
+            );
+        }
 
         // Invoke the middleware stack, as FIFO
         /**
