@@ -21,7 +21,7 @@ class JsonParametersTest extends \PHPUnit_Framework_TestCase
 
     public function testGetters()
     {
-        $this->assertSame('value', $this->params->fetch('key'));
+        $this->assertSame('value', $this->params->get('key'));
         $this->assertSame('value', $this->params['key']);
         $this->assertTrue($this->params->has('key'));
         $this->assertFalse(isset($this->params['bad-key']));
@@ -30,7 +30,7 @@ class JsonParametersTest extends \PHPUnit_Framework_TestCase
     public function testInvalidKeyRequest()
     {
         $this->setExpectedException('\Wave\Framework\Exceptions\InvalidKeyException');
-        $this->params->fetch('bad-key');
+        $this->params->get('bad-key');
     }
 
     public function testInvalidKeyOnArrayAccess()

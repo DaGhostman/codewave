@@ -36,7 +36,7 @@ class Json implements ParametersInterface, \ArrayAccess
      *
      * @return mixed
      */
-    public function fetch($name)
+    public function get($name)
     {
         if (!$this->has($name)) {
             throw new InvalidKeyException(sprintf(
@@ -101,6 +101,11 @@ class Json implements ParametersInterface, \ArrayAccess
         unset($this->parameters[$name]);
     }
 
+    public function export()
+    {
+        return $this->parameters;
+    }
+
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Offset to set
@@ -137,7 +142,7 @@ class Json implements ParametersInterface, \ArrayAccess
      */
     public function offsetGet($offset)
     {
-        return $this->fetch($offset);
+        return $this->get($offset);
     }
 
     /**
