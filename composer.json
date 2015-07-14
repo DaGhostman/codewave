@@ -31,10 +31,10 @@
     }
   },
   "require-dev": {
-    "phpunit/phpunit": "4.7",
+    "phpunit/phpunit": "~4.7",
     "mockery/mockery": "~0.9",
-    "squizlabs/php_codesniffer": "2.3@stable",
-    "phpmd/phpmd": "2.2",
+    "squizlabs/php_codesniffer": "~2.3",
+    "phpmd/phpmd": "~2.2",
     "satooshi/php-coveralls": "dev-master"
   }
 }

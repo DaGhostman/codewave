@@ -1,7 +1,6 @@
 <?php
 namespace Wave\Framework\Http;
 
-use FastRoute\Route;
 use Wave\Framework\Application\Router;
 use Wave\Framework\Exceptions\HttpNotAllowedException;
 use Wave\Framework\Exceptions\HttpNotFoundException;
@@ -89,7 +88,6 @@ class Server implements ServerInterface, MiddlewareAwareInterface
         }
 
         if ($this->request->getMethod() === 'TRACE') {
-
             foreach ($this->request->getHeaders() as $name => $values) {
                 foreach ($values as $value) {
                     echo sprintf(
