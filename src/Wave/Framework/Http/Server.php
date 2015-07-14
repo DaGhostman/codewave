@@ -1,6 +1,9 @@
 <?php
 namespace Wave\Framework\Http;
 
+use Wave\Framework\Application\Router;
+use Wave\Framework\Exceptions\HttpNotAllowedException;
+use Wave\Framework\Exceptions\HttpNotFoundException;
 use Wave\Framework\Interfaces\Http\RequestInterface;
 use Wave\Framework\Interfaces\Http\ResponseInterface;
 use Wave\Framework\Interfaces\Http\ServerInterface;
@@ -61,11 +64,15 @@ class Server implements ServerInterface, MiddlewareAwareInterface
      * the one which you pass before you exit.
      *
      *
-     * @param callable $callback
+     * @param Router $router
+     * @throws \InvalidArgumentException
+     * @throws HttpNotAllowedException
+     * @throws HttpNotFoundException
      * @return $this
      */
-    public function listen(callable $callback = null)
+    public function listen(Router $router)
     {
+
         // Invoke the middleware stack, as FIFO
         /**
          * @var $middleware MiddlewareInterface
@@ -74,7 +81,22 @@ class Server implements ServerInterface, MiddlewareAwareInterface
             $middleware->before($this->request);
         }
 
-        call_user_func($callback, $this->request, $this->response);
+        if ($this->request->getMethod() === 'TRACE') {
+
+            foreach ($this->request->getHeaders() as $name => $values) {
+                foreach ($values as $value) {
+                    echo sprintf(
+                        '%s: %s' . "\n\r",
+                        $name,
+                        $value
+                    );
+                }
+            }
+        }
+
+        if ($this->request->getMethod() !== 'TRACE') {
+            $router->dispatch($this->request, $this->response);
+        }
 
         // Invoke the middleware stack as LIFO
         foreach (array_reverse($this->middleware) as $middleware) {
