@@ -25,6 +25,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        if (defined('HHVM_VERSION')) {
+            $this->markTestSkipped(
+                'The MySQLi extension is not available.'
+            );
+        }
         $this->setUpHttpMock();
 
         $this->http->mock
