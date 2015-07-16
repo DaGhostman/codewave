@@ -56,29 +56,36 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testSimpleRequest()
     {
-        $this->assertSame(
-            '{}', $this->client->send(new StubResponse())->getBody()
-        );
+        if (!defined('HHVM_VERSION')) {
+            $this->assertSame(
+                '{}', $this->client->send(new StubResponse())->getBody()
+            );
+        }
     }
 
     public function testRequestWithHeaders()
     {
-        $this->client->withHeaders();
+        if (!defined('HHVM_VERSION')) {
+            $this->client->withHeaders();
 
-        $this->assertSame('PHPUnit/TestCase', $this->client->send(new StubResponse())->getHeader('User-Agent'));
+            $this->assertSame('PHPUnit/TestCase', $this->client->send(new StubResponse())->getHeader('User-Agent'));
+        }
     }
 
     public function testRequestWithoutHeaders()
     {
-
-        $this->assertNull($this->client->send(new StubResponse())->getHeader('User-Agent'));
+        if (!defined('HHVM_VERSION')) {
+            $this->assertNull($this->client->send(new StubResponse())->getHeader('User-Agent'));
+        }
     }
 
     public function testCurlResource()
     {
-        $this->assertTrue(is_resource(
-            (new Client(new StubRequest('GET', new MockUrl('/api', null, 'localhost', 8082))))
-                ->getCurl())
-        );
+        if (!defined('HHVM_VERSION')) {
+            $this->assertTrue(is_resource(
+                    (new Client(new StubRequest('GET', new MockUrl('/api', null, 'localhost', 8082))))
+                        ->getCurl())
+            );
+        }
     }
 }
