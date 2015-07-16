@@ -11,19 +11,15 @@ use Wave\Framework\Interfaces\Http\ResponseInterface;
 
 class Router
 {
-    private $prefix;
-    private $cache = false;
-    private $cacheFolder = '';
-
     /**
      * @var \FastRoute\RouteCollector
      */
     protected $collector;
-
     /**
      * @var array
      */
     protected $namedRoutes = [];
+    private $prefix;
 
     public function __construct(array $options = [])
     {
@@ -33,10 +29,6 @@ class Router
 
         if ($this->prefix !== null) {
             $this->setPrefix($this->prefix);
-        }
-
-        if ($this->cache === true && is_readable($this->cacheFolder)) {
-            throw new \RuntimeException('Cache directory is not readable');
         }
 
         $this->collector = new RouteCollector(
@@ -59,6 +51,15 @@ class Router
         $this->addRoute('get', $pattern, $callback, $name);
 
         return $this;
+    }
+
+    private function addRoute($method, $pattern, array $callback, $name = null)
+    {
+        $this->collector->addRoute(strtoupper($method), (string)$this->prefix . $pattern, $callback);
+
+        if ($name !== null) {
+            $this->namedRoutes[$name] = $this->prefix . $pattern;
+        }
     }
 
     public function post($pattern, array $callback, $name = null)
@@ -107,15 +108,6 @@ class Router
         $this->setPrefix($oldPrefix);
 
         return $this;
-    }
-
-    private function addRoute($method, $pattern, array $callback, $name = null)
-    {
-        $this->collector->addRoute(strtoupper($method), (string) $this->prefix . $pattern, $callback);
-
-        if ($name !== null) {
-            $this->namedRoutes[$name] = $this->prefix . $pattern;
-        }
     }
 
     public function route($name, array $args = [])
