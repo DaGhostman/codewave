@@ -29,6 +29,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped(
                 'The MySQLi extension is not available.'
             );
+
+            return;
         }
         $this->setUpHttpMock();
 
