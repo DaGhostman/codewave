@@ -10,7 +10,8 @@
   },
   "prefer-stable": true,
   "suggest": {
-    "psr/log": "1.0.0"
+    "monolog/monolog": "PSR-3 Logger implementation",
+    "php-di/php-di": "Dependency Injection Container"
   },
   "license": "MIT",
   "authors": [
