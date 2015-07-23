@@ -2,8 +2,8 @@
 namespace Wave\Framework\Application;
 
 use FastRoute\DataGenerator\GroupCountBased;
-use FastRoute\RouteCollector;
 use FastRoute\RouteParser\Std;
+use Wave\Framework\Router\RouteCollector;
 use Wave\Framework\Exceptions\HttpNotAllowedException;
 use Wave\Framework\Exceptions\HttpNotFoundException;
 use Wave\Framework\Interfaces\Http\RequestInterface;
@@ -20,6 +20,7 @@ class Router
      */
     protected $namedRoutes = [];
     private $prefix;
+    private $suffix;
 
     public function __construct(array $options = [])
     {
@@ -37,31 +38,31 @@ class Router
         );
     }
 
-    private function setPrefix($prefix)
-    {
-        if ($prefix !== null && substr($prefix, 0, 1) !== '/') {
-            throw new \LogicException('Prefix must begin with "/"');
-        }
-
-        $this->prefix = $prefix;
-    }
-
+    /**
+     * Defines a route which will respond to GET and HEAD requests
+     *
+     * @param string $pattern The route pattern for the URL
+     * @param array $callback The callback which should be handle the response
+     * @param string $name (Optional) Route name. Used for reverse routing.
+     *
+     * @return $this
+     */
     public function get($pattern, array $callback, $name = null)
     {
-        $this->addRoute('get', $pattern, $callback, $name);
+        $this->addRoute('get', ltrim($pattern, '/'), $callback, $name);
 
         return $this;
     }
 
-    private function addRoute($method, $pattern, array $callback, $name = null)
-    {
-        $this->collector->addRoute(strtoupper($method), (string)$this->prefix . $pattern, $callback);
-
-        if ($name !== null) {
-            $this->namedRoutes[$name] = $this->prefix . $pattern;
-        }
-    }
-
+    /**
+     * Defines a route which will respond to POST requests
+     *
+     * @param string $pattern The route pattern for the URL
+     * @param array $callback The callback which should be handle the response
+     * @param string $name (Optional) Route name. Used for reverse routing.
+     *
+     * @return $this
+     */
     public function post($pattern, array $callback, $name = null)
     {
         $this->addRoute('post', $pattern, $callback, $name);
@@ -69,6 +70,15 @@ class Router
         return $this;
     }
 
+    /**
+     * Defines a route which will respond to PUT requests
+     *
+     * @param string $pattern The route pattern for the URL
+     * @param array $callback The callback which should be handle the response
+     * @param string $name (Optional) Route name. Used for reverse routing.
+     *
+     * @return $this
+     */
     public function put($pattern, array $callback, $name = null)
     {
         $this->addRoute('put', $pattern, $callback, $name);
@@ -76,6 +86,15 @@ class Router
         return $this;
     }
 
+    /**
+     * Defines a route which will respond to PATCH requests
+     *
+     * @param string $pattern The route pattern for the URL
+     * @param array $callback The callback which should be handle the response
+     * @param string $name (Optional) Route name. Used for reverse routing.
+     *
+     * @return $this
+     */
     public function patch($pattern, array $callback, $name = null)
     {
         $this->addRoute('patch', $pattern, $callback, $name);
@@ -83,6 +102,15 @@ class Router
         return $this;
     }
 
+    /**
+     * Defines a route which will respond to DELETE requests
+     *
+     * @param string $pattern The route pattern for the URL
+     * @param array $callback The callback which should be handle the response
+     * @param string $name (Optional) Route name. Used for reverse routing.
+     *
+     * @return $this
+     */
     public function delete($pattern, array $callback, $name = null)
     {
         $this->addRoute('delete', $pattern, $callback, $name);
@@ -90,6 +118,15 @@ class Router
         return $this;
     }
 
+    /**
+     * Defines a route which will respond to OPTIONS requests
+     *
+     * @param string $pattern The route pattern for the URL
+     * @param array $callback The callback which should be handle the response
+     * @param string $name (Optional) Route name. Used for reverse routing.
+     *
+     * @return $this
+     */
     public function options($pattern, array $callback, $name = null)
     {
         $this->addRoute('options', $pattern, $callback, $name);
@@ -97,6 +134,17 @@ class Router
         return $this;
     }
 
+    /**
+     * Registers a set of routes with the same prefix and/or suffix,
+     * isolates the registering from the rest of the code, so everything
+     * outside of the callback will not be affected. (avoids dumb variable
+     * names containing controller instances, etc)
+     *
+     * @param callable $callback Usually an anonymous function
+     * @param array $options 'prefix' and/or 'suffix' keys only supported
+     *
+     * @return $this
+     */
     public function group($callback, array $options = [])
     {
         $oldPrefix = $this->prefix;
@@ -104,12 +152,39 @@ class Router
             $this->setPrefix($options['prefix']);
         }
 
+        $oldSuffix = $this->suffix;
+        if (array_key_exists('suffix', $options)) {
+            $this->setSuffix($options['suffix']);
+        }
+
         call_user_func($callback, $this);
         $this->setPrefix($oldPrefix);
+        $this->setSuffix($oldSuffix);
 
         return $this;
     }
 
+    /**
+     * Returns the route which is registered with $name. Allowing to
+     * get a route based on name instead of hard-coding and makes
+     * updates to the route pattern easy as it is defined in 1 place
+     * and used in many.
+     *
+     * @param string $name Name of the registered route
+     * @param array $args (Optional) Assoc array where parameter names are
+     *                    the keys and their values used to make the route
+     *
+     * @throws \InvalidArgumentException When a route with $name does not
+     *                                   exist. Otherwise thrown when the
+     *                                   parameters use regex patterns for
+     *                                   validation and the provided param
+     *                                   does not match it.
+     * @throws \LogicException When the number of provided arguments does
+     *                         not match the number of parameters in the
+     *                         route pattern.
+     *
+     * @return string
+     */
     public function route($name, array $args = [])
     {
         if (!array_key_exists($name, $this->namedRoutes)) {
@@ -158,10 +233,16 @@ class Router
     }
 
     /**
+     * Performs the route matching and invokes the handler for the route, if
+     * there is an error it throws exception.
+     *
      * @param RequestInterface $request
      * @param ResponseInterface $response
+     *
      * @throws HttpNotAllowedException
      * @throws HttpNotFoundException
+     *
+     * @return void
      */
     public function dispatch(RequestInterface $request, ResponseInterface $response)
     {
@@ -183,5 +264,38 @@ class Router
                 throw new HttpNotAllowedException('Method not allowed', 0, null, $r[1]);
                 break;
         }
+    }
+
+    public function import($data)
+    {
+        $this->collector->import($data);
+    }
+
+    /**
+     * Proxies the route definition with the backend routing library
+     *
+     * @param string $method
+     * @param string $pattern
+     * @param array $callback
+     * @param null  $name
+     */
+    protected function addRoute($method, $pattern, array $callback, $name = null)
+    {
+        $concatenatedPattern = '/' . $this->prefix . '/' . $pattern . $this->suffix;
+        $this->collector->addRoute(strtoupper($method), $concatenatedPattern, $callback);
+
+        if ($name !== null) {
+            $this->namedRoutes[$name] = $concatenatedPattern;
+        }
+    }
+
+    private function setPrefix($prefix)
+    {
+        $this->prefix = trim($prefix, '/');
+    }
+
+    private function setSuffix($suffix)
+    {
+        $this->prefix = trim($suffix, '/');
     }
 }
