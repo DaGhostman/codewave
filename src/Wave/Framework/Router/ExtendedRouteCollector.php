@@ -29,7 +29,7 @@ class ExtendedRouteCollector extends RouteCollector
     public function __construct(RouteParser $routeParser, DataGenerator $dataGenerator, array $cache = null)
     {
         parent::__construct($routeParser, $dataGenerator);
-        if (array_key_exists('provider', $cache)) {
+        if (is_array($cache) && array_key_exists('provider', $cache)) {
             if (!method_exists($this->cacheProvider, 'fetch') ||
                 !method_exists($this->cacheProvider, 'contains') ||
                 !method_exists($this->cacheProvider, 'save')
