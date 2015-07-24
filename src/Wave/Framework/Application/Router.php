@@ -58,7 +58,7 @@ class Router
      */
     public function get($pattern, array $callback, $name = null)
     {
-        $this->addRoute('get', ltrim($pattern, '/'), $callback, $name);
+        $this->addRoute('get', $pattern, $callback, $name);
 
         return $this;
     }
@@ -285,7 +285,10 @@ class Router
      */
     protected function addRoute($method, $pattern, array $callback, $name = null)
     {
-        $concatenatedPattern = '/' . $this->prefix . '/' . $pattern . $this->suffix;
+        $concatenatedPattern = (!is_null($this->prefix) ? '/' . $this->prefix : '') .
+            $pattern .
+            ($this->suffix ? $this->suffix : '');
+
         $this->collector->addRoute(strtoupper($method), $concatenatedPattern, $callback);
 
         if ($name !== null) {
