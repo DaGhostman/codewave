@@ -11,7 +11,8 @@
   "prefer-stable": true,
   "suggest": {
     "monolog/monolog": "PSR-3 Logger implementation",
-    "php-di/php-di": "Dependency Injection Container"
+    "php-di/php-di": "Dependency Injection Container",
+    "doctrine/cache": "A High performance caching library"
   },
   "license": "MIT",
   "authors": [
