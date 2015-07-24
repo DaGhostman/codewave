@@ -3,7 +3,7 @@ namespace Wave\Framework\Application;
 
 use FastRoute\DataGenerator\GroupCountBased;
 use FastRoute\RouteParser\Std;
-use Wave\Framework\Router\RouteCollector;
+use Wave\Framework\Router\ExtendedRouteCollector as RouteCollector;
 use Wave\Framework\Exceptions\HttpNotAllowedException;
 use Wave\Framework\Exceptions\HttpNotFoundException;
 use Wave\Framework\Interfaces\Http\RequestInterface;
@@ -12,7 +12,7 @@ use Wave\Framework\Interfaces\Http\ResponseInterface;
 class Router
 {
     /**
-     * @var \FastRoute\RouteCollector
+     * @var RouteCollector
      */
     protected $collector;
     /**
@@ -21,7 +21,15 @@ class Router
     protected $namedRoutes = [];
     private $prefix;
     private $suffix;
+    private $cache;
 
+    /**
+     * The the 'prefix' and 'suffix' options are, respectively setting global route prefix and suffix.
+     * The 'cache' option however must be an array having the 'provider' and optionally 'ttl'. The provider
+     * must have the
+     *
+     * @param array $options Array containing any of the 'prefix', 'suffix', 'cache'
+     */
     public function __construct(array $options = [])
     {
         foreach ($options as $option => $value) {
@@ -34,7 +42,8 @@ class Router
 
         $this->collector = new RouteCollector(
             new Std(),
-            new GroupCountBased()
+            new GroupCountBased(),
+            $this->cache
         );
     }
 
@@ -264,11 +273,6 @@ class Router
                 throw new HttpNotAllowedException('Method not allowed', 0, null, $r[1]);
                 break;
         }
-    }
-
-    public function import($data)
-    {
-        $this->collector->import($data);
     }
 
     /**
