@@ -4,6 +4,17 @@ namespace Wave\Framework\Application;
 use Wave\Framework\Http\Entities\Url\Query;
 use Wave\Framework\Interfaces\Http\UrlInterface;
 
+/**
+ * Class ApplicationFactory
+ *
+ * Acts as a builder factory to bootstrap the creation of
+ * Http\Server object. By using it's methods you might consider
+ * setting custom classes that meet your purpose better, just
+ * keep in mind that the purpose of this class is to solely
+ * simplify the bootstrap of a regular application.
+ *
+ * @package Wave\Framework\Application
+ */
 class ApplicationFactory
 {
     private $requestClass = '\Wave\Framework\Http\Request';
@@ -20,6 +31,9 @@ class ApplicationFactory
         'HTTPS'         => null,
     ];
 
+    /**
+     * @param array $server the $_SERVER variable should be used in almost all cases
+     */
     public function __construct(array $server)
     {
         $this->serverVariables = array_merge($this->serverVariables, $server);
