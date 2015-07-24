@@ -46,6 +46,15 @@ class ExtendedRouteCollector extends RouteCollector
         }
     }
 
+    public function addRoute($httpMethod, $route, $handler)
+    {
+        if ($this->cacheProvider !== null && $this->cacheProvider->contains('routerCache')) {
+            return;
+        }
+
+        parent::addRoute($httpMethod, $route, $handler);
+    }
+
     /**
      * Returns the collected route data, as provided by the data generator.
      *
