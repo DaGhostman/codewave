@@ -303,6 +303,6 @@ class Router
 
     private function setSuffix($suffix)
     {
-        $this->prefix = trim($suffix, '/');
+        $this->suffix = trim($suffix, '/');
     }
 }
