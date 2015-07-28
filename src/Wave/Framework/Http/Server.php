@@ -80,14 +80,6 @@ class Server implements ServerInterface, MiddlewareAwareInterface
             );
         }
 
-        // Invoke the middleware stack, as FIFO
-        /**
-         * @var $middleware MiddlewareInterface
-         */
-        foreach ($this->middleware as $middleware) {
-            $middleware->before($this->request);
-        }
-
         if ($this->request->getMethod() === 'TRACE') {
             foreach ($this->request->getHeaders() as $name => $values) {
                 foreach ($values as $value) {
@@ -101,6 +93,14 @@ class Server implements ServerInterface, MiddlewareAwareInterface
         }
 
         if ($this->request->getMethod() !== 'TRACE') {
+            // Invoke the middleware stack, as FIFO
+            /**
+             * @var $middleware MiddlewareInterface
+             */
+            foreach ($this->middleware as $middleware) {
+                $middleware->before($this->request);
+            }
+
             try {
                 $router->dispatch($this->request, $this->response);
             } catch (HttpNotFoundException $e) {
@@ -114,11 +114,11 @@ class Server implements ServerInterface, MiddlewareAwareInterface
                 $this->response->setStatus(500);
                 throw $e;
             }
-        }
 
-        // Invoke the middleware stack as LIFO
-        foreach (array_reverse($this->middleware) as $middleware) {
-            $middleware->after($this->response);
+            // Invoke the middleware stack as LIFO
+            foreach (array_reverse($this->middleware) as $middleware) {
+                $middleware->after($this->response);
+            }
         }
 
         $this->send();
