@@ -98,7 +98,7 @@ class Server implements ServerInterface, MiddlewareAwareInterface
              * @var $middleware MiddlewareInterface
              */
             foreach ($this->middleware as $middleware) {
-                $middleware->before($this->request);
+                $middleware->before($this->request, $this->response);
             }
 
             try {

@@ -6,6 +6,6 @@ use Wave\Framework\Interfaces\Http\ResponseInterface;
 
 interface MiddlewareInterface
 {
-    public function before(RequestInterface $request);
+    public function before(RequestInterface $request, ResponseInterface $response);
     public function after(ResponseInterface $response);
 }
