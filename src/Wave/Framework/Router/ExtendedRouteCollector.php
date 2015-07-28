@@ -30,6 +30,8 @@ class ExtendedRouteCollector extends RouteCollector
     {
         parent::__construct($routeParser, $dataGenerator);
         if (is_array($cache) && array_key_exists('provider', $cache)) {
+            $this->cacheProvider = $cache['provider'];
+
             if (!method_exists($this->cacheProvider, 'fetch') ||
                 !method_exists($this->cacheProvider, 'contains') ||
                 !method_exists($this->cacheProvider, 'save')
@@ -38,8 +40,6 @@ class ExtendedRouteCollector extends RouteCollector
                     'Cache provider must implement methods "fetch", "contains", "save"'
                 );
             }
-
-            $this->cacheProvider = $cache['provider'];
             if (array_key_exists('ttl', $cache)) {
                 $this->cacheLifetime = $cache['ttl'];
             }
