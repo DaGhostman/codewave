@@ -10,7 +10,7 @@ use Wave\Framework\Interfaces\Middleware\MiddlewareInterface;
 
 class StubMiddleware implements MiddlewareInterface
 {
-    public function before(RequestInterface $request)
+    public function before(RequestInterface $request, ResponseInterface $response)
     {
         echo 'Begin-';
     }
