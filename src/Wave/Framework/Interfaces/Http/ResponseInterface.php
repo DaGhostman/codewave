@@ -80,7 +80,7 @@ interface ResponseInterface
     /**
      * Return the status code of the request as an integer
      *
-     * @return int
+     * @return array
      */
     public function getStatus();
 
