@@ -111,7 +111,10 @@ class Server implements ServerInterface, MiddlewareAwareInterface
                 $this->response->addHeader('Allow', implode(', ', $e->getAllowed()));
                 throw $e;
             } catch (\Exception $e) {
-                $this->response->setStatus(500);
+                list($statusCode)=$this->response->getStatus();
+                if ($statusCode >= 200 && $statusCode <= 208) {
+                    $this->response->setStatus(500);
+                }
                 throw $e;
             }
         }
