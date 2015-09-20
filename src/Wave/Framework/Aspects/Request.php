@@ -69,6 +69,5 @@ class Request implements Aspect
         }
 
         $object->setRequest($this->request);
-        $invocation->proceed();
     }
 }
