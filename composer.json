@@ -6,13 +6,15 @@
   "type": "library",
   "require": {
     "php": ">=5.4",
-    "nikic/fast-route": "v0.6.0"
+    "nikic/fast-route": "v0.6.0",
+    "lisachenko/go-aop-php": "0.6.1"
   },
   "prefer-stable": true,
   "suggest": {
     "monolog/monolog": "PSR-3 Logger implementation",
     "php-di/php-di": "Dependency Injection Container",
-    "doctrine/cache": "A High performance caching library"
+    "doctrine/cache": "A High performance caching library",
+    "doctrine/orm": "High Performing ORM"
   },
   "license": "MIT",
   "authors": [
