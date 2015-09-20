@@ -14,8 +14,14 @@ use Wave\Framework\Interfaces\Http\ParametersInterface;
  */
 class Json implements ParametersInterface, \ArrayAccess
 {
+    /**
+     * @var array|mixed
+     */
     private $parameters = [];
 
+    /**
+     * @param RequestInterface $request
+     */
     public function __construct(RequestInterface $request)
     {
         if (strlen(trim($request->getBody())) > 0) {
@@ -23,6 +29,9 @@ class Json implements ParametersInterface, \ArrayAccess
         }
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return json_encode($this->parameters);
@@ -101,9 +110,13 @@ class Json implements ParametersInterface, \ArrayAccess
         unset($this->parameters[$name]);
     }
 
+    /**
+     * @return string
+     */
     public function export()
     {
-        return $this->parameters;
+        // Present the output up to where the parser stopped. Helps with troubleshooting
+        return json_encode($this->parameters, JSON_PRETTY_PRINT | JSON_PARTIAL_OUTPUT_ON_ERROR);
     }
 
     /**
