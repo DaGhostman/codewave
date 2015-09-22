@@ -35,7 +35,7 @@ use Doctrine\Common\Annotations\Annotation;
  * Class Catchable
  * @package Wave\Framework\Annotations\General
  * @Annotation
- * @Annotation\Target("METHOD")
+ * @Annotation\Target({"METHOD", "CLASS"})
  */
 class Catchable extends Annotation
 {
@@ -47,14 +47,14 @@ class Catchable extends Annotation
     /**
      * Returns an exception object if defined or false on failure
      *
-     * @param $exception string
+     * @param $exception string FQN of the thrown exception
      *
-     * @return bool|Exception
+     * @return null|Exception
      */
     public function getException($exception)
     {
         if (!array_key_exists($exception, $this->map)) {
-            $this->map[$exception] =  new Exception([]);
+            $this->map[$exception] = null;
         }
 
         return $this->map[$exception];

@@ -26,17 +26,16 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Wave\Framework\Annotations\Controller;
+namespace Wave\Framework\Annotations\General;
 
 use Doctrine\Common\Annotations\Annotation;
 
 /**
- * Class Template
+ * Class Request
  * @package Wave\Framework\Annotations\Controller
  *
  * @Annotation
- * @Annotation\Target("METHOD")
+ * @Annotation\Target({"METHOD", "CLASS"})
  */
-class Template extends Annotation
-{
-}
+class Request extends Annotation
+{}

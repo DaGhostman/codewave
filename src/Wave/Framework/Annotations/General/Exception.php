@@ -34,8 +34,9 @@ use Doctrine\Common\Annotations\Annotation;
 /**
  * Class Catchable
  * @package Wave\Framework\Annotations\General
+ *
  * @Annotation
- * @Annotation\Target("METHOD")
+ * @Annotation\Target({"METHOD", "CLASS"})
  */
 class Exception extends Annotation {
     /**
@@ -75,8 +76,8 @@ class Exception extends Annotation {
     public function getMessage()
     {
         if ($this->message === null) {
-            $this->message = 'Call of {class}:{method} resulted in "{exception}"' .
-                'exception with message {message} @ {file}:{line} ' . PHP_EOL .
+            $this->message = 'Call of {class}:{method} resulted in "{exception}" ' .
+                'exception with "message" {message} @ {file}:{line} ' . PHP_EOL .
                 'Arguments: {arguments}';
         }
 
