@@ -38,4 +38,5 @@ use Doctrine\Common\Annotations\Annotation;
  * @Annotation\Target({"METHOD", "CLASS"})
  */
 class Request extends Annotation
-{}
+{
+}

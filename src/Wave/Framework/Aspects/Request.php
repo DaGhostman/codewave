@@ -55,7 +55,8 @@ class Request implements Aspect
 
     /**
      * @param MethodInvocation $invocation
-     * @Before("@annotation(Wave\Framework\Annotations\General\Request) || @within(Wave\Framework\Annotations\General\Request)")
+     * @Before("@annotation(Wave\Framework\Annotations\General\Request) ||
+                    @within(Wave\Framework\Annotations\General\Request)")
      */
     public function beforeRequestAnnotation(MethodInvocation $invocation)
     {

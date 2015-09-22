@@ -28,7 +28,6 @@
  */
 namespace Wave\Framework\Annotations\Http;
 
-
 use Doctrine\Common\Annotations\Annotation;
 
 /**

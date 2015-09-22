@@ -28,7 +28,6 @@
  */
 namespace Wave\Framework\Annotations\General;
 
-
 use Doctrine\Common\Annotations\Annotation;
 
 /**
@@ -38,7 +37,8 @@ use Doctrine\Common\Annotations\Annotation;
  * @Annotation
  * @Annotation\Target({"METHOD", "CLASS"})
  */
-class Exception extends Annotation {
+class Exception extends Annotation
+{
     /**
      * @type string
      * @Enum({"DEBUG", "INFO", "NOTICE", "WARNING", "ERROR", "CRITICAL", "ALERT", "EMERGENCY"})

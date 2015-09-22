@@ -37,4 +37,7 @@ use Doctrine\Common\Annotations\Annotation;
  * @Annotation
  * @Annotation\Target("Method")
  */
-class Json extends Annotation {}
+class Json extends Annotation
+{
+
+}
