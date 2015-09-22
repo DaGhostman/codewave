@@ -37,26 +37,59 @@ use Doctrine\Common\Annotations\Annotation;
  * @Annotation
  * @Annotation\Target("METHOD")
  */
-class Catchable extends Annotation
-{
+class Exception extends Annotation {
     /**
-     * @var array
+     * @type string
+     * @Enum({"DEBUG", "INFO", "NOTICE", "WARNING", "ERROR", "CRITICAL", "ALERT", "EMERGENCY"})
      */
-    public $map = [];
+    public $severity = 'CRITICAL';
 
     /**
-     * Returns an exception object if defined or false on failure
-     *
-     * @param $exception string
-     *
-     * @return bool|Exception
+     * @type string
      */
-    public function getException($exception)
+    public $message;
+
+    /**
+     * @type bool
+     */
+    public $rethrow = true;
+
+    /**
+     * Returns, if provided, the severity of this kind of exception.
+     * The severity is one of the public method names of the LoggerInterface
+     *
+     * @return string
+     */
+    public function getSeverity()
     {
-        if (!array_key_exists($exception, $this->map)) {
-            $this->map[$exception] =  new Exception([]);
+        return $this->severity;
+    }
+
+    /**
+     * Returns a message to be used when logging the exception,
+     * does NOT replace the exception message, but rather
+     * adds formatting to it.
+     *
+     * @return string
+     */
+    public function getMessage()
+    {
+        if ($this->message === null) {
+            $this->message = 'Call of {class}:{method} resulted in "{exception}"' .
+                'exception with message {message} @ {file}:{line} ' . PHP_EOL .
+                'Arguments: {arguments}';
         }
 
-        return $this->map[$exception];
+        return $this->message;
+    }
+
+    /**
+     * Returns whether the exception should be rethrown
+     *
+     * @return bool
+     */
+    public function getRethrow()
+    {
+        return $this->rethrow;
     }
 }

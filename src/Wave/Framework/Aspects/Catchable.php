@@ -57,6 +57,8 @@ class Catchable extends AnnotationAspect
      * @param MethodInvocation $invocation
      *
      * @Around("@annotation(Wave\Framework\Annotations\General\Catchable)")
+     * @throws \Exception
+     * @return mixed
      */
     public function aroundCatchableAnnotation(MethodInvocation $invocation)
     {
@@ -71,10 +73,9 @@ class Catchable extends AnnotationAspect
                 '\Wave\Framework\Annotations\General\Catchable'
             );
 
-            $severity = $annotation->getExceptionSeverity(get_class($ex));
-            $message = $annotation->getExceptionMessage(get_class($ex));
+            $exception = $annotation->getException(get_class($ex));
 
-            call_user_func([$this->logger, strtolower($severity)], $message, [
+            call_user_func([$this->logger, strtolower($exception->getSeverity())], $exception->getMessage(), [
                 'class' => get_class($invocation->getThis()),
                 'method' => $invocation->getMethod()->name,
                 'exception' => get_class($ex),
@@ -83,6 +84,10 @@ class Catchable extends AnnotationAspect
                 'line' => $ex->getLine(),
                 'arguments' => $invocation->getArguments()
             ]);
+
+            if ($exception->getRethrow() === true) {
+                throw $ex;
+            }
         }
     }
 }
