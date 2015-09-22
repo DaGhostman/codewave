@@ -55,7 +55,7 @@ class Template extends AnnotationAspect
     /**
      * @param MethodInvocation $invocation
      *
-     * @Before("@annotation(Wave\Framework\Annotations\Controller\Template)")
+     * @Before("@annotation(Wave\Framework\Annotations\General\Template) || @within(Wave\Framework\Annotations\General\Template)")
      */
     public function beforeTemplateAnnotation(MethodInvocation $invocation)
     {
