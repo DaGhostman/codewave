@@ -30,10 +30,15 @@ namespace Wave\Framework\Application;
 
 use Go\Aop\Pointcut;
 use Wave\Framework\Annotations\General\Catchable;
+use Wave\Framework\Annotations\General\Exception;
 use Wave\Framework\Http\Server;
 use Wave\Framework\Http\Url;
 use Wave\Framework\Interfaces\Middleware\MiddlewareInterface;
 
+/**
+ * Class Core
+ * @package Wave\Framework\Application
+ */
 class Core extends AspectsKernel
 {
 
@@ -55,6 +60,8 @@ class Core extends AspectsKernel
     {
         $this->server = (new ApplicationFactory($_SERVER))
             ->build(new Url());
+
+        self::$instance = $this; // Adjustment to remove the need of calling `self::getInstance`
     }
 
     /**
@@ -70,12 +77,16 @@ class Core extends AspectsKernel
 
     /**
      * @param Router $router Already populated Router
-     * @param array $options Options for the AspectKernel (passed directly)
      *
      * @Catchable(map={
-     *   "RuntimeException": {"severity": "error"},
-     *   "OutOfRangeException": {"severity": "error"},
-     *   "InvalidArgumentException": {"severity": "error"}
+     *   "RuntimeException": @Exception(severity="ERROR"),
+     *   "OutOfRangeException": @Exception(severity="ERROR"),
+     *   "InvalidArgumentException": @Exception(severity="ERROR"),
+     *   "Wave\Framework\Exceptions\HttpNotFoundException": @Exception(severity="INFO"),
+     *   "Wave\Framework\Exceptions\HttpNotAllowedException": @Exception(severity="WARNING"),
+     *   "Wave\Framework\Exceptions\InvalidKeyException": @Exception(severity="WARNING"),
+     *   "Wave\Framework\Exceptions\AspectAnnotationException": @Exception(severity="ERROR"),
+     *   "Exception": @Exception(severity="CRITICAL", rethrow=true)
      * })
      *
      * @throws \InvalidArgumentException
