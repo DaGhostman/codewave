@@ -20,7 +20,6 @@ class Router
      */
     protected $namedRoutes = [];
     private $prefix;
-    private $suffix;
     private $cache;
 
     /**
@@ -161,14 +160,8 @@ class Router
             $this->setPrefix($options['prefix']);
         }
 
-        $oldSuffix = $this->suffix;
-        if (array_key_exists('suffix', $options)) {
-            $this->setSuffix($options['suffix']);
-        }
-
         call_user_func($callback, $this);
         $this->setPrefix($oldPrefix);
-        $this->setSuffix($oldSuffix);
 
         return $this;
     }
@@ -267,7 +260,7 @@ class Router
                 throw new HttpNotFoundException('Route not found');
                 break;
             case 1:
-                call_user_func($r[1], $request, $r[2], $response);
+                call_user_func_array($r[1], $r[2]);
                 break;
             case 2:
                 throw new HttpNotAllowedException('Method not allowed', 0, null, $r[1]);
@@ -286,8 +279,7 @@ class Router
     protected function addRoute($method, $pattern, array $callback, $name = null)
     {
         $concatenatedPattern = (!is_null($this->prefix) ? '/' . $this->prefix : '') .
-            $pattern .
-            ($this->suffix ? $this->suffix : '');
+            $pattern;
 
         $this->collector->addRoute(strtoupper($method), $concatenatedPattern, $callback);
 
@@ -296,13 +288,13 @@ class Router
         }
     }
 
+    /**
+     * Sets the prefix to use when adding routes
+     *
+     * @param $prefix string
+     */
     private function setPrefix($prefix)
     {
         $this->prefix = trim($prefix, '/');
-    }
-
-    private function setSuffix($suffix)
-    {
-        $this->suffix = trim($suffix, '/');
     }
 }
