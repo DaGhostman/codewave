@@ -44,6 +44,8 @@ class Catchable extends AnnotationAspect
      */
     private $logger;
 
+    protected $annotation = '\Wave\Framework\Annotations\General\Catchable';
+
     /**
      * @param LoggerInterface $logger
      */
@@ -65,15 +67,7 @@ class Catchable extends AnnotationAspect
         try {
             return $invocation->proceed();
         } catch (\Exception $ex) {
-            /**
-             * @var $annotation \Wave\Framework\Annotations\General\Catchable
-             */
-            $annotation = $this->annotationReader->getMethodAnnotation(
-                $invocation->getMethod(),
-                '\Wave\Framework\Annotations\General\Catchable'
-            );
-
-            $this->callLogger($ex, $annotation, $invocation);
+            $this->callLogger($ex, $invocation);
         }
     }
 
@@ -89,21 +83,23 @@ class Catchable extends AnnotationAspect
         try {
             return $invocation->proceed();
         } catch (\Exception $ex) {
-            $annotation = $this->annotationReader->getClassAnnotation(
-                new \ReflectionClass($invocation->getThis()),
-                '\Wave\Framework\Annotations\General\Catchable'
-            );
-
-            $this->callLogger($ex, $annotation, $invocation);
+            $this->callLogger($ex, $invocation);
         }
     }
 
-    private function callLogger($ex, $annotation, $invocation)
+    /**
+     * @param $ex \Exception
+     * @param $annotation object
+     * @param $invocation MethodInvocation
+     * @throws
+     */
+    private function callLogger($ex, $invocation)
     {
         /**
          * @var $exception \Wave\Framework\Annotations\General\Exception|null
          */
-        $exception = $annotation->getException(get_class($ex));
+        $exception = $this->getMethodAnnotation($invocation->getMethod())
+            ->getException(get_class($ex));
 
         $severity = 'CRITICAL';
         $message = $message = 'Call of {class}:{method} resulted in "{exception}" ' .

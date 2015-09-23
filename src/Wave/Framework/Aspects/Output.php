@@ -44,6 +44,11 @@ class Output extends AnnotationAspect
     protected $acceptHeaderValue = 'text/html';
 
     /**
+     * @var string
+     */
+    protected $annotation = '\Wave\Framework\Annotations\Output\Html';
+
+    /**
      * @Around("@annotation(Wave\Framework\Annotations\Output\Html)")
      *
      * @param MethodInvocation $invocation
@@ -64,10 +69,7 @@ class Output extends AnnotationAspect
         foreach ($accepted as $value) {
             if (strpos($this->acceptHeaderValue, $value) !== false) {
                 header('Content-type: text/html', true);
-                $annotation = $this->annotationReader->getMethodAnnotation(
-                    $invocation->getMethod(),
-                    '\Wave\Framework\Annotations\Output\Html'
-                );
+                $annotation = $this->getMethodAnnotation($invocation->getMethod());
 
 
                 if (is_null($annotation)) {

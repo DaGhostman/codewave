@@ -30,6 +30,9 @@ namespace Wave\Framework\Aspects;
 
 use Go\Aop\Aspect;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Go\Aop\Intercept\MethodInvocation;
+use ReflectionMethod;
+use Wave\Framework\Exceptions\AspectAnnotationException;
 
 /**
  * Class AnnotationAspect
@@ -43,10 +46,106 @@ abstract class AnnotationAspect implements Aspect
     protected $annotationReader;
 
     /**
+     * The annotation used for the current aspect
+     *
+     * @var string
+     */
+    protected $annotation;
+
+    /**
      * Instantiates the annotation reader
      */
     public function __construct()
     {
         $this->annotationReader = new AnnotationReader();
+    }
+
+    /**
+     * Returns the default annotation for the $method or
+     * the provided $annotation
+     *
+     * @param $method ReflectionMethod
+     * @param $annotation string
+     *
+     * @throws AspectAnnotationException
+     * @return null|object
+     */
+    public function getMethodAnnotation(ReflectionMethod $method, $annotation = null)
+    {
+        if ($annotation === null) {
+            if ($this->annotation === null) {
+                throw new AspectAnnotationException(
+                    sprintf('Annotation not provided for aspect: "%s"', get_class($this))
+                );
+            }
+
+            $annotation = $this->annotation;
+        }
+
+        return $this->annotationReader->getMethodAnnotation(
+            $method,
+            $annotation
+        );
+    }
+
+    /**
+     * Returns all annotations for $method
+     *
+     * @param $method ReflectionMethod
+     * @return array
+     */
+    public function getMethodAnnotations(ReflectionMethod $method)
+    {
+        return $this->annotationReader->getMethodAnnotations($method);
+    }
+
+    /**
+     * Returns the default annotation for the $class or
+     * the provided $annotation
+     *
+     *
+     * @param $class string|object The object of which the annotation should be received
+     * @param $annotation string The alternative annotation to fetch from the class
+     *
+     * @throws AspectAnnotationException
+     *
+     * @return null|object
+     */
+    public function getClassAnnotation($class, $annotation = null)
+    {
+        if ($annotation === null) {
+            if ($this->annotation === null) {
+                throw new AspectAnnotationException(
+                    sprintf('Annotation not provided for aspect: "%s"', get_class($this))
+                );
+            }
+
+            $annotation = $this->annotation;
+        }
+
+        if (!$class instanceof \ReflectionClass) {
+            $class = new \ReflectionClass($class);
+        }
+
+        return $this->annotationReader->getClassAnnotation(
+            $class,
+            $annotation
+        );
+    }
+
+    /**
+     * Returns all annotations of the $class
+     *
+     * @param $class string|object The class of which to retrieve the annotations
+     *
+     * @return array
+     */
+    public function getClassAnnotations($class)
+    {
+        if (!$class instanceof \ReflectionClass) {
+            $class = new \ReflectionClass($class);
+        }
+
+        $this->annotationReader->getClassAnnotations($class);
     }
 }

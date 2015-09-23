@@ -31,7 +31,7 @@ namespace Wave\Framework\Aspects;
 use Go\Lang\Annotation\Around;
 use Go\Lang\Annotation\Before;
 use Go\Aop\Intercept\MethodInvocation;
-use Wave\Framework\Http\Response as HttpResponse;
+use Wave\Framework\Interfaces\Http\ResponseInterface as HttpResponse;
 
 /**
  * Class Response
@@ -63,7 +63,7 @@ class Response extends AnnotationAspect
         /**
          * @var $annotation \Wave\Framework\Annotations\Http\Response
          */
-        $annotation = $this->annotationReader->getMethodAnnotation(
+        $annotation = $this->getMethodAnnotation(
             $invocation->getMethod(),
             '\Wave\Framework\Annotations\Http\Response'
         );
@@ -106,7 +106,7 @@ class Response extends AnnotationAspect
         /**
          * @var $annotation \Wave\Framework\Annotations\Http\Headers
          */
-        $annotation = $this->annotationReader->getMethodAnnotation(
+        $annotation = $this->getMethodAnnotation(
             $invocation->getMethod(),
             '\Wave\Framework\Annotations\Http\Headers'
         );
