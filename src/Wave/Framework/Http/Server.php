@@ -1,6 +1,7 @@
 <?php
 namespace Wave\Framework\Http;
 
+use Wave\Framework\Annotations\General\Catchable;
 use Wave\Framework\Application\Router;
 use Wave\Framework\Exceptions\HttpNotAllowedException;
 use Wave\Framework\Exceptions\HttpNotFoundException;
@@ -10,6 +11,10 @@ use Wave\Framework\Interfaces\Http\ServerInterface;
 use Wave\Framework\Interfaces\Middleware\MiddlewareAwareInterface;
 use Wave\Framework\Interfaces\Middleware\MiddlewareInterface;
 
+/**
+ * Class Server
+ * @package Wave\Framework\Http
+ */
 class Server implements ServerInterface, MiddlewareAwareInterface
 {
     /**
@@ -32,6 +37,9 @@ class Server implements ServerInterface, MiddlewareAwareInterface
      */
     protected $bufferLevel;
 
+    /**
+     * @var array
+     */
     private $middleware = [];
 
     /**
@@ -170,11 +178,17 @@ class Server implements ServerInterface, MiddlewareAwareInterface
         }
     }
 
+    /**
+     * @return RequestInterface
+     */
     public function getRequest()
     {
         return $this->request;
     }
 
+    /**
+     * @return ResponseInterface
+     */
     public function getResponse()
     {
         return $this->response;
@@ -192,6 +206,10 @@ class Server implements ServerInterface, MiddlewareAwareInterface
         $this->middleware[] = $middleware;
     }
 
+    /**
+     * @param $server
+     * @return array
+     */
     private function buildHeaders($server)
     {
         $headers = [];
@@ -201,8 +219,8 @@ class Server implements ServerInterface, MiddlewareAwareInterface
                 continue;
             }
             if ($value && strpos($key, 'HTTP_') === 0) {
-                $name = strtr(substr($key, 5), '_', ' ');
-                $name = strtr(ucwords(strtolower($name)), ' ', '-');
+                $name = str_replace('_', ' ', substr($key, 5));
+                $name = str_replace(' ', '-', ucwords(strtolower($name)));
                 $name = strtolower($name);
                 $headers[$name] = $value;
                 continue;
