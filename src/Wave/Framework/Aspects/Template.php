@@ -31,7 +31,6 @@ namespace Wave\Framework\Aspects;
 use Go\Aop\Intercept\MethodInvocation;
 use Go\Lang\Annotation\Around;
 
-
 /**
  * Class Template
  * @package Wave\Framework\Aspects

@@ -40,6 +40,7 @@ class Validation extends AnnotationAspect
     /**
      * @param MethodInvocation $invocation
      * @throws \Wave\Framework\Exceptions\AspectAnnotationException
+     * @throws \InvalidArgumentException
      *
      * @Before("@annotation(Wave\Framework\Annotations\General\ParameterValidator)")
      */
@@ -54,10 +55,9 @@ class Validation extends AnnotationAspect
             if (array_key_exists($index, $args)) {
                 if (preg_match($regex, $args[$index]) !== 1) {
                     throw new \InvalidArgumentException(sprintf(
-                        'Parameter at position "%s" (with value \'%s\') does not match the required pattern "%s" in %s::%s',
+                        'Parameter at position "%d"(\'%s\') does not match the required pattern in %s::%s',
                         $index,
                         $args[$index],
-                        $regex,
                         get_class($invocation->getThis()),
                         $invocation->getMethod()->name
                     ));
