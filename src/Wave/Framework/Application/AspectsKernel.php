@@ -38,9 +38,7 @@ class AspectsKernel extends AspectKernel
 
     public function addAspect(Aspect $aspect)
     {
-        $this->aspects[] = $aspect;
-
-        return $this;
+        $this->container->registerAspect($aspect);
     }
 
     /**
@@ -51,9 +49,5 @@ class AspectsKernel extends AspectKernel
      * @return void
      */
     protected function configureAop(AspectContainer $container)
-    {
-        foreach ($this->aspects as $aspect) {
-            $container->registerAspect($aspect);
-        }
-    }
+    {}
 }
