@@ -88,10 +88,11 @@ class Catchable extends AnnotationAspect
     }
 
     /**
-     * @param $ex \Exception
-     * @param $annotation object
+     * @param $ex         \Exception
      * @param $invocation MethodInvocation
-     * @throws
+     *
+     * @throws \Exception
+     * @throws \Wave\Framework\Exceptions\AspectAnnotationException
      */
     private function callLogger($ex, $invocation)
     {

@@ -31,7 +31,7 @@ namespace Wave\Framework\Aspects;
 use Go\Lang\Annotation\Around;
 use Go\Lang\Annotation\Before;
 use Go\Aop\Intercept\MethodInvocation;
-use Wave\Framework\Interfaces\Http\ResponseInterface as HttpResponse;
+use Wave\Framework\Http\Response as HttpResponse;
 
 /**
  * Class Response
@@ -56,6 +56,8 @@ class Response extends AnnotationAspect
     /**
      * @param MethodInvocation $invocation
      *
+     * @throws \Wave\Framework\Exceptions\AspectAnnotationException
+     *
      * @Around("@annotation(Wave\Framework\Annotations\Http\Response)")
      */
     public function aroundResponseAnnotation(MethodInvocation $invocation)
@@ -79,6 +81,8 @@ class Response extends AnnotationAspect
     /**
      * @param MethodInvocation $invocation
      *
+     * @throws \InvalidArgumentException
+     *
      * @Before("@annotation(Wave\Framework\Annotations\Http\Status)")
      */
     public function beforeStatusAnnotation(MethodInvocation $invocation)
@@ -98,6 +102,8 @@ class Response extends AnnotationAspect
 
     /**
      * @param MethodInvocation $invocation
+     *
+     * @throws \Wave\Framework\Exceptions\AspectAnnotationException
      *
      * @Before("@annotation(Wave\Framework\Annotations\Http\Headers)")
      */
