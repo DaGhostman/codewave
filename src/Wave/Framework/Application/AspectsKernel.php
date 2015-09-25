@@ -34,11 +34,12 @@ use Go\Core\AspectKernel;
 
 class AspectsKernel extends AspectKernel
 {
-    private $aspects = [];
 
     public function addAspect(Aspect $aspect)
     {
         $this->container->registerAspect($aspect);
+
+        return $this;
     }
 
     /**
