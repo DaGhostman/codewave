@@ -35,8 +35,17 @@ use Doctrine\Common\Annotations\Annotation;
  * @package Wave\Framework\Annotations\Controller
  *
  * @Annotation
- * @Annotation\Target({"METHOD", "CLASS"})
+ * @Annotation\Target("METHOD")
  */
 class Template extends Annotation
 {
+    /**
+     * @type array
+     */
+    public $view;
+
+    public function getView()
+    {
+        return $this->view;
+    }
 }

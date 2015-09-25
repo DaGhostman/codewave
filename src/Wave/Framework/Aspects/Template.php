@@ -29,8 +29,8 @@
 namespace Wave\Framework\Aspects;
 
 use Go\Aop\Intercept\MethodInvocation;
-use Go\Lang\Annotation\Before;
-use Wave\Framework\Interfaces\General\ControllerInterface;
+use Go\Lang\Annotation\Around;
+
 
 /**
  * Class Template
@@ -41,29 +41,38 @@ class Template extends AnnotationAspect
     /**
      * @var object
      */
-    private $engine;
+    private $container;
 
     /**
-     * @param $engine object
+     * @param $container object
      */
-    public function __construct($engine)
+    public function __construct($container)
     {
-        $this->engine = $engine;
+        $this->container = $container;
         parent::__construct();
     }
 
     /**
      * @param MethodInvocation $invocation
      *
-     * @Before("@annotation(Wave\Framework\Annotations\General\Template) ||
-                    @within(Wave\Framework\Annotations\General\Template)")
+     * @Around("@annotation(Wave\Framework\Annotations\General\Template)")
+     * @return mixed
      */
-    public function beforeTemplateAnnotation(MethodInvocation $invocation)
+    public function aroundTemplateAnnotation(MethodInvocation $invocation)
     {
-        /**
-         * @var $object ControllerInterface
-         */
-        $object = $invocation->getThis();
-        $object->setTemplateEngine($this->engine);
+        $data = $invocation->proceed();
+        $annotation = $this->annotationReader->getMethodAnnotation(
+            $invocation->getMethod(),
+            '\Wave\Framework\Annotations\General\Template'
+        );
+
+        list($view,$method)=$annotation->getView();
+        $viewObject = $this->container
+            ->get($view);
+
+        $viewObject->$method($data)
+            ->render();
+
+        return $data;
     }
 }
