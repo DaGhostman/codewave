@@ -28,9 +28,6 @@
  */
 namespace Wave\Framework\Application;
 
-use Go\Aop\Pointcut;
-use Wave\Framework\Annotations\General\Catchable;
-use Wave\Framework\Annotations\General\Exception;
 use Wave\Framework\Http\Server;
 use Wave\Framework\Http\Url;
 use Wave\Framework\Interfaces\Middleware\MiddlewareInterface;
@@ -55,13 +52,21 @@ class Core extends AspectsKernel
 
     /**
      * Prepares the core HTTP objects
+     * @param $options array
+     *
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
+     * @throws \OutOfRangeException
      */
-    public function __construct()
+    public function __construct(array $options = [])
     {
+        $this->defaultConfiguration = array_merge($this->defaultConfiguration, $options);
+
         $this->server = (new ApplicationFactory($_SERVER))
             ->build(new Url());
 
-        self::$instance = $this; // Adjustment to remove the need of calling `self::getInstance`
+        self::$instance = $this;
+        $this->init($this->defaultConfiguration);
     }
 
     /**
@@ -78,17 +83,6 @@ class Core extends AspectsKernel
     /**
      * @param Router $router Already populated Router
      *
-     * @Catchable(map={
-     *   "RuntimeException": @Exception(severity="ERROR"),
-     *   "OutOfRangeException": @Exception(severity="ERROR"),
-     *   "InvalidArgumentException": @Exception(severity="ERROR"),
-     *   "Wave\Framework\Exceptions\HttpNotFoundException": @Exception(severity="INFO"),
-     *   "Wave\Framework\Exceptions\HttpNotAllowedException": @Exception(severity="WARNING"),
-     *   "Wave\Framework\Exceptions\InvalidKeyException": @Exception(severity="WARNING"),
-     *   "Wave\Framework\Exceptions\AspectAnnotationException": @Exception(severity="ERROR"),
-     *   "Exception": @Exception(severity="CRITICAL", rethrow=true)
-     * })
-     *
      * @throws \InvalidArgumentException
      * @throws \Wave\Framework\Exceptions\HttpNotFoundException
      * @throws \Wave\Framework\Exceptions\HttpNotAllowedException
@@ -96,9 +90,6 @@ class Core extends AspectsKernel
      */
     public function run(Router $router)
     {
-        if (!defined('AOP_CACHE_DIR')) {
-            $this->init();
-        }
         foreach ($this->middleware as $middleware) {
             $this->server->addMiddleware($middleware);
         }
