@@ -31,7 +31,6 @@ namespace Wave\Framework\Aspects;
 use Go\Aop\Aspect;
 use Go\Aop\Intercept\MethodInvocation;
 use Go\Lang\Annotation\Before;
-use Wave\Framework\Interfaces\General\ControllerInterface;
 use Wave\Framework\Interfaces\Http\RequestInterface;
 
 /**
@@ -55,19 +54,14 @@ class Request implements Aspect
 
     /**
      * @param MethodInvocation $invocation
-     * @Before("@annotation(Wave\Framework\Annotations\General\Request) ||
-                    @within(Wave\Framework\Annotations\General\Request)")
+     * @Before("@annotation(Wave\Framework\Annotations\General\Request)")
      */
     public function beforeRequestAnnotation(MethodInvocation $invocation)
     {
         $object = $invocation->getThis();
-        if (!$object instanceof ControllerInterface) {
-            throw new \RuntimeException(sprintf(
-                'Expected class "%s" to implement Interfaces\General\ControllerInterfaces',
-                get_class($object)
-            ));
+        if (method_exists($object, 'setRequest')) {
+            $object->setRequest($this->request);
         }
 
-        $object->setRequest($this->request);
     }
 }
