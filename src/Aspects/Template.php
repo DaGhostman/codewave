@@ -65,7 +65,9 @@ class Template extends AnnotationAspect
             '\Wave\Framework\Annotations\General\Template'
         );
 
-        list($view,$method)=$annotation->getView();
+        $view = $annotation->getView()[0];
+        $method=$annotation->getView()[1];
+
         $viewObject = $this->container
             ->get($view);
 

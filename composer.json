@@ -7,7 +7,8 @@
   "require": {
     "php": ">=5.4",
     "nikic/fast-route": "v0.6.0",
-    "lisachenko/go-aop-php": "0.6.1"
+    "goaop/framework": "0.6.1",
+    "doctrine/annotations": "1.*@stable"
   },
   "prefer-stable": true,
   "suggest": {
@@ -26,7 +27,7 @@
   ],
   "minimum-stability": "stable",
   "autoload": {
-    "psr-0": { "Wave\\Framework\\": "src" }
+    "psr-4": { "Wave\\Framework\\": "src" }
   },
   "autoload-dev": {
     "psr-0": {
@@ -35,10 +36,10 @@
     }
   },
   "require-dev": {
-    "phpunit/phpunit": "~4.7",
+    "phpunit/phpunit": "4.*",
     "mockery/mockery": "~0.9",
-    "squizlabs/php_codesniffer": "~2.3",
-    "phpmd/phpmd": "~2.2",
+    "squizlabs/php_codesniffer": "2.*",
+    "phpmd/phpmd": "2.*",
     "satooshi/php-coveralls": "dev-master"
   }
 }
