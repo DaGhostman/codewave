@@ -1,7 +1,6 @@
 <?php
 namespace Wave\Framework\Http;
 
-use Wave\Framework\Annotations\General\Catchable;
 use Wave\Framework\Application\Router;
 use Wave\Framework\Exceptions\HttpNotAllowedException;
 use Wave\Framework\Exceptions\HttpNotFoundException;
