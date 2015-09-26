@@ -1,13 +1,7 @@
 <?php
 namespace Test\Application;
 
-use Stub\MockUrl;
-use Stub\StubRequest;
-use Stub\StubResponse;
 use Wave\Framework\Application\Router;
-use Wave\Framework\Http\Request;
-use Wave\Framework\Http\Response;
-use Wave\Framework\Http\Url;
 
 class RouterTest extends \PHPUnit_Framework_TestCase
 {
@@ -17,14 +11,26 @@ class RouterTest extends \PHPUnit_Framework_TestCase
      */
     private $router;
 
+    private $mockController;
+
     public function setUp()
     {
+        $this->mockController = $this->getMockBuilder('\stdClass')
+            ->setMethods(['index'])
+            ->getMock();
+
+        $this->mockController->expects($this->any())
+            ->method('index')
+            ->willReturnCallback(function () {
+                echo 'true';
+            });
+
         $this->router = new Router();
     }
 
     public function testGet()
     {
-        $this->router->get('/', [new \Stub\StubController, 'index']);
+        $this->router->get('/', [$this->mockController, 'index']);
         $this->expectOutputString('true');
 
         $this->router->dispatch('GET', '/');
@@ -33,28 +39,28 @@ class RouterTest extends \PHPUnit_Framework_TestCase
 
     public function testPost()
     {
-        $this->router->post('/', [new \Stub\StubController, 'index']);
+        $this->router->post('/', [$this->mockController, 'index']);
         $this->expectOutputString('true');
         $this->router->dispatch('POST', '/');
     }
 
     public function testPut()
     {
-        $this->router->put('/', [new \Stub\StubController, 'index']);
+        $this->router->put('/', [$this->mockController, 'index']);
         $this->expectOutputString('true');
         $this->router->dispatch('PUT', '/');
     }
 
     public function testPatch()
     {
-        $this->router->patch('/', [new \Stub\StubController, 'index']);
+        $this->router->patch('/', [$this->mockController, 'index']);
         $this->expectOutputString('true');
         $this->router->dispatch('PATCH', '/');
     }
 
     public function testDelete()
     {
-        $this->router->delete('/', [new \Stub\StubController, 'index']);
+        $this->router->delete('/', [$this->mockController, 'index']);
         $this->expectOutputString('true');
         $this->router->dispatch('DELETE', '/');
     }
@@ -67,14 +73,14 @@ class RouterTest extends \PHPUnit_Framework_TestCase
      */
     public function testHead()
     {
-        $this->router->get('/', [new \Stub\StubController, 'index']);
+        $this->router->get('/', [$this->mockController, 'index']);
         $this->expectOutputString('true'); // Verify the output
         $this->router->dispatch('HEAD', '/');
     }
 
     public function testOptions()
     {
-        $this->router->options('/', [new \Stub\StubController, 'index']);
+        $this->router->options('/', [$this->mockController, 'index']);
         $this->expectOutputString('true');
         $this->router->dispatch('OPTIONS', '/');
     }
@@ -85,7 +91,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             /**
              * @var Router $r
              */
-            $r->get('/stub', [new \Stub\StubController, 'index']);
+            $r->get('/stub', [$this->mockController, 'index']);
         }, ['prefix' => '/test']);
 
         $this->expectOutputString('true');
@@ -95,7 +101,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     public function testRouteGroupWithParameter()
     {
         $this->router->group(function($r) {
-            $r->get('/test/uri', [new \Stub\StubController, 'index']);
+            $r->get('/test/uri', [$this->mockController, 'index']);
         }, ['prefix' => '/group/{param}']);
 
         $this->expectOutputString('true');
@@ -118,7 +124,8 @@ class RouterTest extends \PHPUnit_Framework_TestCase
 
     public function testNamedRoutes()
     {
-        $this->router->get('/test/uri/with/{param}/regexParam/{regexParam:[a-c]+}', [new \Stub\StubController, 'index'], 'testRoute');
+        $this->router->get('/test/uri/with/{param}/regexParam/{regexParam:[a-c]+}', [$this->mockController, 'index'],
+            'testRoute');
 
         $this->assertSame(
             '/test/uri/with/simpleParameter/regexParam/aabc',
@@ -134,7 +141,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     public function testNamedRoutesFromGroups()
     {
         $this->router->group(function($r) {
-            $r->get('/some/{param}', [new \Stub\StubController, 'index'], 'test');
+            $r->get('/some/{param}', [$this->mockController, 'index'], 'test');
         }, ['prefix' => '/test/{uri}/with/{params}']);
 
         $this->assertSame(
@@ -165,7 +172,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     public function testNamedRoutesArgumentException()
     {
         $this->router
-            ->get('/some/{param}', [new \Stub\StubController(), 'index'], 'test');
+            ->get('/some/{param}', [$this->mockController, 'index'], 'test');
 
         $this->setExpectedException(
             '\LogicException',

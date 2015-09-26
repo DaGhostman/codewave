@@ -3,8 +3,6 @@
 
 namespace Test\Application;
 
-
-use Stub\MockUrl;
 use Wave\Framework\Application\ApplicationFactory;
 
 class ApplicationFactoryTest extends \PHPUnit_Framework_TestCase
@@ -13,13 +11,11 @@ class ApplicationFactoryTest extends \PHPUnit_Framework_TestCase
      * @var ApplicationFactory
      */
     protected $factory;
-    protected function setUp()
-    {
-        $this->factory = new ApplicationFactory([
-            'CONTENT_TYPE' => 'text/html',
-            'REQUEST_METHOD' => 'GET'
-        ]);
-    }
+
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $mock;
 
     public function testSettingRequestClassException()
     {
@@ -27,8 +23,9 @@ class ApplicationFactoryTest extends \PHPUnit_Framework_TestCase
             '\RuntimeException',
             'The request class needs to implement \Wave\Framework\Interfaces\Http\RequestInterface'
         );
+
         $this->factory->setRequest('\stdClass')
-            ->build(new MockUrl());
+            ->build($this->mock);
     }
 
     public function testSettingResponseClassException()
@@ -38,7 +35,8 @@ class ApplicationFactoryTest extends \PHPUnit_Framework_TestCase
             'The response class needs to implement \Wave\Framework\Interfaces\Http\ResponseInterface'
         );
 
-        $this->factory->setResponse('\stdClass')->build(new MockUrl());
+        $this->factory->setResponse('\stdClass')
+            ->build($this->mock);
     }
 
     public function testSettingServerClassException()
@@ -49,6 +47,17 @@ class ApplicationFactoryTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertNull($this->factory->setServer('\stdClass')
-            ->build(new MockUrl()));
+            ->build($this->mock));
+    }
+
+    protected function setUp()
+    {
+        $this->mock = $this->getMock(
+            '\Wave\Framework\Http\Url', null, [], '', true
+        );
+        $this->factory = new ApplicationFactory([
+            'CONTENT_TYPE' => 'text/html',
+            'REQUEST_METHOD' => 'GET'
+        ]);
     }
 }

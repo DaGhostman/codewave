@@ -65,6 +65,37 @@ class Server implements ServerInterface, MiddlewareAwareInterface
     }
 
     /**
+     * @param $server
+     * @return array
+     */
+    private function buildHeaders($server)
+    {
+        $headers = [];
+        foreach ($server as $key => $value) {
+            if (strpos($key, 'HTTP_COOKIE') === 0) {
+                // Cookies are handled using the $_COOKIE super global
+                continue;
+            }
+            if ($value && strpos($key, 'HTTP_') === 0) {
+                $name = str_replace('_', ' ', substr($key, 5));
+                $name = str_replace(' ', '-', ucwords(strtolower($name)));
+                $name = strtolower($name);
+                $headers[$name] = $value;
+                continue;
+            }
+            if ($value && strpos($key, 'CONTENT_') === 0) {
+                $name = substr($key, 8); // Content-
+                $name = 'Content-' . (($name === 'MD5') ? $name : ucfirst(strtolower($name)));
+                $name = strtolower($name);
+                $headers[$name] = $value;
+                continue;
+            }
+        }
+
+        return $headers;
+    }
+
+    /**
      * Responsible for invoking the $callback as well as trigger the
      * middleware stack. Note that the middleware is running as if
      * going through layers of onion, the layer you first enter is
@@ -124,7 +155,7 @@ class Server implements ServerInterface, MiddlewareAwareInterface
                 $this->response->addHeader('Allow', implode(', ', $e->getAllowed()));
                 throw $e;
             } catch (\Exception $e) {
-                list($statusCode)=$this->response->getStatus();
+                $statusCode = $this->response->getStatus()[0];
                 if ($statusCode >= 200 && $statusCode <= 208) {
                     $this->response->setStatus(500);
                 }
@@ -209,36 +240,5 @@ class Server implements ServerInterface, MiddlewareAwareInterface
     public function addMiddleware(MiddlewareInterface $middleware)
     {
         $this->middleware[] = $middleware;
-    }
-
-    /**
-     * @param $server
-     * @return array
-     */
-    private function buildHeaders($server)
-    {
-        $headers = [];
-        foreach ($server as $key => $value) {
-            if (strpos($key, 'HTTP_COOKIE') === 0) {
-                // Cookies are handled using the $_COOKIE super global
-                continue;
-            }
-            if ($value && strpos($key, 'HTTP_') === 0) {
-                $name = str_replace('_', ' ', substr($key, 5));
-                $name = str_replace(' ', '-', ucwords(strtolower($name)));
-                $name = strtolower($name);
-                $headers[$name] = $value;
-                continue;
-            }
-            if ($value && strpos($key, 'CONTENT_') === 0) {
-                $name = substr($key, 8); // Content-
-                $name = 'Content-' . (($name === 'MD5') ? $name : ucfirst(strtolower($name)));
-                $name = strtolower($name);
-                $headers[$name] = $value;
-                continue;
-            }
-        }
-
-        return $headers;
     }
 }
