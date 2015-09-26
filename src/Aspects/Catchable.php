@@ -67,65 +67,41 @@ class Catchable extends AnnotationAspect
         try {
             return $invocation->proceed();
         } catch (\Exception $ex) {
-            $this->callLogger($ex, $invocation);
-        }
-    }
+            $method = $invocation->getMethod();
 
-    /**
-     * @param MethodInvocation $invocation
-     *
-     * @Around("@within(Wave\Framework\Annotations\General\Catchable)")
-     * @throws \Exception
-     * @return mixed
-     */
-    public function aroundCatchableClassAnnotation($invocation)
-    {
-        try {
-            return $invocation->proceed();
-        } catch (\Exception $ex) {
-            $this->callLogger($ex, $invocation);
-        }
-    }
+            /**
+             * @var mixed $exception
+             */
+            $exception = $this->getMethodAnnotation($method);
+            if ($exception !== null) {
+                $exception = $exception->getException(get_class($ex));
+            }
 
-    /**
-     * @param $ex         \Exception
-     * @param $invocation MethodInvocation
-     *
-     * @throws \Exception
-     * @throws \Wave\Framework\Exceptions\AspectAnnotationException
-     */
-    private function callLogger($ex, $invocation)
-    {
-        /**
-         * @var $exception \Wave\Framework\Annotations\General\Exception|null
-         */
-        $exception = $this->getMethodAnnotation($invocation->getMethod())
-            ->getException(get_class($ex));
+            $severity = 'CRITICAL';
+            $message = $message = 'Call of {class}:{method} resulted in "{exception}" ' .
+                'exception with "message" {message} @ {file}:{line} ' . PHP_EOL .
+                'Arguments: {arguments}';
+            $rethrow = true;
 
-        $severity = 'CRITICAL';
-        $message = $message = 'Call of {class}:{method} resulted in "{exception}" ' .
-            'exception with "message" {message} @ {file}:{line} ' . PHP_EOL .
-            'Arguments: {arguments}';
-        $rethrow = true;
+            if ($exception !== null) {
+                $severity = strtolower($exception->getSeverity());
+                $message = $exception->getMessage();
+                $rethrow = $exception->getRethrow();
+            }
 
-        if ($exception !== null) {
-            $severity = strtolower($exception->getSeverity());
-            $message = $exception->getMessage();
-            $rethrow = $exception->getRethrow();
-        }
+            call_user_func([$this->logger, $severity], $message, [
+                'class' => get_class($invocation->getThis()),
+                'method' => $method->name,
+                'exception' => get_class($ex),
+                'message' => $ex->getMessage() ,
+                'file' => $ex->getFile(),
+                'line' => $ex->getLine(),
+                'arguments' => $invocation->getArguments()
+            ]);
 
-        call_user_func([$this->logger, $severity], $message, [
-            'class' => get_class($invocation->getThis()),
-            'method' => $invocation->getMethod()->name,
-            'exception' => get_class($ex),
-            'message' => $ex->getMessage() ,
-            'file' => $ex->getFile(),
-            'line' => $ex->getLine(),
-            'arguments' => $invocation->getArguments()
-        ]);
-
-        if ($rethrow === true) {
-            throw $ex;
+            if ($rethrow === true) {
+                throw $ex;
+            }
         }
     }
 }
