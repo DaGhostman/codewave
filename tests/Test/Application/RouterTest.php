@@ -17,56 +17,46 @@ class RouterTest extends \PHPUnit_Framework_TestCase
      */
     private $router;
 
-    /**
-     * @var StubRequest
-     */
-    private $request;
-
-    /**
-     * @var StubResponse
-     */
-    private $response;
     public function setUp()
     {
-        $url = new MockUrl('/');
-        $this->request = new StubRequest('GET', $url, []);
-        $this->response = new StubResponse();
         $this->router = new Router();
     }
 
     public function testGet()
     {
-        $this->router->get('/', ['\Stub\StubController', 'index']);
+        $this->router->get('/', [new \Stub\StubController, 'index']);
         $this->expectOutputString('true');
-        $this->router->dispatch($this->request, $this->response);
+
+        $this->router->dispatch('GET', '/');
+
     }
 
     public function testPost()
     {
-        $this->router->post('/', ['\Stub\StubController', 'index']);
+        $this->router->post('/', [new \Stub\StubController, 'index']);
         $this->expectOutputString('true');
-        $this->router->dispatch(new StubRequest('POST', new Url()), $this->response);
+        $this->router->dispatch('POST', '/');
     }
 
     public function testPut()
     {
-        $this->router->put('/', ['\Stub\StubController', 'index']);
+        $this->router->put('/', [new \Stub\StubController, 'index']);
         $this->expectOutputString('true');
-        $this->router->dispatch(new StubRequest('PUT', new Url()), $this->response);
+        $this->router->dispatch('PUT', '/');
     }
 
     public function testPatch()
     {
-        $this->router->patch('/', ['\Stub\StubController', 'index']);
+        $this->router->patch('/', [new \Stub\StubController, 'index']);
         $this->expectOutputString('true');
-        $this->router->dispatch(new StubRequest('PATCH', new Url()), $this->response);
+        $this->router->dispatch('PATCH', '/');
     }
 
     public function testDelete()
     {
-        $this->router->delete('/', ['\Stub\StubController', 'index']);
+        $this->router->delete('/', [new \Stub\StubController, 'index']);
         $this->expectOutputString('true');
-        $this->router->dispatch(new Request('DELETE', new Url()), $this->response);
+        $this->router->dispatch('DELETE', '/');
     }
 
     /*
@@ -77,16 +67,16 @@ class RouterTest extends \PHPUnit_Framework_TestCase
      */
     public function testHead()
     {
-        $this->router->get('/', ['\Stub\StubController', 'index']);
+        $this->router->get('/', [new \Stub\StubController, 'index']);
         $this->expectOutputString('true'); // Verify the output
-        $this->router->dispatch(new Request('HEAD', new Url()), $this->response);
+        $this->router->dispatch('HEAD', '/');
     }
 
     public function testOptions()
     {
-        $this->router->options('/', ['\Stub\StubController', 'index']);
+        $this->router->options('/', [new \Stub\StubController, 'index']);
         $this->expectOutputString('true');
-        $this->router->dispatch(new Request('OPTIONS', new Url()), $this->response);
+        $this->router->dispatch('OPTIONS', '/');
     }
 
     public function testGroups()
@@ -95,40 +85,40 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             /**
              * @var Router $r
              */
-            $r->get('/stub', ['Stub\StubController', 'index']);
+            $r->get('/stub', [new \Stub\StubController, 'index']);
         }, ['prefix' => '/test']);
 
         $this->expectOutputString('true');
-        $this->router->dispatch(new Request('GET', new Url('/test/stub')), new StubResponse());
+        $this->router->dispatch('GET', '/test/stub');
     }
 
     public function testRouteGroupWithParameter()
     {
         $this->router->group(function($r) {
-            $r->get('/test/uri', ['Stub\StubController', 'index']);
+            $r->get('/test/uri', [new \Stub\StubController, 'index']);
         }, ['prefix' => '/group/{param}']);
 
         $this->expectOutputString('true');
-        $this->router->dispatch(new StubRequest('GET', new Url('/group/hello/test/uri')), new StubResponse());
+        $this->router->dispatch('GET', '/group/hello/test/uri');
     }
 
     public function testNotFoundRoutes()
     {
-        $this->router->get('/some/uri', ['Stub\Controller', 'index']);
+        $this->router->get('/some/uri', []);
         $this->setExpectedException('\Wave\Framework\Exceptions\HttpNotFoundException');
-        $this->router->dispatch($this->request, new StubResponse());
+        $this->router->dispatch('GET', '/');
     }
 
     public function testNotAllowedRoutes()
     {
         $this->router->post('/', ['Stub\Controller', 'index']);
         $this->setExpectedException('\Wave\Framework\Exceptions\HttpNotAllowedException');
-        $this->router->dispatch($this->request, new StubResponse());
+        $this->router->dispatch('GET', '/');
     }
 
     public function testNamedRoutes()
     {
-        $this->router->post('/test/uri/with/{param}/regexParam/{regexParam:[a-c]+}', [], 'testRoute');
+        $this->router->get('/test/uri/with/{param}/regexParam/{regexParam:[a-c]+}', [new \Stub\StubController, 'index'], 'testRoute');
 
         $this->assertSame(
             '/test/uri/with/simpleParameter/regexParam/aabc',
@@ -137,12 +127,14 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'regexParam' => 'aabc'
             ])
         );
+        $this->expectOutputString('true');
+        $this->router->dispatch('GET', '/test/uri/with/simpleParameter/regexParam/aabc');
     }
 
     public function testNamedRoutesFromGroups()
     {
         $this->router->group(function($r) {
-            $r->get('/some/{param}', [], 'test');
+            $r->get('/some/{param}', [new \Stub\StubController, 'index'], 'test');
         }, ['prefix' => '/test/{uri}/with/{params}']);
 
         $this->assertSame(
@@ -153,6 +145,9 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'uri' => 'route'
             ])
         );
+
+        $this->expectOutputString('true');
+        $this->router->dispatch('GET', '/test/route/with/parameters/some/parameter');
     }
 
     public function testNamedRoutesLogicException()
@@ -160,22 +155,32 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->router
             ->get('/some/uri', [], 'test');
 
-        $this->setExpectedException('\LogicException');
+        $this->setExpectedException(
+            '\LogicException',
+            'Number of arguments does not match the number of bound parameters'
+        );
         $this->router->route('test', ['param' => 'Hello+World!']);
     }
 
     public function testNamedRoutesArgumentException()
     {
         $this->router
-            ->get('/some/{param}', [], 'test');
+            ->get('/some/{param}', [new \Stub\StubController(), 'index'], 'test');
 
-        $this->setExpectedException('\LogicException');
+        $this->setExpectedException(
+            '\LogicException',
+            'Number of arguments does not match the number of bound parameters'
+        );
+
         $this->router->route('test', ['some' => 'param']);
     }
 
     public function testNamedRouteNotFoundException()
     {
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->setExpectedException(
+            '\InvalidArgumentException',
+            'Route with name "notFound" does not exist'
+        );
         $this->router->route('notFound', []);
     }
 }

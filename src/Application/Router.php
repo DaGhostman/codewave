@@ -3,6 +3,7 @@ namespace Wave\Framework\Application;
 
 use FastRoute\DataGenerator\GroupCountBased;
 use FastRoute\RouteParser\Std;
+use Wave\Framework\Interfaces\Http\UrlInterface;
 use Wave\Framework\Router\ExtendedRouteCollector as RouteCollector;
 use Wave\Framework\Exceptions\HttpNotAllowedException;
 use Wave\Framework\Exceptions\HttpNotFoundException;
@@ -238,21 +239,20 @@ class Router
      * Performs the route matching and invokes the handler for the route, if
      * there is an error it throws exception.
      *
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
+     * @param string $method
+     * @param string $uri
      *
      * @throws HttpNotAllowedException
      * @throws HttpNotFoundException
      *
      * @return void
      */
-    public function dispatch(RequestInterface $request, ResponseInterface $response)
+    public function dispatch($method, $uri)
     {
         $d = new \FastRoute\Dispatcher\GroupCountBased($this->collector->getData());
         $r = $d->dispatch(
-            ($request->getMethod() === 'HEAD' ? 'GET' : $request->getMethod()),
-            $request->getUrl()
-                ->getPath()
+            ($method === 'HEAD' ? 'GET' : $method),
+            $uri
         );
 
         switch ($r[0]) {

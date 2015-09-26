@@ -109,7 +109,13 @@ class Server implements ServerInterface, MiddlewareAwareInterface
             }
 
             try {
-                $router->dispatch($this->request, $this->response);
+                $router->dispatch(
+                    $this->request
+                        ->getMethod(),
+                    $this->request
+                        ->getUrl()
+                        ->getPath()
+                );
             } catch (HttpNotFoundException $e) {
                 $this->response->setStatus(404);
                 throw $e;
