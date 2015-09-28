@@ -28,9 +28,8 @@
  */
 namespace Wave\Framework\Aspects;
 
-use Go\Lang\Annotation\Around;
-use Go\Lang\Annotation\Before;
 use Go\Aop\Intercept\MethodInvocation;
+use Go\Lang\Annotation\Before;
 use Wave\Framework\Http\Response as HttpResponse;
 
 /**
@@ -51,31 +50,6 @@ class Response extends AnnotationAspect
     {
         $this->response = $response;
         parent::__construct();
-    }
-
-    /**
-     * @param MethodInvocation $invocation
-     *
-     * @throws \Wave\Framework\Exceptions\AspectAnnotationException
-     *
-     * @Around("@annotation(Wave\Framework\Annotations\Http\Response)")
-     */
-    public function aroundResponseAnnotation(MethodInvocation $invocation)
-    {
-        /**
-         * @var $annotation \Wave\Framework\Annotations\Http\Response
-         */
-        $annotation = $this->getMethodAnnotation(
-            $invocation->getMethod(),
-            '\Wave\Framework\Annotations\Http\Response'
-        );
-
-        $this->response->setStatus($annotation->getStatus());
-        $this->response->addHeaders($annotation->getHeaders());
-
-        ob_start();
-        $this->response->setBody($invocation->proceed());
-        ob_end_clean(); // Prevents output from the action method (ensures all headers will be accepted)
     }
 
     /**
