@@ -71,9 +71,7 @@ class Template extends AnnotationAspect
         $viewObject = $this->container
             ->get($view);
 
-        $viewObject->$method($data)
-            ->render();
-
-        return $data;
+        $viewObject->$method($data);
+        $viewObject->render();
     }
 }
