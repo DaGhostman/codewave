@@ -1,12 +1,12 @@
 <?php
-namespace Wave\Framework\Exceptions;
+namespace Wave\Framework\Exceptions\Dispatch;
 
 /**
  * Class HttpNotAllowedException
  *
  * @package Wave\Framework\Exceptions
  */
-class HttpNotAllowedException extends \Exception
+class MethodNotAllowedException extends \Exception
 {
     /**
      * @var array List of allowed methods for the given uri

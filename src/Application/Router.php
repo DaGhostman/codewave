@@ -2,15 +2,15 @@
 namespace Wave\Framework\Application;
 
 use FastRoute\DataGenerator\GroupCountBased;
+use FastRoute\RouteCollector;
 use FastRoute\RouteParser\Std;
-use Wave\Framework\Interfaces\Http\UrlInterface;
-use Wave\Framework\Router\ExtendedRouteCollector as RouteCollector;
-use Wave\Framework\Exceptions\HttpNotAllowedException;
-use Wave\Framework\Exceptions\HttpNotFoundException;
-use Wave\Framework\Interfaces\Http\RequestInterface;
-use Wave\Framework\Interfaces\Http\ResponseInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface as RequestInterface;
+use Wave\Framework\Exceptions\Dispatch\MethodNotAllowedException;
+use Wave\Framework\Exceptions\Dispatch\NotFoundException;
+use Wave\Framework\Interfaces\Middleware\MiddlewareInterface;
 
-class Router
+class Router implements MiddlewareInterface
 {
     /**
      * @var RouteCollector
@@ -48,19 +48,50 @@ class Router
     }
 
     /**
+     * Sets the prefix to use when adding routes
+     *
+     * @param $prefix string
+     */
+    private function setPrefix($prefix)
+    {
+        $this->prefix = trim($prefix, '/');
+    }
+
+    /**
      * Defines a route which will respond to GET and HEAD requests
      *
      * @param string $pattern The route pattern for the URL
      * @param array $callback The callback which should be handle the response
+     * @param callable[] $middleware List of the middleware for the route
      * @param string $name (Optional) Route name. Used for reverse routing.
      *
      * @return $this
      */
-    public function get($pattern, array $callback, $name = null)
+    public function get($pattern, array $callback, array $middleware = null, $name = null)
     {
-        $this->addRoute('get', $pattern, $callback, $name);
+        $this->addRoute('get', $pattern, $callback, $middleware, $name);
 
         return $this;
+    }
+
+    /**
+     * Proxies the route definition with the backend routing library
+     *
+     * @param string $method
+     * @param string $pattern
+     * @param array $callback
+     * @param null  $name
+     */
+    protected function addRoute($method, $pattern, array $callback, array $middleware = null, $name = null)
+    {
+        $concatenatedPattern = (!is_null($this->prefix) ? '/' . $this->prefix : '') .
+            $pattern;
+
+        $this->collector->addRoute(strtoupper($method), $concatenatedPattern, new Route($callback, $middleware));
+
+        if ($name !== null) {
+            $this->namedRoutes[$name] = $concatenatedPattern;
+        }
     }
 
     /**
@@ -68,13 +99,14 @@ class Router
      *
      * @param string $pattern The route pattern for the URL
      * @param array $callback The callback which should be handle the response
+     * @param callable[] $middleware List of the middleware for the route
      * @param string $name (Optional) Route name. Used for reverse routing.
      *
      * @return $this
      */
-    public function post($pattern, array $callback, $name = null)
+    public function post($pattern, array $callback, array $middleware = null, $name = null)
     {
-        $this->addRoute('post', $pattern, $callback, $name);
+        $this->addRoute('post', $pattern, $callback, $middleware, $name);
 
         return $this;
     }
@@ -84,13 +116,14 @@ class Router
      *
      * @param string $pattern The route pattern for the URL
      * @param array $callback The callback which should be handle the response
+     * @param callable[] $middleware List of the middleware for the route
      * @param string $name (Optional) Route name. Used for reverse routing.
      *
      * @return $this
      */
-    public function put($pattern, array $callback, $name = null)
+    public function put($pattern, array $callback, array $middleware = null, $name = null)
     {
-        $this->addRoute('put', $pattern, $callback, $name);
+        $this->addRoute('put', $pattern, $callback, $middleware, $name);
 
         return $this;
     }
@@ -100,13 +133,14 @@ class Router
      *
      * @param string $pattern The route pattern for the URL
      * @param array $callback The callback which should be handle the response
+     * @param callable[] $middleware List of the middleware for the route
      * @param string $name (Optional) Route name. Used for reverse routing.
      *
      * @return $this
      */
-    public function patch($pattern, array $callback, $name = null)
+    public function patch($pattern, array $callback, array $middleware = null, $name = null)
     {
-        $this->addRoute('patch', $pattern, $callback, $name);
+        $this->addRoute('patch', $pattern, $callback, $middleware, $name);
 
         return $this;
     }
@@ -116,13 +150,14 @@ class Router
      *
      * @param string $pattern The route pattern for the URL
      * @param array $callback The callback which should be handle the response
+     * @param callable[] $middleware List of the middleware for the route
      * @param string $name (Optional) Route name. Used for reverse routing.
      *
      * @return $this
      */
-    public function delete($pattern, array $callback, $name = null)
+    public function delete($pattern, array $callback, array $middleware = null, $name = null)
     {
-        $this->addRoute('delete', $pattern, $callback, $name);
+        $this->addRoute('delete', $pattern, $callback, $middleware, $name);
 
         return $this;
     }
@@ -132,13 +167,14 @@ class Router
      *
      * @param string $pattern The route pattern for the URL
      * @param array $callback The callback which should be handle the response
+     * @param callable[] $middleware List of the middleware for the route
      * @param string $name (Optional) Route name. Used for reverse routing.
      *
      * @return $this
      */
-    public function options($pattern, array $callback, $name = null)
+    public function options($pattern, array $callback, array $middleware = null, $name = null)
     {
-        $this->addRoute('options', $pattern, $callback, $name);
+        $this->addRoute('options', $pattern, $callback, $middleware, $name);
 
         return $this;
     }
@@ -236,19 +272,46 @@ class Router
     }
 
     /**
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @param callable|null $next
+     * @return ResponseInterface
+     * @throws MethodNotAllowedException
+     * @throws NotFoundException
+     */
+    public function __invoke($request, $response, $next = null)
+    {
+        if ($next !== null) {
+            $response = $next($request, $response);
+        }
+
+        $result = $this->dispatch($request, $response);
+
+        if ($result instanceof ResponseInterface) {
+            $response = $result;
+        }
+
+        return $response;
+    }
+
+    /**
      * Performs the route matching and invokes the handler for the route, if
      * there is an error it throws exception.
      *
-     * @param string $method
-     * @param string $uri
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param \Psr\Http\Message\ResponseInterface $response
      *
-     * @throws HttpNotAllowedException
-     * @throws HttpNotFoundException
+     * @throws MethodNotAllowedException
+     * @throws NotFoundException
      *
-     * @return void
+     * @return ResponseInterface
      */
-    public function dispatch($method, $uri)
+    public function dispatch($request, $response)
     {
+
+        $method = $request->getMethod();
+        $uri = $request->getUri()->getPath();
+
         $d = new \FastRoute\Dispatcher\GroupCountBased($this->collector->getData());
         $r = $d->dispatch(
             ($method === 'HEAD' ? 'GET' : $method),
@@ -257,44 +320,14 @@ class Router
 
         switch ($r[0]) {
             case 0:
-                throw new HttpNotFoundException('Route not found');
+                throw new NotFoundException('Route not found');
                 break;
             case 1:
-                call_user_func_array($r[1], $r[2]);
+                return call_user_func($r[1], $request, $response, $r[2]);
                 break;
             case 2:
-                throw new HttpNotAllowedException('Method not allowed', 0, null, $r[1]);
+                throw new MethodNotAllowedException('Method not allowed', 0, null, $r[1]);
                 break;
         }
-    }
-
-    /**
-     * Proxies the route definition with the backend routing library
-     *
-     * @param string $method
-     * @param string $pattern
-     * @param array $callback
-     * @param null  $name
-     */
-    protected function addRoute($method, $pattern, array $callback, $name = null)
-    {
-        $concatenatedPattern = (!is_null($this->prefix) ? '/' . $this->prefix : '') .
-            $pattern;
-
-        $this->collector->addRoute(strtoupper($method), $concatenatedPattern, $callback);
-
-        if ($name !== null) {
-            $this->namedRoutes[$name] = $concatenatedPattern;
-        }
-    }
-
-    /**
-     * Sets the prefix to use when adding routes
-     *
-     * @param $prefix string
-     */
-    private function setPrefix($prefix)
-    {
-        $this->prefix = trim($prefix, '/');
     }
 }

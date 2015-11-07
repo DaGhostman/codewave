@@ -1,11 +1,16 @@
 <?php
 namespace Wave\Framework\Interfaces\Middleware;
 
-use Wave\Framework\Interfaces\Http\RequestInterface;
-use Wave\Framework\Interfaces\Http\ResponseInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface as RequestInterface;
 
 interface MiddlewareInterface
 {
-    public function before(RequestInterface $request, ResponseInterface $response);
-    public function after(ResponseInterface $response);
+    /**
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @param callable $next
+     * @return bool
+     */
+    public function __invoke($request, $response, $next = null);
 }

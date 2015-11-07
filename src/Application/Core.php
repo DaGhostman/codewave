@@ -28,9 +28,9 @@
  */
 namespace Wave\Framework\Application;
 
-use Wave\Framework\Http\Server;
-use Wave\Framework\Http\Url;
 use Wave\Framework\Interfaces\Middleware\MiddlewareInterface;
+use Wave\Framework\Middleware\RouterMiddleware;
+use Zend\Diactoros\Server;
 
 /**
  * Class Core
@@ -38,17 +38,19 @@ use Wave\Framework\Interfaces\Middleware\MiddlewareInterface;
  */
 class Core extends AspectsKernel
 {
-
-    private $defaultConfiguration = [
-        'debug' => false
+    /**
+     * Config options
+     * @var array
+     */
+    private $config = [
+        'debug' => false,
+        'allowDirectOutput' => false
     ];
 
-    private $middleware = [];
-
     /**
-     * @var Server
+     * @var MiddlewareInterface[]
      */
-    private $server;
+    private $middleware = [];
 
     /**
      * Prepares the core HTTP objects
@@ -60,21 +62,29 @@ class Core extends AspectsKernel
      */
     public function __construct(array $options = [])
     {
-        $this->defaultConfiguration = array_merge($this->defaultConfiguration, $options);
-
-        $this->server = (new ApplicationFactory($_SERVER))
-            ->build(new Url());
-
-        self::$instance = $this;
-        $this->init($this->defaultConfiguration);
+        $this->config = array_merge($this->config, $options);
+        if (array_key_exists('aspects', $this->config) && $this->config['aspects'] === true) {
+            self::$instance = $this;
+            $this->init($this->config);
+        }
     }
 
     /**
-     * @param MiddlewareInterface $middleware
+     * @param callable $middleware
+     *
+     * @throws \InvalidArgumentException
+     *
      * @return $this
      */
-    public function addMiddleware(MiddlewareInterface $middleware)
+    public function addMiddleware(callable $middleware)
     {
+        if (!is_callable($middleware)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Expected callable, received %s',
+                gettype($middleware)
+            ));
+        }
+
         $this->middleware[] = $middleware;
 
         return $this;
@@ -83,36 +93,53 @@ class Core extends AspectsKernel
     /**
      * @param Router $router Already populated Router
      *
-     * @throws \InvalidArgumentException
-     * @throws \Wave\Framework\Exceptions\HttpNotFoundException
-     * @throws \Wave\Framework\Exceptions\HttpNotAllowedException
+     * @throws \RuntimeException On stream errors
+     * @throws \Wave\Framework\Exceptions\Dispatch\MethodNotAllowedException
+     * @throws \Wave\Framework\Exceptions\Dispatch\NotFoundException
      * @throws \Exception
      */
     public function run(Router $router)
     {
-        foreach ($this->middleware as $middleware) {
-            $this->server->addMiddleware($middleware);
+        $this->middleware = array_merge([new RouterMiddleware($router)], $this->middleware);
+
+        $next = null;
+        $stack = new \SplDoublyLinkedList();
+        foreach ($this->middleware as $callback) {
+            if ($stack->count() > 0) {
+                $next = $stack->top();
+            }
+            $stack->push(function ($request, $response) use ($callback, $next) {
+                return call_user_func($callback, $request, $response, $next);
+            });
         }
 
-        $this->server
-            ->listen($router);
-    }
+        $server = Server::createServer(function ($request, $response) use ($stack) {
+            /**
+             * @var $request \Zend\Diactoros\Request
+             * @var $response \Zend\Diactoros\Response
+             * @var $stream \Psr\Http\Message\StreamInterface
+             */
+            if ($request->getMethod() === 'TRACE') {
+                $stream = $response->getBody();
+                $stream->write(sprintf(
+                    '%s %s' . PHP_EOL,
+                    $request->getMethod(),
+                    $request->getUri()->getPath()
+                ));
+                foreach ($request->getHeaders() as $header => $values) {
+                    foreach ($values as $value) {
+                        $stream->write(sprintf('%s: %s' . PHP_EOL, $header, $value));
+                    }
+                }
+            }
 
-    /**
-     * @return \Wave\Framework\Interfaces\Http\RequestInterface
-     */
-    public function getRequest()
-    {
-        return $this->server
-            ->getRequest();
-    }
+            $stack->setIteratorMode(\SplDoublyLinkedList::IT_MODE_LIFO);
+            if ($stack !== null && $request->getMethod() !== 'TRACE') {
+                $response = call_user_func($stack->top(), $request, $response);
+            }
 
-    /**
-     * @return \Wave\Framework\Interfaces\Http\ResponseInterface
-     */
-    public function getResponse()
-    {
-        return $this->server
-            ->getResponse();
+            return $response;
+        }, $_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
+        $server->listen();
     }
 }

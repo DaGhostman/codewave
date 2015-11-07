@@ -1,11 +1,11 @@
 <?php
-namespace Wave\Framework\Exceptions;
+namespace Wave\Framework\Exceptions\Dispatch;
 
 /**
  * Class HttpNotFoundException
  * @package Wave\Framework\Exceptions
  */
-class HttpNotFoundException extends \Exception
+class NotFoundException extends \Exception
 {
 
 }

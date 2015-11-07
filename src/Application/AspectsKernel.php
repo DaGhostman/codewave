@@ -54,9 +54,8 @@ class AspectsKernel extends AspectKernel
         // Implements required abstract method
         /*
          * Prior to version 3 there will be some Aspects which
-         * will be loaded for every application. Candidates are:
-         *  - @Catchable
-         *  - @Cache (TBD)
+         * will be loaded for every application, if `aspects`
+         * option is provided upon object creation.
          */
     }
 }

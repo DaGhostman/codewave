@@ -10,5 +10,5 @@ interface MiddlewareAwareInterface
      *
      * @return null
      */
-    public function addMiddleware(MiddlewareInterface $middleware);
+    public function addMiddleware(\SplDoublyLinkedList $middleware);
 }
