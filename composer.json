@@ -6,9 +6,11 @@
   "type": "library",
   "require": {
     "php": ">=5.4",
+    "psr/http-message": "1.0",
     "nikic/fast-route": "v0.6.0",
     "goaop/framework": "0.6.1",
-    "doctrine/annotations": "1.*@stable"
+    "doctrine/annotations": "1.*@stable",
+    "zendframework/zend-diactoros": "1.*"
   },
   "prefer-stable": true,
   "suggest": {
