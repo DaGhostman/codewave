@@ -4,15 +4,9 @@
 namespace Stub;
 
 
-use Wave\Framework\Http\Request;
-use Wave\Framework\Interfaces\Http\UrlInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Zend\Diactoros\ServerRequest as Request;
 
-class StubRequest extends Request
+class StubRequest extends Request implements ServerRequestInterface
 {
-    public function getBody()
-    {
-        return json_encode([
-            'key' => 'value'
-        ]);
-    }
 }

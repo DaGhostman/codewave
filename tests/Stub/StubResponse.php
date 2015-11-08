@@ -4,6 +4,9 @@
 namespace Stub;
 
 
-use Wave\Framework\Http\Response;
+use Psr\Http\Message\ResponseInterface;
+use Zend\Diactoros\Response;
 
-class StubResponse extends Response {}
+class StubResponse extends Response implements ResponseInterface
+{
+}

@@ -6,6 +6,7 @@ use FastRoute\RouteCollector;
 use FastRoute\RouteParser\Std;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Wave\Framework\Exceptions\Dispatch\MethodNotAllowedException;
 use Wave\Framework\Exceptions\Dispatch\NotFoundException;
 use Wave\Framework\Interfaces\Middleware\MiddlewareInterface;
@@ -298,15 +299,15 @@ class Router implements MiddlewareInterface
      * Performs the route matching and invokes the handler for the route, if
      * there is an error it throws exception.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param \Psr\Http\Message\ResponseInterface $response
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      *
      * @throws MethodNotAllowedException
      * @throws NotFoundException
      *
      * @return ResponseInterface
      */
-    public function dispatch($request, $response)
+    public function dispatch(ServerRequestInterface $request, ResponseInterface $response)
     {
 
         $method = $request->getMethod();
