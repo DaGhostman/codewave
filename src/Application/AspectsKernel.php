@@ -32,18 +32,29 @@ use Go\Aop\Aspect;
 use Go\Core\AspectContainer;
 use Go\Core\AspectKernel;
 
+/**
+ * Class AspectsKernel
+ * @package Wave\Framework\Application
+ */
 class AspectsKernel extends AspectKernel
 {
 
+    /**
+     * Registers an aspect to the aspects kernel
+     * @param Aspect $aspect
+     * @return $this
+     */
     public function addAspect(Aspect $aspect)
     {
-        $this->container->registerAspect($aspect);
+        if ($this->container !== null) {
+            $this->container->registerAspect($aspect);
+        }
 
         return $this;
     }
 
     /**
-     * Configure an AspectContainer with advisors, aspects and pointcuts
+     * Configure an AspectContainer with advisers, aspects and pointcuts
      *
      * @param AspectContainer $container
      *
