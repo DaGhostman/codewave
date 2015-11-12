@@ -40,11 +40,13 @@ class Catchable extends AnnotationAspect
 {
 
     /**
+     * @var string
+     */
+    protected $annotation = '\Wave\Framework\Annotations\LogErrors';
+    /**
      * @var LoggerInterface
      */
     private $logger;
-
-    protected $annotation = '\Wave\Framework\Annotations\General\Catchable';
 
     /**
      * @param LoggerInterface $logger
@@ -58,7 +60,7 @@ class Catchable extends AnnotationAspect
     /**
      * @param MethodInvocation $invocation
      *
-     * @Around("@annotation(Wave\Framework\Annotations\General\Catchable)")
+     * @Around("@annotation(Wave\Framework\Annotations\LogErrors)")
      * @throws \Exception
      * @return mixed
      */
@@ -67,41 +69,14 @@ class Catchable extends AnnotationAspect
         try {
             return $invocation->proceed();
         } catch (\Exception $ex) {
-            $method = $invocation->getMethod();
-
-            /**
-             * @var mixed $exception
-             */
-            $exception = $this->getMethodAnnotation($method);
-            if ($exception !== null) {
-                $exception = $exception->getException(get_class($ex));
-            }
-
-            $severity = 'CRITICAL';
-            $message = $message = 'Call of {class}:{method} resulted in "{exception}" ' .
-                'exception with "message" {message} @ {file}:{line} ' . PHP_EOL .
-                'Arguments: {arguments}';
-            $rethrow = true;
-
-            if ($exception !== null) {
-                $severity = strtolower($exception->getSeverity());
-                $message = $exception->getMessage();
-                $rethrow = $exception->getRethrow();
-            }
-
-            call_user_func([$this->logger, $severity], $message, [
-                'class' => get_class($invocation->getThis()),
-                'method' => $method->name,
+            $this->logger->error('Unhandled exception {exception} with {message} occurred in {file}:{line}', [
                 'exception' => get_class($ex),
                 'message' => $ex->getMessage() ,
                 'file' => $ex->getFile(),
-                'line' => $ex->getLine(),
-                'arguments' => $invocation->getArguments()
+                'line' => $ex->getLine()
             ]);
 
-            if ($rethrow === true) {
-                throw $ex;
-            }
+            throw $ex;
         }
     }
 }
