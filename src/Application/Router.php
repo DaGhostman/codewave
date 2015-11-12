@@ -11,6 +11,10 @@ use Wave\Framework\Exceptions\Dispatch\MethodNotAllowedException;
 use Wave\Framework\Exceptions\Dispatch\NotFoundException;
 use Wave\Framework\Interfaces\Middleware\MiddlewareInterface;
 
+/**
+ * Class Router
+ * @package Wave\Framework\Application
+ */
 class Router implements MiddlewareInterface
 {
     /**
@@ -21,7 +25,25 @@ class Router implements MiddlewareInterface
      * @var array
      */
     protected $namedRoutes = [];
+
+    /**
+     * @var callable
+     */
+    protected $errorHandler = null;
+
+    /**
+     * @var callable
+     */
+    protected $notFound = null;
+
+    /**
+     * @var string
+     */
     private $prefix;
+
+    /**
+     * @var mixed
+     */
     private $cache;
 
     /**
@@ -59,16 +81,54 @@ class Router implements MiddlewareInterface
     }
 
     /**
+     * Registers a callback to handle errors
+     *
+     * @param $callback callback
+     * @throws \InvalidArgumentException If $callback is not callable
+     * @return $this
+     */
+    public function setErrorHandler($callback)
+    {
+        if (!is_callable($callback)) {
+            throw new \InvalidArgumentException(
+                'Invalid error handler provided'
+            );
+        }
+        $this->errorHandler = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Registers a callback to dispatch when a page is not found
+     *
+     * @param callback $callback
+     * @throws \InvalidArgumentException If $callback is not callable
+     * @return $this
+     */
+    public function setNotFound($callback)
+    {
+        if (!is_callable($callback)) {
+            throw new \InvalidArgumentException(
+                'Invalid 404 callback provided'
+            );
+        }
+        $this->notFound = $callback;
+
+        return $this;
+    }
+
+    /**
      * Defines a route which will respond to GET and HEAD requests
      *
      * @param string $pattern The route pattern for the URL
-     * @param array $callback The callback which should be handle the response
+     * @param callable $callback The callback which should be handle the response
      * @param callable[] $middleware List of the middleware for the route
      * @param string $name (Optional) Route name. Used for reverse routing.
      *
      * @return $this
      */
-    public function get($pattern, array $callback, array $middleware = null, $name = null)
+    public function get($pattern, $callback, array $middleware = null, $name = null)
     {
         $this->addRoute('get', $pattern, $callback, $middleware, $name);
 
@@ -80,10 +140,11 @@ class Router implements MiddlewareInterface
      *
      * @param string $method
      * @param string $pattern
-     * @param array $callback
+     * @param callable $callback
+     * @param array $middleware
      * @param null  $name
      */
-    protected function addRoute($method, $pattern, array $callback, array $middleware = null, $name = null)
+    protected function addRoute($method, $pattern, $callback, array $middleware = null, $name = null)
     {
         $concatenatedPattern = (!is_null($this->prefix) ? '/' . $this->prefix : '') .
             $pattern;
@@ -99,13 +160,13 @@ class Router implements MiddlewareInterface
      * Defines a route which will respond to POST requests
      *
      * @param string $pattern The route pattern for the URL
-     * @param array $callback The callback which should be handle the response
+     * @param callable $callback The callback which should be handle the response
      * @param callable[] $middleware List of the middleware for the route
      * @param string $name (Optional) Route name. Used for reverse routing.
      *
      * @return $this
      */
-    public function post($pattern, array $callback, array $middleware = null, $name = null)
+    public function post($pattern, $callback, array $middleware = null, $name = null)
     {
         $this->addRoute('post', $pattern, $callback, $middleware, $name);
 
@@ -116,13 +177,13 @@ class Router implements MiddlewareInterface
      * Defines a route which will respond to PUT requests
      *
      * @param string $pattern The route pattern for the URL
-     * @param array $callback The callback which should be handle the response
+     * @param callable $callback The callback which should be handle the response
      * @param callable[] $middleware List of the middleware for the route
      * @param string $name (Optional) Route name. Used for reverse routing.
      *
      * @return $this
      */
-    public function put($pattern, array $callback, array $middleware = null, $name = null)
+    public function put($pattern, $callback, array $middleware = null, $name = null)
     {
         $this->addRoute('put', $pattern, $callback, $middleware, $name);
 
@@ -133,13 +194,13 @@ class Router implements MiddlewareInterface
      * Defines a route which will respond to PATCH requests
      *
      * @param string $pattern The route pattern for the URL
-     * @param array $callback The callback which should be handle the response
+     * @param callable $callback The callback which should be handle the response
      * @param callable[] $middleware List of the middleware for the route
      * @param string $name (Optional) Route name. Used for reverse routing.
      *
      * @return $this
      */
-    public function patch($pattern, array $callback, array $middleware = null, $name = null)
+    public function patch($pattern, $callback, array $middleware = null, $name = null)
     {
         $this->addRoute('patch', $pattern, $callback, $middleware, $name);
 
@@ -150,13 +211,13 @@ class Router implements MiddlewareInterface
      * Defines a route which will respond to DELETE requests
      *
      * @param string $pattern The route pattern for the URL
-     * @param array $callback The callback which should be handle the response
+     * @param callable $callback The callback which should be handle the response
      * @param callable[] $middleware List of the middleware for the route
      * @param string $name (Optional) Route name. Used for reverse routing.
      *
      * @return $this
      */
-    public function delete($pattern, array $callback, array $middleware = null, $name = null)
+    public function delete($pattern, $callback, array $middleware = null, $name = null)
     {
         $this->addRoute('delete', $pattern, $callback, $middleware, $name);
 
@@ -167,13 +228,13 @@ class Router implements MiddlewareInterface
      * Defines a route which will respond to OPTIONS requests
      *
      * @param string $pattern The route pattern for the URL
-     * @param array $callback The callback which should be handle the response
+     * @param callable $callback The callback which should be handle the response
      * @param callable[] $middleware List of the middleware for the route
      * @param string $name (Optional) Route name. Used for reverse routing.
      *
      * @return $this
      */
-    public function options($pattern, array $callback, array $middleware = null, $name = null)
+    public function options($pattern, $callback, array $middleware = null, $name = null)
     {
         $this->addRoute('options', $pattern, $callback, $middleware, $name);
 
@@ -330,5 +391,7 @@ class Router implements MiddlewareInterface
                 throw new MethodNotAllowedException('Method not allowed', 0, null, $r[1]);
                 break;
         }
+
+        return $response;
     }
 }

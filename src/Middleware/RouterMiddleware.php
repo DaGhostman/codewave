@@ -28,18 +28,12 @@
  */
 namespace Wave\Framework\Middleware;
 
-use Exceptions\Dispatch\UnauthorizedException;
-use Wave\Framework\Annotations\General\Catchable;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface as RequestInterface;
 use Wave\Framework\Application\Router;
 use Wave\Framework\Exceptions\Dispatch\MethodNotAllowedException;
-use Wave\Framework\Exceptions\Dispatch\NotAcceptableException;
 use Wave\Framework\Exceptions\Dispatch\NotFoundException;
-use Wave\Framework\Exceptions\HttpNotAllowedException;
-use Wave\Framework\Exceptions\HttpNotFoundException;
 use Wave\Framework\Interfaces\Middleware\MiddlewareInterface;
-use Psr\Http\Message\ServerRequestInterface as RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\MessageInterface;
 use Zend\Diactoros\Stream;
 
 /**
@@ -61,6 +55,17 @@ class RouterMiddleware implements MiddlewareInterface
     protected $router;
 
     /**
+     * @var callable
+     */
+    protected $errorHandler = null;
+
+    /**
+     * @var callable
+     */
+    protected $notFound = null;
+
+
+    /**
      * RouterMiddleware constructor.
      * Injects the already populated router object to be used by
      * the middleware for routing.
@@ -70,6 +75,34 @@ class RouterMiddleware implements MiddlewareInterface
     public function __construct(Router $router)
     {
         $this->router = $router;
+    }
+
+    /**
+     * Registers a callback to handle errors
+     *
+     * @param $callback callback
+     * @throws \InvalidArgumentException If $callback is not callable
+     * @return $this
+     */
+    public function setErrorHandler($callback)
+    {
+        $this->errorHandler = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Registers a callback to dispatch when a page is not found
+     *
+     * @param callback $callback
+     * @throws \InvalidArgumentException If $callback is not callable
+     * @return $this
+     */
+    public function setNotFound($callback)
+    {
+        $this->notFound = $callback;
+
+        return $this;
     }
 
     /**
@@ -110,11 +143,14 @@ class RouterMiddleware implements MiddlewareInterface
             }
         } catch (NotFoundException $ex) {
             $response = $response->withStatus(404);
+            $response = call_user_func($this->notFound, $request, $response) ?: $response;
         } catch (MethodNotAllowedException $ex) {
             $response = $response->withStatus(405)
                 ->withAddedHeader('Allow', implode(', ', $ex->getAllowed()));
+            $response = call_user_func($this->errorHandler, $request, $response, $ex) ?: $response;
         } catch (\Exception $ex) {
             $response = $response->withStatus(500);
+            $response = call_user_func($this->errorHandler, $request, $response, $ex) ?: $response;
         }
 
         return $response;
