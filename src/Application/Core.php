@@ -100,7 +100,11 @@ class Core extends AspectsKernel
      */
     public function run(Router $router)
     {
-        $this->middleware = array_merge([new RouterMiddleware($router)], $this->middleware);
+        $middleware = new RouterMiddleware($router);
+        $middleware->setErrorHandler($router->getErrorHandler())
+            ->setNotFound($router->getNotFoundHandler());
+
+        $this->middleware = array_merge([$middleware], $this->middleware);
 
         $next = null;
         $stack = new \SplDoublyLinkedList();

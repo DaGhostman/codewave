@@ -143,14 +143,20 @@ class RouterMiddleware implements MiddlewareInterface
             }
         } catch (NotFoundException $ex) {
             $response = $response->withStatus(404);
-            $response = call_user_func($this->notFound, $request, $response) ?: $response;
+            if ($this->notFound !== null) {
+                $response = call_user_func($this->notFound, $request, $response) ?: $response;
+            }
         } catch (MethodNotAllowedException $ex) {
             $response = $response->withStatus(405)
                 ->withAddedHeader('Allow', implode(', ', $ex->getAllowed()));
-            $response = call_user_func($this->errorHandler, $request, $response, $ex) ?: $response;
+            if ($this->errorHandler !== null) {
+                $response = call_user_func($this->errorHandler, $request, $response, $ex) ?: $response;
+            }
         } catch (\Exception $ex) {
             $response = $response->withStatus(500);
-            $response = call_user_func($this->errorHandler, $request, $response, $ex) ?: $response;
+            if ($this->errorHandler !== null) {
+                $response = call_user_func($this->errorHandler, $request, $response, $ex) ?: $response;
+            }
         }
 
         return $response;

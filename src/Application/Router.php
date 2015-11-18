@@ -81,6 +81,33 @@ class Router implements MiddlewareInterface
     }
 
     /**
+     * Registers a callback to dispatch when a page is not found
+     *
+     * @param callback $callback
+     * @throws \InvalidArgumentException If $callback is not callable
+     * @return $this
+     */
+    public function setNotFound($callback)
+    {
+        if (!is_callable($callback)) {
+            throw new \InvalidArgumentException(
+                'Invalid 404 callback provided'
+            );
+        }
+        $this->notFound = $callback;
+
+        return $this;
+    }
+
+    /**
+     * @return callable
+     */
+    public function getErrorHandler()
+    {
+        return $this->errorHandler;
+    }
+
+    /**
      * Registers a callback to handle errors
      *
      * @param $callback callback
@@ -100,22 +127,11 @@ class Router implements MiddlewareInterface
     }
 
     /**
-     * Registers a callback to dispatch when a page is not found
-     *
-     * @param callback $callback
-     * @throws \InvalidArgumentException If $callback is not callable
-     * @return $this
+     * @return callable
      */
-    public function setNotFound($callback)
+    public function getNotFoundHandler()
     {
-        if (!is_callable($callback)) {
-            throw new \InvalidArgumentException(
-                'Invalid 404 callback provided'
-            );
-        }
-        $this->notFound = $callback;
-
-        return $this;
+        return $this->notFound;
     }
 
     /**
