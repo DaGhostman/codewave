@@ -8,7 +8,6 @@
 
 namespace Wave\Framework\Middleware;
 
-
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as RequestInterface;
 use Wave\Framework\Flash\Manager;
