@@ -26,31 +26,13 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Wave\Framework\Middleware;
+namespace Wave\Framework\Exceptions;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Wave\Framework\Interfaces\Middleware\MiddlewareInterface;
-
-class Csrf implements MiddlewareInterface
+/**
+ * Class CsrfTokenException
+ * @package Wave\Framework\Exceptions
+ */
+class CsrfTokenException extends \Exception
 {
-    /**
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @param callable $next
-     *
-     * @return ResponseInterface
-     */
-    public function __invoke($request, $response, $next = null)
-    {
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            $_SESSION['csrf_token'] = md5(uniqid(crc32(time()), true));
-        }
 
-        if (null !== $next) {
-            $response = $next($request, $response);
-        }
-
-        return $response;
-    }
 }
