@@ -343,7 +343,7 @@ class Router implements MiddlewareInterface
                     $key
                 ));
             }
-            $replace['{' . $key . '}'] = $value;
+            $replace['{' . $key . '}'] = urlencode($value);
         }
 
         return strtr($this->namedRoutes[$name][0], $replace);
