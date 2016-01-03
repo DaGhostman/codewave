@@ -73,7 +73,7 @@ class Logger implements Aspect
         try {
             $response = $invocation->proceed();
         } catch (\Exception $ex) {
-            $this->logger->critical($ex->getMessage(), $ex);
+            $this->logger->critical($ex->getMessage(), $ex->getTrace());
             throw $ex;
         }
 
